@@ -21,6 +21,9 @@ class Shell {
 
 		const string	getFileSystemPath() const;
 
+		Directory*		getCurrentDirectory() const;
+		Directory*		setCurrentDirectory(Directory* directory);
+
 		Directory*		getRoot() const;
 
 		void			execute(string command);
@@ -28,6 +31,7 @@ class Shell {
 	private:
 		static const string	fileSystemPath;
 		Directory*			root;
+		Directory*			currentDirectory;
 		bool				isTerminating;
 		string				prompt;
 		string				currentDirectoryPath;

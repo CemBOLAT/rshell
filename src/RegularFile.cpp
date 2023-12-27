@@ -1,5 +1,5 @@
 #include "../includes/RegularFile.hpp"
-#include <iomanip>
+#include "../includes/Utils.hpp"
 #include <ctime>
 
 RegularFile::RegularFile(const string &name, size_t sizeBytes, time_t time, const string& data, const string& path)
@@ -12,22 +12,11 @@ RegularFile::~RegularFile()
 
 ostream&	operator<<(ostream& os, const RegularFile& file)
 {
-	// ayrı bölersin bu kısmı!
-
 	time_t rawtime = file.getTime();
-
 	struct tm* timeinfo = std::localtime(&rawtime);
-	int day = timeinfo->tm_mday;
-	int month = timeinfo->tm_mon + 1;
-	int hour = timeinfo->tm_hour;
-	int minute = timeinfo->tm_min;
 
-	os << "F " << file.getName() << " "
-		<< std::setw(2) << std::setfill('0') << day << "/"
-		<< std::setw(2) << std::setfill('0') << month << " "
-		<< std::setw(2) << std::setfill('0') << hour << ":"
-		<< std::setw(2) << std::setfill('0') << minute << " "
-		<< file.getSizeBytes() << " Bytes" << std::endl;
+	os << "F " << file.getName() << " ";
+	Utils::printTime(os, timeinfo) << file.getSizeBytes() << " Bytes" << std::endl;
 	return os;
 }
 

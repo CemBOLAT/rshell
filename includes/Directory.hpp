@@ -15,10 +15,10 @@ class Directory : public File {
 		vector<File*>	getFiles() const;
 		friend ostream&	operator<<(ostream& os, const Directory& dir);
 		Directory*		getDirectory(const string &name) const;
-		void			addFile(File* file);
-
 		void			setParentDirectoryName(const string &name);
 		string			getParentDirectoryName() const;
+		void			addFile(File* file);
+		void			removeFile(const string &name);
 	private:
 		vector<File*>	files;
 		string			parentDirectoryName;

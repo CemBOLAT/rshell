@@ -11,6 +11,7 @@ Shell::Shell() :
 		isTerminating(false), prompt("cemalBolat:/$ "), currentDirectoryPath("/")
 {
 	this->root = new Directory("/", time(nullptr), "/");
+	this->currentDirectory = this->root;
 }
 
 Shell::~Shell()
@@ -59,21 +60,39 @@ Directory* Shell::getRoot() const
 	return this->root;
 }
 
+Directory* Shell::getCurrentDirectory() const
+{
+	return this->currentDirectory;
+}
+
+Directory* Shell::setCurrentDirectory(Directory* directory)
+{
+	this->currentDirectory = directory;
+	return this->currentDirectory;
+}
+
 void Shell::execute(string command)
 {
 	command = Utils::trim(command);
-	if (command == "exit")
+	string commandName = command.substr(0, command.find(' '));
+	string commandArgument = command.substr(command.find(' ') + 1, command.size() - 1);
+	if (commandName == "exit")
 	{
 		this->setTerminated(true);
 		return;
 	}
-	else if (command == "ls")
+	else if (command == "ls") // bu kısımlara baK
 	{
 		Executor::ls(*this);
 		return;
 	}
-	else if (command == "cat"){
-
+	else if (commandName == "cat"){
+		Executor::cat(*this, commandArgument);
+		return;
+	}
+	else if (commandName == "rm"){
+		Executor::rm(*this, commandArgument);
+		return;
 	}
 }
 

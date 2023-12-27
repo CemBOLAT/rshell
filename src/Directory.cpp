@@ -40,6 +40,18 @@ void	Directory::addFile(File* file)
 	this->files.push_back(file);
 }
 
+void	Directory::removeFile(const string &name)
+{
+	for (auto it = this->files.begin(); it != this->files.end(); ++it)
+	{
+		if ((*it)->getName() == name)
+		{
+			this->files.erase(it);
+			return;
+		}
+	}
+}
+
 // hata olabilir
 void	Directory::setParentDirectoryName(const string &name)
 {

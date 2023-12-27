@@ -8,6 +8,7 @@ SRCS := ./src/main.cpp \
 		./src/Utils.cpp \
 		./src/Executor.cpp \
 		./src/SaveFile.cpp \
+		#./src/UtilsTemplate.cpp \
 
 OBJS := $(SRCS:.cpp=.o)
 CXX := g++
