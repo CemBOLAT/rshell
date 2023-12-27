@@ -35,3 +35,8 @@ size_t		RegularFile::getSizeBytes() const
 {
 	return this->sizeBytes;
 }
+
+string		RegularFile::getData() const
+{
+	return this->data;
+}

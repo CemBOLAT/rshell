@@ -12,6 +12,7 @@ class RegularFile : public File {
 
 
 		size_t			getSizeBytes() const;
+		string			getData() const;
 		friend ostream&	operator<<(ostream& os, const RegularFile& file);
 	private:
 		const size_t	sizeBytes;

@@ -1,11 +1,8 @@
 Type: Regular
 Name: myName
 Path: /
-Content: Cemal Bolat$
+Content: Cemal Bolat
 Type: Regular
 Name: mySchool
 Path: /
-Content: Gebze Technical University$
-Type: Directory
-Name: myOS
-Path: /mySchool
+Content: Gebze Technical University

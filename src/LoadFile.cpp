@@ -52,4 +52,5 @@ void LoadFile::load(const std::string &path, Shell &shell){
 			addRegularFile(shell, file);
 		}
 	}
+	file.close();
 }
