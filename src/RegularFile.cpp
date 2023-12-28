@@ -16,7 +16,7 @@ ostream&	operator<<(ostream& os, const RegularFile& file)
 	struct tm* timeinfo = std::localtime(&rawtime);
 
 	os << "F " << file.getName() << " ";
-	Utils::printTime(os, timeinfo) << file.getSizeBytes() << " Bytes" << std::endl;
+	Utils::printTime(os, timeinfo) << file.getSizeBytes() << " Bytes";
 	return os;
 }
 

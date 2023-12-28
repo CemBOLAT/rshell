@@ -13,7 +13,6 @@ namespace Utils {
 				return dynamic_cast<T*>(file);
 			}
 		}
-		throw invalid_argument("");
 		return nullptr;
 	}
 }

@@ -6,7 +6,7 @@
 
 class Directory : public File {
 	public:
-		Directory(const string &name, time_t time, const string &str);
+		Directory(const string &name, time_t time, const string &path);
 		Directory(const Directory& dir) = default;
 		Directory&	operator=(const Directory& dir) = default;
 		virtual		~Directory();

@@ -17,18 +17,28 @@ using namespace std;
 		// 2. Dosya Adı
 		// 3. Dosya Konumu
 
-void addRegularFile(Shell &shell, ifstream &file){
+void LoadFile::addRegularFile(Shell &shell, ifstream &file){
 	string		name;
 	string		path;
-	string		content;
+	string		data;
 	Directory	*directory;
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
-	content = Utils::getContent(file);
+	data = Utils::getData(file);
 	directory = shell.getRoot()->getDirectory(path);
 	if (directory == nullptr)
 		throw runtime_error("Directory could not be found."); // not configrated
-	directory->addFile(new RegularFile(name, content.size(), time(nullptr), content, path));
+	directory->addFile(new RegularFile(name, data.size(), time(nullptr), data, path));
+}
+
+void LoadFile::addDirectory(Shell &shell, ifstream &file){
+	string		name;
+	string		path;
+	Directory	*directory;
+	name = Utils::getContent(file);
+	path = Utils::getContent(file);
+	directory = shell.getCurrentDirectory();
+	directory->addFile(new Directory(name, time_t(nullptr), path)); // zaman kritik
 }
 
 void LoadFile::load(const std::string &path, Shell &shell){
@@ -50,6 +60,9 @@ void LoadFile::load(const std::string &path, Shell &shell){
 			continue;
 		if (line.substr(line.find(" ") + 1, line.size() - 1) == "Regular"){
 			addRegularFile(shell, file);
+		}
+		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Directory"){
+			addDirectory(shell, file);
 		}
 	}
 	file.close();

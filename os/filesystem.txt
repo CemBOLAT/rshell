@@ -1,8 +1,18 @@
 Type: Regular
 Name: myName
 Path: /
-Content: Cemal Bolat
+Content: Cemal Bolat
 Type: Regular
-Name: mySchool
+Name: myurl
 Path: /
-Content: Gebze Technical University
+Content: Kasim Bolat
+Çok satırlı
+Çok satırlı
+Çok satırlı
+Çok satırlı
+Type: Directory
+Name: 31
+Path: /31/
+Type: Directory
+Name: sevilgen
+Path: /sevilgen/

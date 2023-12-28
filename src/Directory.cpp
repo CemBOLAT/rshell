@@ -1,4 +1,6 @@
 #include "../includes/Directory.hpp"
+#include "../includes/Utils.hpp"
+#include <ctime>
 
 Directory::Directory(const string &name, time_t time, const string &path) : File(name, time, path)
 {
@@ -7,12 +9,6 @@ Directory::Directory(const string &name, time_t time, const string &path) : File
 
 Directory::~Directory()
 {/*Body inintentionally left empty! */}
-
-ostream&	operator<<(ostream& os, const Directory& dir)
-{
-	os << dir.getName();
-	return os;
-}
 
 vector<File*>	Directory::getFiles() const
 {
@@ -64,4 +60,15 @@ void	Directory::setParentDirectoryName(const string &name)
 string	Directory::getParentDirectoryName() const
 {
 	return this->parentDirectoryName;
+}
+
+
+ostream&	operator<<(ostream& os, const Directory& dir)
+{
+	time_t rawtime = dir.getTime();
+	struct tm* timeinfo = std::localtime(&rawtime);
+
+	os << "D " << dir.getName() << " ";
+	Utils::printTime(os, timeinfo);
+	return os;
 }

@@ -94,5 +94,13 @@ void Shell::execute(string command)
 		Executor::rm(*this, commandArgument);
 		return;
 	}
+	else if (commandName == "mkdir"){
+		Executor::mkdir(*this, commandArgument);
+		return;
+	}
+	else if (commandName == "cd"){
+		Executor::cd(*this, commandArgument);
+		return;
+	}
 }
 

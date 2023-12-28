@@ -16,6 +16,12 @@ void SaveFile::save(const std::string &path, Shell &shell){
 			file << "Path: " << vdFile->getPath() << std::endl;
 			file << "Content: " << vdFile->getData() << std::endl;
 		}
+		else if (dynamic_cast<Directory*>(vfile) != nullptr){
+			Directory *vdFile = dynamic_cast<Directory*>(vfile);
+			file << "Type: Directory" << std::endl;
+			file << "Name: " << vdFile->getName() << std::endl;
+			file << "Path: " << vdFile->getPath() << std::endl;
+		}
 
 	}
 	file.close();
