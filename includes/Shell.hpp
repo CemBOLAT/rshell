@@ -16,17 +16,14 @@ class Shell {
 		void			setPrompt(const string& prompt);
 		string			getPrompt() const;
 
-		void			setCurrentDirectoryPath(const string& path);
-		string			getCurrentDirectoryPath() const;
-
 		const string	getFileSystemPath() const;
 
 		Directory*		getCurrentDirectory() const;
-		Directory*		setCurrentDirectory(Directory* directory);
+		void			setCurrentDirectory(Directory* directory);
 
 		Directory*		getRoot() const;
-
 		void			execute(string command);
+
 
 	private:
 		static const string	fileSystemPath;
@@ -34,7 +31,6 @@ class Shell {
 		Directory*			currentDirectory;
 		bool				isTerminating;
 		string				prompt;
-		string				currentDirectoryPath;
 
 };
 

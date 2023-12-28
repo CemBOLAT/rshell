@@ -1,11 +1,15 @@
 #include "../includes/Directory.hpp"
 #include "../includes/Utils.hpp"
 #include <ctime>
+#include <sstream>
 
-Directory::Directory(const string &name, time_t time, const string &path) : File(name, time, path)
-{
-	setParentDirectoryName(path);
-}
+Directory::Directory(const string &name, time_t time, const string &path)
+	: File(name, time, path), parentDirectory(nullptr)
+{/*Body inintentionally left empty! */}
+
+Directory::Directory(const string &name, time_t time, const string &path, Directory* parentDirectory)
+	: File(name, time, path), parentDirectory(parentDirectory)
+{/*Body inintentionally left empty! */}
 
 Directory::~Directory()
 {/*Body inintentionally left empty! */}
@@ -18,16 +22,15 @@ vector<File*>	Directory::getFiles() const
 // hata dosya okumada sorun var
 Directory*	Directory::getDirectory(const string &name) const
 {
-	if (this->getName() == name){
-		return const_cast<Directory*>(this);
-	}
 	for (auto file : this->files)
 	{
+		//std::cout << file->getName() << std::endl;
 		if (file->getName() == name)
 		{
 			return dynamic_cast<Directory*>(file);
 		}
 	}
+
 	return nullptr;
 }
 
@@ -49,19 +52,15 @@ void	Directory::removeFile(const string &name)
 }
 
 // hata olabilir
-void	Directory::setParentDirectoryName(const string &name)
+Directory*	Directory::getParentDirectory() const
 {
-	if (name == "/")
-		this->parentDirectoryName = "";
-	else
-		this->parentDirectoryName = name.substr(0, name.find_last_of("/"));
+	return this->parentDirectory;
 }
 
-string	Directory::getParentDirectoryName() const
+void	Directory::setParentDirectory(Directory* parentDirectory)
 {
-	return this->parentDirectoryName;
+	this->parentDirectory = parentDirectory;
 }
-
 
 ostream&	operator<<(ostream& os, const Directory& dir)
 {
@@ -71,4 +70,12 @@ ostream&	operator<<(ostream& os, const Directory& dir)
 	os << "D " << dir.getName() << " ";
 	Utils::printTime(os, timeinfo);
 	return os;
+}
+
+Directory* Directory::operator/(const string &name) const
+{
+	Directory* directory = this->getDirectory(name);
+	//if (directory == nullptr) (emin değiliim)
+	//	throw runtime_error("cd: " + name + ": No such file or directory");
+	return directory;
 }

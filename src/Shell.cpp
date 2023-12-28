@@ -7,8 +7,7 @@
 
 const std::string Shell::fileSystemPath = "./os/filesystem.txt";
 
-Shell::Shell() :
-		isTerminating(false), prompt("cemalBolat:/$ "), currentDirectoryPath("/")
+Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
 {
 	this->root = new Directory("/", time(nullptr), "/");
 	this->currentDirectory = this->root;
@@ -16,6 +15,8 @@ Shell::Shell() :
 
 Shell::~Shell()
 {
+	// free all memory allocated for
+	// the file system (dont forget to delete the root directory) too
 	delete this->root;
 	this->root = nullptr;
 }
@@ -35,7 +36,7 @@ void Shell::setTerminated(bool isTerminated)
 	this->isTerminating = isTerminated;
 }
 
-void Shell::setPrompt(const string& prompt)
+void Shell::setPrompt(const string &prompt)
 {
 	this->prompt = prompt;
 }
@@ -45,30 +46,19 @@ string Shell::getPrompt() const
 	return this->prompt;
 }
 
-void Shell::setCurrentDirectoryPath(const string& path)
-{
-	this->currentDirectoryPath = path;
-}
-
-string Shell::getCurrentDirectoryPath() const
-{
-	return this->currentDirectoryPath;
-}
-
-Directory* Shell::getRoot() const
+Directory *Shell::getRoot() const
 {
 	return this->root;
 }
 
-Directory* Shell::getCurrentDirectory() const
+Directory *Shell::getCurrentDirectory() const
 {
 	return this->currentDirectory;
 }
 
-Directory* Shell::setCurrentDirectory(Directory* directory)
+void Shell::setCurrentDirectory(Directory *directory)
 {
 	this->currentDirectory = directory;
-	return this->currentDirectory;
 }
 
 void Shell::execute(string command)
@@ -76,31 +66,47 @@ void Shell::execute(string command)
 	command = Utils::trim(command);
 	string commandName = command.substr(0, command.find(' '));
 	string commandArgument = command.substr(command.find(' ') + 1, command.size() - 1);
+
+	if (command.find(' ') == string::npos)
+		commandArgument = "";
 	if (commandName == "exit")
 	{
 		this->setTerminated(true);
 		return;
 	}
-	else if (command == "ls") // bu kısımlara baK
+	else if (commandName == "ls") // bu kısımlara baK
 	{
-		Executor::ls(*this);
+		if (commandArgument == "-R"){
+			Executor::lsRecursive(getCurrentDirectory(), *this);
+		}
+		else
+			Executor::ls(*this);
 		return;
 	}
-	else if (commandName == "cat"){
+	else if (commandName == "cat")
+	{
 		Executor::cat(*this, commandArgument);
 		return;
 	}
-	else if (commandName == "rm"){
+	else if (commandName == "rm")
+	{
 		Executor::rm(*this, commandArgument);
 		return;
 	}
-	else if (commandName == "mkdir"){
+	else if (commandName == "mkdir")
+	{
 		Executor::mkdir(*this, commandArgument);
 		return;
 	}
-	else if (commandName == "cd"){
+	else if (commandName == "cd")
+	{
 		Executor::cd(*this, commandArgument);
+		setPrompt("cemalBolat:" + getCurrentDirectory()->getPath() + "$ ");
 		return;
 	}
-}
+	else if (commandName == "cp"){
+		Executor::cp(*this, Utils::split(commandArgument, ' '));
+		return;
+	}
 
+}

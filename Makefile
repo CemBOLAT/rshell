@@ -26,7 +26,7 @@ CXXFLAGS := -std=c++11 -Wall -Wextra -Werror -pedantic -g
 
 all : $(NAME)
 
-$(NAME) : $(OBJS)
+$(NAME) : $(OBJS) $(Header)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 

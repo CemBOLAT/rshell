@@ -8,7 +8,9 @@ namespace Executor {
 	void	cat(const Shell& shell, const string& fileName);
 	void	rm(const Shell& shell, const string& fileName);
 	void	mkdir(const Shell& shell, const string& directoryName);
-	void	cd(const Shell& shell, const string& directoryName);
+	void	cd(Shell& shell, const string& directoryName);
+	void	lsRecursive(const Directory *directory, const Shell &shell);
+	void	cp(const Shell& shell, const vector<string>& args);
 }
 
 #endif

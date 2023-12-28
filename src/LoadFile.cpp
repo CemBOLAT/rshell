@@ -21,24 +21,36 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file){
 	string		name;
 	string		path;
 	string		data;
-	Directory	*directory;
+	Directory	*directory = shell.getRoot();
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
 	data = Utils::getData(file);
-	directory = shell.getRoot()->getDirectory(path);
+	directory = Utils::findDirectory(shell.getCurrentDirectory(), path);
+
 	if (directory == nullptr)
-		throw runtime_error("Directory could not be found."); // not configrated
+		throw runtime_error("Directory coouold not be found."); // not configrated
 	directory->addFile(new RegularFile(name, data.size(), time(nullptr), data, path));
 }
 
+// hata var iki derinlikte boom
 void LoadFile::addDirectory(Shell &shell, ifstream &file){
 	string		name;
 	string		path;
-	Directory	*directory;
+	Directory	*parentDirectory;
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
-	directory = shell.getCurrentDirectory();
-	directory->addFile(new Directory(name, time_t(nullptr), path)); // zaman kritik
+
+	if (path == "/"){
+		parentDirectory = shell.getRoot();
+		parentDirectory->addFile(new Directory(name, time_t(nullptr), path, parentDirectory)); // zaman kritik
+	}
+	else{
+		string		parentPath = Utils::subParentPath(path);
+		parentDirectory = Utils::findDirectory(shell.getCurrentDirectory(), parentPath);
+		if (parentDirectory == nullptr)
+			throw runtime_error("Directory coould not be found."); // not configrated
+		parentDirectory->addFile(new Directory(name, time_t(nullptr), path, parentDirectory)); // zaman kritik
+	}
 }
 
 void LoadFile::load(const std::string &path, Shell &shell){

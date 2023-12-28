@@ -11,8 +11,22 @@ Content: Kasim Bolat
 Çok satırlı
 Çok satırlı
 Type: Directory
-Name: 31
-Path: /31/
+Name: a
+Path: /a/
 Type: Directory
-Name: sevilgen
-Path: /sevilgen/
+Name: aa
+Path: /a/aa/
+Type: Regular
+Name: myurl
+Path: /a/aa/
+Content: Kasim Bolat
+Çok satırlı
+Çok satırlı
+Çok satırlı
+Çok satırlı
+Type: Directory
+Name: b
+Path: /a/aa/b/
+Type: Directory
+Name: c
+Path: /a/aa/b/c/

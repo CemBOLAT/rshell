@@ -2,6 +2,7 @@
 # define REGULARFILE_HPP
 
 #include "File.hpp"
+#include "Directory.hpp"
 
 class RegularFile : public File {
 	public:
@@ -13,6 +14,8 @@ class RegularFile : public File {
 
 		size_t			getSizeBytes() const;
 		string			getData() const;
+
+		void			copy(Directory *dir) const;
 		friend ostream&	operator<<(ostream& os, const RegularFile& file);
 	private:
 		const size_t	sizeBytes;

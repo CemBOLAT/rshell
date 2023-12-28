@@ -29,3 +29,8 @@ string		RegularFile::getData() const
 {
 	return this->data;
 }
+
+void		RegularFile::copy(Directory *dir) const
+{
+	dir->addFile(new RegularFile(*this));
+}
