@@ -101,11 +101,15 @@ void Shell::execute(string command)
 	else if (commandName == "cd")
 	{
 		Executor::cd(*this, commandArgument);
-		setPrompt("cemalBolat:" + getCurrentDirectory()->getPath() + "$ ");
+		if (getCurrentDirectory()->getName() == "/")
+			this->setPrompt("cemalBolat:/$ ");
+		else
+			setPrompt("cemalBolat:" + getCurrentDirectory()->getPath() + getCurrentDirectory()->getName() + "/$ ");
 		return;
 	}
 	else if (commandName == "cp"){
-		Executor::cp(*this, Utils::split(commandArgument, ' '));
+		vector<string> args = Utils::split(commandArgument, ' ');
+		Executor::cp(*this, args[0], args[1]);
 		return;
 	}
 

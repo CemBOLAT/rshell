@@ -11,7 +11,7 @@ class File {
 		File(const string &name, time_t time, const string& path = "");
 		File(const File& file) = default;
 		File&			operator=(const File& file) = default;
-		virtual			~File();
+		virtual			~File() = 0;
 
 		time_t			getTime() const;
 		time_t			setTime(const time_t &time);

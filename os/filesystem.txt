@@ -1,8 +1,4 @@
 Type: Regular
-Name: myName
-Path: /
-Content: Cemal Bolat
-Type: Regular
 Name: myurl
 Path: /
 Content: Kasim Bolat
@@ -12,21 +8,21 @@ Content: Kasim Bolat
 Çok satırlı
 Type: Directory
 Name: a
+Path: /
+Type: Directory
+Name: b
 Path: /a/
 Type: Directory
-Name: aa
-Path: /a/aa/
+Name: d
+Path: /a/
+Type: Directory
+Name: c
+Path: /a/d/
 Type: Regular
 Name: myurl
-Path: /a/aa/
+Path: /a/
 Content: Kasim Bolat
 Çok satırlı
 Çok satırlı
 Çok satırlı
 Çok satırlı
-Type: Directory
-Name: b
-Path: /a/aa/b/
-Type: Directory
-Name: c
-Path: /a/aa/b/c/

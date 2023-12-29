@@ -25,7 +25,13 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file){
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
 	data = Utils::getData(file);
-	directory = Utils::findDirectory(shell.getCurrentDirectory(), path);
+
+	if (path == "/"){
+		directory = shell.getRoot();
+		directory->addFile(new RegularFile(name, data.size(), time(nullptr), data, path));
+		return;
+	}
+	directory = Utils::findDirectory(shell, path);
 
 	if (directory == nullptr)
 		throw runtime_error("Directory coouold not be found."); // not configrated
@@ -37,6 +43,7 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 	string		name;
 	string		path;
 	Directory	*parentDirectory;
+	//Directory	*myDirectory;
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
 
@@ -45,10 +52,10 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 		parentDirectory->addFile(new Directory(name, time_t(nullptr), path, parentDirectory)); // zaman kritik
 	}
 	else{
-		string		parentPath = Utils::subParentPath(path);
-		parentDirectory = Utils::findDirectory(shell.getCurrentDirectory(), parentPath);
+		parentDirectory = Utils::findDirectory(shell, path);
 		if (parentDirectory == nullptr)
 			throw runtime_error("Directory coould not be found."); // not configrated
+		//myDirectory = parentDirectory / name;
 		parentDirectory->addFile(new Directory(name, time_t(nullptr), path, parentDirectory)); // zaman kritik
 	}
 }
@@ -63,11 +70,6 @@ void LoadFile::load(const std::string &path, Shell &shell){
 		string line;
 		getline(file, line);
 		line = Utils::trim(line);
-		//for (size_t i = 0; i < line.size(); i++){
-		//	if (line[i] < 32)
-		//		printf("%d %ld %ld\n", line[i], i, line.size());
-		//}
-		//std::cout << line.substr(line.find(" ") + 1, line.size() - 1) << "$" << std::endl;
 		if (line.empty())
 			continue;
 		if (line.substr(line.find(" ") + 1, line.size() - 1) == "Regular"){

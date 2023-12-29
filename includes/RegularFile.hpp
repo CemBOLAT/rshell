@@ -18,7 +18,7 @@ class RegularFile : public File {
 		void			copy(Directory *dir) const;
 		friend ostream&	operator<<(ostream& os, const RegularFile& file);
 	private:
-		const size_t	sizeBytes;
+		size_t			sizeBytes;
 		string			data;
 };
 

@@ -10,7 +10,7 @@ namespace Executor {
 	void	mkdir(const Shell& shell, const string& directoryName);
 	void	cd(Shell& shell, const string& directoryName);
 	void	lsRecursive(const Directory *directory, const Shell &shell);
-	void	cp(const Shell& shell, const vector<string>& args);
+	void	cp(const Shell& shell, const string& source, const string& fileName);
 }
 
 #endif
