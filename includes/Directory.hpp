@@ -14,7 +14,6 @@ class Directory : public File {
 
 
 		vector<File*>	getFiles() const;
-		friend ostream&	operator<<(ostream& os, const Directory& dir);
 		Directory*		getDirectory(const string &name) const;
 		void			addFile(File* file);
 
@@ -27,6 +26,7 @@ class Directory : public File {
 		void			setParentDirectory(Directory* parentDirectory);
 
 		string			getOwnFilesPath() const;
+		virtual void	print(ostream& os, size_t maxLen) const override;
 	private:
 		string			ownFilesPath;
 		vector<File*>	files;

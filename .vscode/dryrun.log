@@ -1,0 +1,16 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/cembolat/Desktop/rshell-gpt-'
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/main.o src/main.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/Shell.o src/Shell.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/File.o src/File.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/Directory.o src/Directory.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/RegularFile.o src/RegularFile.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/LoadFile.o src/LoadFile.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/Utils.o src/Utils.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/Executor.o src/Executor.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/SaveFile.o src/SaveFile.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/Template.o src/Template.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -c -o obj/TextEngine.o src/TextEngine.cpp
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic -g -o myShell obj/main.o obj/Shell.o obj/File.o obj/Directory.o obj/RegularFile.o obj/LoadFile.o obj/Utils.o obj/Executor.o obj/SaveFile.o obj/Template.o obj/TextEngine.o
+make: Leaving directory `/Users/cembolat/Desktop/rshell-gpt-'
+ 

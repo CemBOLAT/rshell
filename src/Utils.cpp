@@ -143,9 +143,9 @@ namespace Utils
 			return shell.getRoot();
 		}
 		//std::cout << "absPath: " << absPath << std::endl;
-		std::cout << "path  : " << path << std::endl;
-		for (auto path : paths)
-		 	std::cout << path << std::endl;
+		//std::cout << "path  : " << path << std::endl;
+		//for (auto path : paths)
+		 //	std::cout << path << std::endl;
 		Directory *dir = findDirTraverse(shell.getRoot(), paths);
 		// cout << "000000" << endl;
 		return dir;

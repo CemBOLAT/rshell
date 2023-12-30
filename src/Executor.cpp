@@ -1,5 +1,6 @@
 #include "../includes/Executor.hpp"
 #include "../includes/Utils.hpp"
+#include "../includes/TextEngine.hpp"
 #include "../includes/RegularFile.hpp"
 #include "../includes/Directory.hpp"
 #include "./Template.cpp"
@@ -8,22 +9,22 @@
 #include <fstream>
 
 namespace {
-	void listOnlyCurrentDirectory(ostream &os, const Shell& shell) {
+	void listOnlyCurrentDirectory(ostream &os, const Shell& shell, size_t maxNameLength) {
 		time_t rawtime = shell.getRoot()->getTime();
 		struct tm* timeinfo = std::localtime(&rawtime);
 
-		os << "D " << "." << " ";
+		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << "." << " ";
 		Utils::printTime(os, timeinfo) << std::endl;
 	}
 
-	void listSpecialDirectories(ostream &os, const Shell& shell) {
+	void listSpecialDirectories(ostream &os, const Shell& shell, size_t maxNameLength) {
 		time_t rawtime = shell.getCurrentDirectory()->getTime();
 		struct tm* timeinfo = std::localtime(&rawtime);
 
-		os << "D " << "." << " "; // hata var düzelecezzz (zaman sorunu !)
-		Utils::printTime(os, timeinfo) << std::endl;
+		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << "." << " ";
+			Utils::printTime(os, timeinfo) << std::endl;
 
-		os << "D " << ".." << " ";
+		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << ".." << " ";
 		Utils::printTime(os, timeinfo) << std::endl;
 	}
 }
@@ -32,23 +33,27 @@ namespace Executor {
 
 	void ls(const Shell& Shell) {
 		Directory* currentDirectory = Shell.getCurrentDirectory();
+		vector<File *> files = currentDirectory->getFiles();
+		size_t maxNameLength = 0;
+		for (File *file : files)
+		{
+			if (file->getName().size() > maxNameLength)
+				maxNameLength = file->getName().length();
+		}
 		if (Shell.getCurrentDirectory() != Shell.getRoot()) {
-			listSpecialDirectories(cout, Shell);
+			listSpecialDirectories(cout, Shell, maxNameLength);
 		}
 		else {
-			listOnlyCurrentDirectory(cout, Shell);
+			listOnlyCurrentDirectory(cout, Shell, maxNameLength);
 		}
-		vector<File*> files = currentDirectory->getFiles();
 		if (files.empty())
 			return;
+
 		for (File* file : files) {
 			if (dynamic_cast<Directory*>(file)) {
-				Directory* directory = dynamic_cast<Directory*>(file);
-				
-				cout << *directory << endl;
+				file->print(cout, maxNameLength);
 			} else if (dynamic_cast<RegularFile*>(file)) {
-				RegularFile* regularFile = dynamic_cast<RegularFile*>(file);
-				cout << *regularFile << endl;
+				file->print(cout, maxNameLength);
 			}
 			//else if (dynamic_cast<SymbolicLink*>(file)) {
 			//	SymbolicLink* symbolicLink = dynamic_cast<SymbolicLink*>(file);
@@ -188,13 +193,17 @@ namespace Executor {
 namespace {
 	void listRecursive(const Directory *directory){
 		vector<File *> files = directory->getFiles();
+		size_t maxNameLength = 0;
+		for (auto file : files){
+			if (file->getName().size() > maxNameLength)
+				maxNameLength = file->getName().length();
+		}
 		for (File* file : files) {
 			if (dynamic_cast<Directory*>(file)) {
-				Directory* directory = dynamic_cast<Directory*>(file);
-				cout << *directory << endl;
+				file->print(cout, maxNameLength);
+
 			} else if (dynamic_cast<RegularFile*>(file)) {
-				RegularFile* regularFile = dynamic_cast<RegularFile*>(file);
-				cout << *regularFile << endl;
+				file->print(cout, maxNameLength);
 			}
 			//else if (dynamic_cast<SymbolicLink*>(file)) {
 			//	SymbolicLink* symbolicLink = dynamic_cast<SymbolicLink*>(file);
@@ -204,7 +213,12 @@ namespace {
 		for (File* file : files) {
 			if (dynamic_cast<Directory*>(file)) {
 				Directory* directory = dynamic_cast<Directory*>(file);
-				std::cout << "\n."<< directory->getPath() + directory->getName() << ":" << std::endl;
+				cout << "\n";
+				Utils::TextEngine::greenBackground();
+				cout << "." << directory->getPath() + directory->getName() << ":";
+				Utils::TextEngine::reset();
+				cout << endl;
+				// (. ve ..) var untuma
 				listRecursive(directory); //sonra karar verirsin
 			}
 		}
@@ -214,14 +228,21 @@ namespace {
 
 namespace Executor {
 	void lsRecursive(const Directory *directory, const Shell& Shell) {
-
+		Directory *currentDirectory = Shell.getCurrentDirectory();
+		vector<File *> files = currentDirectory->getFiles();
+		size_t maxNameLength = 0;
+		for (File *file : files)
+		{
+			if (file->getName().length() > maxNameLength)
+				maxNameLength = file->getName().length();
+		}
 		if (directory->getPath() != "/")
 		{
-			listSpecialDirectories(cout, Shell);
+			listSpecialDirectories(cout, Shell, maxNameLength);
 		}
 		else
 		{
-			listOnlyCurrentDirectory(cout, Shell);
+			listOnlyCurrentDirectory(cout, Shell, maxNameLength);
 		}
 		listRecursive(directory);
 	}

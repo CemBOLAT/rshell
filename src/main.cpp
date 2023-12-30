@@ -6,8 +6,8 @@
 #include "../includes/SaveFile.hpp"
 
 
-// FileSystem data için tek satır tutuyor onu düzeltirsin! #Dolar mantığı önemli
 // filesystem dosyasında dosya zamanı yok onu düzeltirsin!
+// link ekle bu kadar
 int main(){
 
 	try {

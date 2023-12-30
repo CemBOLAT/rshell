@@ -1,7 +1,9 @@
 #include "../includes/Directory.hpp"
 #include "../includes/Utils.hpp"
+#include "../includes/TextEngine.hpp"
 #include <ctime>
 #include <sstream>
+#include <iomanip>
 
 Directory::Directory(const string &name, time_t time, const string &path)
 	: File(name, time, path), ownFilesPath(path + name + "/"), parentDirectory(nullptr)
@@ -59,12 +61,21 @@ void	Directory::setParentDirectory(Directory* parentDirectory)
 	this->parentDirectory = parentDirectory;
 }
 
-ostream&	operator<<(ostream& os, const Directory& dir)
+void Directory::print(std::ostream &os, size_t maxLen) const
 {
-	time_t rawtime = dir.getTime();
-	struct tm* timeinfo = std::localtime(&rawtime);
+	time_t rawtime = this->getTime();
+	struct tm *timeinfo = std::localtime(&rawtime);
 
-	os << "D " << dir.getName() << " ";
+	Utils::TextEngine::yellow();
+	os << "D ";
+	Utils::TextEngine::reset();
+	Utils::TextEngine::bold();
+	Utils::TextEngine::cyan();
+	os << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
+	Utils::TextEngine::reset();
+
+	Utils::TextEngine::green();
 	Utils::printTime(os, timeinfo);
-	return os;
+	Utils::TextEngine::resetAll();
+	os << std::endl;
 }

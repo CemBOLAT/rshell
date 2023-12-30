@@ -1,5 +1,6 @@
 #include "../includes/RegularFile.hpp"
 #include "../includes/Utils.hpp"
+#include "../includes/TextEngine.hpp"
 #include <ctime>
 
 RegularFile::RegularFile(const string &name, size_t sizeBytes, time_t time, const string& data, const string& path)
@@ -33,4 +34,16 @@ string		RegularFile::getData() const
 void		RegularFile::copy(Directory *dir) const
 {
 	dir->addFile(new RegularFile(*this));
+}
+
+void		RegularFile::print(ostream& os, size_t maxLen) const
+{
+	time_t rawtime = this->getTime();
+	struct tm* timeinfo = std::localtime(&rawtime);
+
+	Utils::TextEngine::yellow();
+	os << "F " << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
+	Utils::printTime(os, timeinfo) << this->getSizeBytes() << " Bytes";
+	Utils::TextEngine::reset();
+	os << endl;
 }
