@@ -114,5 +114,12 @@ void Shell::execute(string command)
 		Executor::cp(*this, args[0], args[1]);
 		return;
 	}
+	else if (commandName == "link"){
+		vector<string> args = Utils::split(commandArgument, ' ');
+		if (args.size() != 2)
+			throw runtime_error("link: missing operand");
+		//Executor::link(*this, args[0], args[1]);
+		return;
+	}
 
 }

@@ -95,5 +95,8 @@ namespace Utils {
 		void resetAll() {
 			cout << "\033[0m";
 		}
+		void orange() {
+			cout << "\033[38;5;208m";
+		}
 	}
 }

@@ -6,8 +6,9 @@
 #include "../includes/SaveFile.hpp"
 
 
-// filesystem dosyasında dosya zamanı yok onu düzeltirsin!
 // link ekle bu kadar
+// disk alanı kalmadıysa hata ver
+// klasörlerin saatini sekron yap
 int main(){
 
 	try {

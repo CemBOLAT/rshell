@@ -40,6 +40,7 @@ namespace Utils {
 		void	black();
 		void	magenta();
 		void	cyan();
+		void	orange();
 		void	white();
 		void	redBackground();
 		void	greenBackground();

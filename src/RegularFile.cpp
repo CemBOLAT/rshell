@@ -42,8 +42,15 @@ void		RegularFile::print(ostream& os, size_t maxLen) const
 	struct tm* timeinfo = std::localtime(&rawtime);
 
 	Utils::TextEngine::yellow();
-	os << "F " << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
-	Utils::printTime(os, timeinfo) << this->getSizeBytes() << " Bytes";
+	os << "F ";
+	Utils::TextEngine::bold();
+	Utils::TextEngine::orange();
+	os << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
+	Utils::TextEngine::reset();
+	Utils::TextEngine::green();
+	Utils::printTime(os, timeinfo);
+	Utils::TextEngine::cyan();
+	os << this->getSizeBytes() << " Bytes";
 	Utils::TextEngine::reset();
 	os << endl;
 }

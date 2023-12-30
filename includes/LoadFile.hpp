@@ -19,6 +19,7 @@ class LoadFile{
 		static void		load(const std::string &path, Shell &shell);
 		static void		addRegularFile(Shell &shell, ifstream &file);
 		static void		addDirectory(Shell &shell, ifstream &file);
+		static void		addSymbolicLink(Shell &shell, ifstream &file);
 };
 
 #endif

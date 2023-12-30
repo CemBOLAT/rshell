@@ -6,7 +6,7 @@
 #include <iomanip>
 
 Directory::Directory(const string &name, time_t time, const string &path)
-	: File(name, time, path), ownFilesPath(path + name + "/"), parentDirectory(nullptr)
+	: File(name, time, path), ownFilesPath("/"), parentDirectory(nullptr)
 {
 	this->files = vector<File*>();
 }

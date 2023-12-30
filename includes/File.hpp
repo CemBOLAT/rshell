@@ -6,6 +6,8 @@
 
 using namespace std;
 
+
+// load ve save kısmını da pure virtual yap
 class File {
 	public:
 		File(const string &name, time_t time, const string& path = "");

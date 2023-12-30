@@ -250,7 +250,7 @@ namespace Executor {
 
 
 namespace {
-	RegularFile *copyRegularFile(const string &source, const string &fileName, const Shell& shell){
+	RegularFile *copyRegularFile(const string &source, const string &fileName, const Shell& shell, const struct stat &sourceStat){
 		ifstream		sourceFile(source);
 		RegularFile		*regularFile;
 		string			data, line;
@@ -263,10 +263,17 @@ namespace {
 		data = data.substr(0, data.size() - 1);
 		data += static_cast<char>(3);
 		sourceFile.close();
-		regularFile = new RegularFile(fileName, data.size() ,time(nullptr), data, shell.getCurrentDirectory()->getOwnFilesPath());
+		regularFile = new RegularFile(fileName, data.size(), sourceStat.st_mtime, data, shell.getCurrentDirectory()->getOwnFilesPath());
 		return regularFile;
 	}
 }
+
+// namespace {
+// 	Directory *copyDirectory(const string &source, const string &fileName, const Shell& shell, const struct stat &sourceStat){
+// 		Directory		*directory;
+
+// 	}
+// }
 
 // 1. cp cannot create a file in a directory that does not exist
 // 2. cp can swap the contents of two files so no need to create new file when the file is exist at that directory
@@ -285,22 +292,20 @@ namespace Executor {
 		RegularFile *regularFile = Utils::findRegularFile(shell, fileName);
 		Directory *directory = Utils::findDirectory(shell, fileName);
 		if (regularFile == nullptr && S_ISREG(sourceStat.st_mode)){
-			std::cout << "buraya girdi" << std::endl;
-			regularFile = copyRegularFile(source, fileName, shell);
+			//std::cout << "buraya girdi" << std::endl;
+			regularFile = copyRegularFile(source, fileName, shell, sourceStat);
 			shell.getCurrentDirectory()->addFile(regularFile);
 		}
 		else if (directory == nullptr && S_ISDIR(sourceStat.st_mode)){ // reküfsif
-			//directory = new Directory(fileName, time(nullptr), shell.getCurrentDirectory()->getPath(), shell.getCurrentDirectory());
-			//shell.getCurrentDirectory()->addFile(directory);
+			//directory = copyDirectory(source, fileName, shell, sourceStat);
 		}
 		else if (directory && S_ISDIR(sourceStat.st_mode)){ // rekürsif üstüne yaz
 			throw std::runtime_error("cp: cannot overwrite directory '" + fileName + "' with non-directory");
 		}
 		else if (regularFile && S_ISREG(sourceStat.st_mode)){
-			std::cout << "buraya gir11di" << std::endl;
-
+			//std::cout << "buraya gir11di" << std::endl;
 			shell.getCurrentDirectory()->removeFile<RegularFile>(fileName);
-			regularFile = copyRegularFile(source, fileName, shell);
+			regularFile = copyRegularFile(source, fileName, shell, sourceStat);
 			shell.getCurrentDirectory()->addFile(regularFile);
 		}
 	}
