@@ -8,7 +8,8 @@ SRCS := ./src/main.cpp \
 		./src/Utils.cpp \
 		./src/Executor.cpp \
 		./src/SaveFile.cpp \
-		#./src/UtilsTemplate.cpp \
+		./src/Template.cpp \
+		./src/TextEngine.cpp \
 
 OBJS := ./obj/main.o \
 		./obj/Shell.o \
@@ -19,7 +20,8 @@ OBJS := ./obj/main.o \
 		./obj/Utils.o \
 		./obj/Executor.o \
 		./obj/SaveFile.o \
-		#./obj/UtilsTemplate.o \
+		./obj/Template.o \
+		./obj/TextEngine.o \
 
 CXX := g++
 CXXFLAGS := -std=c++11 -Wall -Wextra -Werror -pedantic -g

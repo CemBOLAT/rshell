@@ -4,8 +4,13 @@
 #include <vector>
 #include <sstream>
 
+
+
 // trimleri ayrıntılı bak
 using namespace std;
+
+
+
 namespace Utils
 {
 	std::vector<std::string> split(const string &str, char delim)
@@ -79,24 +84,37 @@ namespace Utils
 		return data;
 	}
 
-	string relPathToAbsPath(const Shell &shell, const string &path)
+	// we have 4 cases
+	// 1. /home/ahmet
+	// 2. home/ahmet
+	// 3. ../ahmet
+	// 4. ./ahmet
+	// multiple cases are also added ./cemal/../ahmet (so we should use recursie)
+	std::string relPathToAbsPath(const Shell &shell, const std::string &path)
 	{
 		if (path[0] == '/'){
 			return path;
 		}
-		if (path[0] == '.')
-		{
-			if (path[1] == '.')
-			{
-				if (shell.getCurrentDirectory()->getParentDirectory() == nullptr)
-					return shell.getCurrentDirectory()->getPath() + path.substr(2);
-				return shell.getCurrentDirectory()->getParentDirectory()->getPath() + shell.getCurrentDirectory()->getParentDirectory()->getName() + path.substr(2);
+		if (shell.getCurrentDirectory() == shell.getRoot()){
+			if (path[0] == '.' && path[1] == '.'){
+				return "/" + path.substr(3, path.size() - 1);
 			}
-			if (shell.getCurrentDirectory()->getParentDirectory() == nullptr)
-				return shell.getCurrentDirectory()->getPath() + shell.getCurrentDirectory()->getName() + "/" + path.substr(2);
-			return shell.getCurrentDirectory()->getParentDirectory()->getPath() + shell.getCurrentDirectory()->getName() + "/" + path.substr(2);
+			else if (path[0] == '.'){
+				return "/" + path.substr(2, path.size() - 1);
+			}
+			else{
+				return "/" + path;
+			}
 		}
-		return shell.getCurrentDirectory()->getPath() + shell.getCurrentDirectory()->getName() + "/" + path;
+		if ((path[0] == '.' && path[1] == '/') ||  path[0] != '.'){
+			if (path[0] == '.')
+				return shell.getCurrentDirectory()->getOwnFilesPath() + "/" + path.substr(2, path.size() - 1);
+			return shell.getCurrentDirectory()->getOwnFilesPath() + "/" + path;
+		}
+		if (path[0] == '.' && path[1] == '.' && path[2] == '/'){
+			return shell.getCurrentDirectory()->getParentDirectory()->getOwnFilesPath() + "/" + path.substr(3, path.size() - 1);
+		}
+		return  ""; // impossible
 	}
 	Directory *findDirTraverse(Directory *directory, const vector<string> &path)
 	{
@@ -118,16 +136,17 @@ namespace Utils
 	}
 	Directory *findDirectory(const Shell &shell, const std::string &path)
 	{
-		string absPath = relPathToAbsPath(shell, path);
- 		vector<string> paths = split(absPath, '/');
-		std::cout << "absPath: " << absPath << std::endl;
+		//string absPath = relPathToAbsPath(shell, path);
+ 		vector<string> paths = split(path, '/'); // **
+		if (paths.size() == 0)
+		{
+			return shell.getRoot();
+		}
+		//std::cout << "absPath: " << absPath << std::endl;
 		std::cout << "path  : " << path << std::endl;
 		for (auto path : paths)
 		 	std::cout << path << std::endl;
 		Directory *dir = findDirTraverse(shell.getRoot(), paths);
-		if (dir == nullptr)
-			throw invalid_argument("cd: " + path + ": No such file or directory");
-		//std::cout << *dir << std::endl;
 		// cout << "000000" << endl;
 		return dir;
 	}
@@ -139,7 +158,8 @@ namespace Utils
 			{
 				if (path.size() == 1)
 				{
-					return dynamic_cast<RegularFile *>(file);
+					if (dynamic_cast<RegularFile *>(file))
+						return dynamic_cast<RegularFile *>(file);
 				}
 				else
 				{
@@ -151,8 +171,8 @@ namespace Utils
 	}
 	RegularFile *findRegularFile(const Shell &shell, const std::string &path)
 	{
-		string absPath = relPathToAbsPath(shell, path);
-		vector<string> paths = split(absPath, '/');
+		//string absPath = relPathToAbsPath(shell, path);
+		vector<string> paths = split(path, '/');
 		// std::cout << "absPath: " << absPath << std::endl;
 		// std::cout << "path  : " << path << std::endl;
 		// for (auto path : paths)
@@ -161,5 +181,14 @@ namespace Utils
 		//std::cout << *regFile << std::endl;
 		// cout << "000000" << endl;
 		return regFile;
+	}
+	string getParentPathOfAbsPath(const string &absPath)
+	{
+		size_t found = absPath.find_last_of('/');
+		if (found != std::string::npos)
+		{
+			return absPath.substr(0, found);
+		}
+		return "/";
 	}
 }

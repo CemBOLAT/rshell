@@ -17,16 +17,21 @@ class Directory : public File {
 		friend ostream&	operator<<(ostream& os, const Directory& dir);
 		Directory*		getDirectory(const string &name) const;
 		void			addFile(File* file);
+
+
+		template <typename T>
 		void			removeFile(const string &name);
 
 
 		Directory*		getParentDirectory() const;
 		void			setParentDirectory(Directory* parentDirectory);
 
-		Directory* operator/(const string &name) const;
+		string			getOwnFilesPath() const;
 	private:
+		string			ownFilesPath;
 		vector<File*>	files;
 		Directory*		parentDirectory;
 };
+
 
 #endif

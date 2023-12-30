@@ -23,6 +23,7 @@ namespace Utils {
 	Directory		*findDirTraverse(Directory *directory, const vector<string> &path);
 	RegularFile		*findRegularFile(const Shell &shell, const std::string &path);
 	RegularFile		*findRegFileTraverse(Directory *directory, const vector<string> &path);
+	string getParentPathOfAbsPath(const string &absPath);
 }
 
 

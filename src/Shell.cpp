@@ -109,6 +109,8 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "cp"){
 		vector<string> args = Utils::split(commandArgument, ' ');
+		if (args.size() != 2)
+			throw runtime_error("cp: missing operand");
 		Executor::cp(*this, args[0], args[1]);
 		return;
 	}

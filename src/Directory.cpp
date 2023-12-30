@@ -4,12 +4,16 @@
 #include <sstream>
 
 Directory::Directory(const string &name, time_t time, const string &path)
-	: File(name, time, path), parentDirectory(nullptr)
-{/*Body inintentionally left empty! */}
+	: File(name, time, path), ownFilesPath(path + name + "/"), parentDirectory(nullptr)
+{
+	this->files = vector<File*>();
+}
 
 Directory::Directory(const string &name, time_t time, const string &path, Directory* parentDirectory)
-	: File(name, time, path), parentDirectory(parentDirectory)
-{/*Body inintentionally left empty! */}
+	: File(name, time, path), ownFilesPath(path + name + "/" ),parentDirectory(parentDirectory)
+{
+	this->files = vector<File *>();
+}
 
 Directory::~Directory()
 {/*Body inintentionally left empty! */}
@@ -24,10 +28,10 @@ Directory*	Directory::getDirectory(const string &name) const
 {
 	for (auto file : this->files)
 	{
-		//std::cout << file->getName() << std::endl;
 		if (file->getName() == name)
 		{
-			return dynamic_cast<Directory*>(file);
+			if (dynamic_cast<Directory*>(file))
+				return dynamic_cast<Directory*>(file);
 		}
 	}
 
@@ -39,16 +43,9 @@ void	Directory::addFile(File* file)
 	this->files.push_back(file);
 }
 
-void	Directory::removeFile(const string &name)
+string	Directory::getOwnFilesPath() const
 {
-	for (auto it = this->files.begin(); it != this->files.end(); ++it)
-	{
-		if ((*it)->getName() == name)
-		{
-			this->files.erase(it);
-			return;
-		}
-	}
+	return this->ownFilesPath;
 }
 
 // hata olabilir
@@ -70,12 +67,4 @@ ostream&	operator<<(ostream& os, const Directory& dir)
 	os << "D " << dir.getName() << " ";
 	Utils::printTime(os, timeinfo);
 	return os;
-}
-
-Directory* Directory::operator/(const string &name) const
-{
-	Directory* directory = this->getDirectory(name);
-	//if (directory == nullptr) (emin değiliim)
-	//	throw runtime_error("cd: " + name + ": No such file or directory");
-	return directory;
 }
