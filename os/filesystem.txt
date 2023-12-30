@@ -120,3 +120,19 @@ fclean : clean
 re : fclean all
 
 .PHONY : all clean fclean re
+Type: Directory
+Name: 222
+Path: /
+Time: 1703977001
+Type: Directory
+Name: dadad
+Path: /
+Time: 1703977010
+Type: Directory
+Name: 1
+Path: /dadad/
+Time: 1703977020
+Type: Directory
+Name: 2 3
+Path: /dadad/
+Time: 1703977024

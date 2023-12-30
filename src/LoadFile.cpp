@@ -2,7 +2,6 @@
 #include "../includes/Shell.hpp"
 #include "../includes/RegularFile.hpp"
 #include "../includes/SymbolicLink.hpp"
-#include "./Template.cpp"
 #include <fstream>
 #include <string>
 #include <ctime>
@@ -13,21 +12,20 @@
 using namespace std;
 
 // Dosyalar için:
-// 1. Dosya Türü (Regular ise)
-// 2. Dosya Adı
-// 3. Dosya Konumu
-// 4. Dosya İçeriği
-// 2. Dosya Türü (Directory ise)
-// 2. Dosya Adı
-// 3. Dosya Konumu
+	// 1. Dosya Türü (Regular ise)
+		// 2. Dosya Adı
+		// 3. Dosya Konumu
+		// 4. Dosya İçeriği
+	// 2. Dosya Türü (Directory ise)
+		// 2. Dosya Adı
+		// 3. Dosya Konumu
 
-void LoadFile::addRegularFile(Shell &shell, ifstream &file)
-{
-	string name;
-	string path;
-	string time;
-	string data;
-	Directory *directory = shell.getRoot();
+void LoadFile::addRegularFile(Shell &shell, ifstream &file){
+	string		name;
+	string		path;
+	string		time;
+	string		data;
+	Directory	*directory = shell.getRoot();
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
 	time = Utils::getContent(file);
@@ -38,13 +36,12 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file)
 	// string to time_t conversion
 	// https://stackoverflow.com/questions/997946/how-to-get-current-time-and-date-in-c
 
-	if (path == "/")
-	{
+	if (path == "/"){
 		directory = shell.getRoot();
 		directory->addFile(new RegularFile(name, data.size(), time_t_time, data, path));
 		return;
 	}
-	directory = findFile<Directory>(shell, path);
+	directory = Utils::findDirectory(shell, path);
 
 	if (directory == nullptr)
 		throw runtime_error("Directory coouold not be found."); // not configrated
@@ -52,41 +49,39 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file)
 }
 
 // hata var iki derinlikte boom
-void LoadFile::addDirectory(Shell &shell, ifstream &file)
-{
-	string name;
-	string path;
-	string time;
-	Directory *parentDirectory;
+void LoadFile::addDirectory(Shell &shell, ifstream &file){
+	string		name;
+	string		path;
+	string		time;
+	Directory	*parentDirectory;
 
-	// Directory	*myDirectory;
+	//Directory	*myDirectory;
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
 	time = Utils::getContent(file);
 
 	time_t time_t_time = stoi(time);
 
-	if (path == "/")
-	{
+
+	if (path == "/"){
 		parentDirectory = shell.getRoot();
 		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
 	}
-	else
-	{
-		parentDirectory = findFile<Directory>(shell, path);
+	else{
+		parentDirectory = Utils::findDirectory(shell, path);
 		if (parentDirectory == nullptr)
 			throw runtime_error("Directory coould not be found."); // not configrated
-		// myDirectory = parentDirectory / name;
+		//myDirectory = parentDirectory / name;
 		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
 	}
 }
 
-void LoadFile::addSymbolicLink(Shell &shell, ifstream &file)
-{
+void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
 	string name;
 	string path;
 	string time;
 	string linkPath;
+
 
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
@@ -95,9 +90,9 @@ void LoadFile::addSymbolicLink(Shell &shell, ifstream &file)
 
 	time_t time_t_time = stoi(time);
 
-	RegularFile *link = findFile<RegularFile>(shell, linkPath);
-	Directory *linkDirectory = findFile<Directory>(shell, linkPath);
-	Directory *directory = findFile<Directory>(shell, path);
+	RegularFile		*link = Utils::findRegularFile(shell, linkPath);
+	Directory		*linkDirectory = Utils::findDirectory(shell, linkPath);
+	Directory		*directory = Utils::findDirectory(shell, path);
 
 	if (link == nullptr && linkDirectory == nullptr)
 		directory->addFile(new SymbolicLink(name, path, time_t_time, nullptr));
@@ -109,8 +104,7 @@ void LoadFile::addSymbolicLink(Shell &shell, ifstream &file)
 		throw runtime_error("Link could not be added.");
 }
 
-void LoadFile::load(const std::string &path, Shell &shell)
-{
+void LoadFile::load(const std::string &path, Shell &shell){
 	ifstream file(path);
 
 	if (!file.is_open())
@@ -122,16 +116,13 @@ void LoadFile::load(const std::string &path, Shell &shell)
 		line = Utils::trim(line);
 		if (line.empty())
 			continue;
-		if (line.substr(line.find(" ") + 1, line.size() - 1) == "Regular")
-		{
+		if (line.substr(line.find(" ") + 1, line.size() - 1) == "Regular"){
 			addRegularFile(shell, file);
 		}
-		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Directory")
-		{
+		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Directory"){
 			addDirectory(shell, file);
 		}
-		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Link")
-		{
+		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Link"){
 			addSymbolicLink(shell, file);
 		}
 		else
