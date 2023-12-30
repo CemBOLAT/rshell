@@ -21,7 +21,7 @@ namespace {
 		time_t rawtime = shell.getCurrentDirectory()->getTime();
 		struct tm* timeinfo = std::localtime(&rawtime);
 
-		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << "." << " ";
+		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << " ." << " ";
 			Utils::printTime(os, timeinfo) << std::endl;
 
 		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << ".." << " ";
@@ -50,11 +50,7 @@ namespace Executor {
 			return;
 
 		for (File* file : files) {
-			if (dynamic_cast<Directory*>(file)) {
-				file->print(cout, maxNameLength);
-			} else if (dynamic_cast<RegularFile*>(file)) {
-				file->print(cout, maxNameLength);
-			}
+			file->print(cout, maxNameLength);
 			//else if (dynamic_cast<SymbolicLink*>(file)) {
 			//	SymbolicLink* symbolicLink = dynamic_cast<SymbolicLink*>(file);
 			//	cout << *symbolicLink;
@@ -98,7 +94,7 @@ namespace Executor {
 			directory = Utils::findDirectory(shell, absPath.substr(0, absPath.find_last_of('/')));
 			//std::cout << fileName << " AA" << std::endl;
 
-			if (regularFile == nullptr)
+			if (regularFile == nullptr || directory == nullptr)
 				throw invalid_argument("rm: cannot remove '" + fileName + "': No such file or directory");
 			directory->removeFile<RegularFile>(regularFile->getName());
 		} catch (const runtime_error& e) {
@@ -190,53 +186,20 @@ namespace Executor {
 	}
 }
 
-namespace {
-	void listRecursive(const Directory *directory){
-		vector<File *> files = directory->getFiles();
-		size_t maxNameLength = 0;
-		for (auto file : files){
-			if (file->getName().size() > maxNameLength)
-				maxNameLength = file->getName().length();
-		}
-		for (File* file : files) {
-			if (dynamic_cast<Directory*>(file)) {
-				file->print(cout, maxNameLength);
-
-			} else if (dynamic_cast<RegularFile*>(file)) {
-				file->print(cout, maxNameLength);
-			}
-			//else if (dynamic_cast<SymbolicLink*>(file)) {
-			//	SymbolicLink* symbolicLink = dynamic_cast<SymbolicLink*>(file);
-			//	cout << *symbolicLink;
-			//}
-		}
-		for (File* file : files) {
-			if (dynamic_cast<Directory*>(file)) {
-				Directory* directory = dynamic_cast<Directory*>(file);
-				cout << "\n";
-				Utils::TextEngine::greenBackground();
-				cout << "." << directory->getPath() + directory->getName() << ":";
-				Utils::TextEngine::reset();
-				cout << endl;
-				// (. ve ..) var untuma
-				listRecursive(directory); //sonra karar verirsin
-			}
-		}
-	}
-}
 
 
 namespace Executor {
 	void lsRecursive(const Directory *directory, const Shell& Shell) {
-		Directory *currentDirectory = Shell.getCurrentDirectory();
-		vector<File *> files = currentDirectory->getFiles();
+		vector<File *> files = directory->getFiles();
 		size_t maxNameLength = 0;
 		for (File *file : files)
 		{
 			if (file->getName().length() > maxNameLength)
 				maxNameLength = file->getName().length();
 		}
-		if (directory->getPath() != "/")
+		if (maxNameLength < 2)
+			maxNameLength = 2;
+		if (directory->getPath() + directory->getName() != "//")
 		{
 			listSpecialDirectories(cout, Shell, maxNameLength);
 		}
@@ -244,7 +207,33 @@ namespace Executor {
 		{
 			listOnlyCurrentDirectory(cout, Shell, maxNameLength);
 		}
-		listRecursive(directory);
+		for (auto file : files)
+		{
+			if (file->getName().size() > maxNameLength)
+				maxNameLength = file->getName().length();
+		}
+		for (File *file : files)
+		{
+			file->print(cout, maxNameLength);
+			// else if (dynamic_cast<SymbolicLink*>(file)) {
+			//	SymbolicLink* symbolicLink = dynamic_cast<SymbolicLink*>(file);
+			//	cout << *symbolicLink;
+			// }
+		}
+		for (File *file : files)
+		{
+			if (dynamic_cast<Directory *>(file))
+			{
+				Directory *directory = dynamic_cast<Directory *>(file);
+				cout << "\n";
+				Utils::TextEngine::greenBackground();
+				cout << "." << directory->getPath() + directory->getName() << ":";
+				Utils::TextEngine::reset();
+				cout << endl;
+				// (. ve ..) var untuma
+				lsRecursive(directory, Shell); // sonra karar verirsin
+			}
+		}
 	}
 }
 

@@ -1,138 +1,12 @@
 Type: Directory
-Name: 1
-Path: /
-Time: 1703976833
-Type: Directory
 Name: 2
-Path: /1/
-Time: 1703976896
-Type: Directory
-Name: oop
 Path: /
-Time: 1703976837
+Time: 1703978021
 Type: Directory
-Name: ls
-Path: /oop/
-Time: 1703976917
-Type: Regular
-Name: here
-Path: /
-Time: 1703974644
-Content: NAME := myShell
-SRCS := ./src/main.cpp \
-		./src/Shell.cpp \
-		./src/File.cpp \
-		./src/Directory.cpp \
-		./src/RegularFile.cpp \
-		./src/LoadFile.cpp \
-		./src/Utils.cpp \
-		./src/Executor.cpp \
-		./src/SaveFile.cpp \
-		./src/Template.cpp \
-		./src/TextEngine.cpp \
-		./src/SymbolicLink.cpp \
-
-OBJS := ./obj/main.o \
-		./obj/Shell.o \
-		./obj/File.o \
-		./obj/Directory.o \
-		./obj/RegularFile.o \
-		./obj/LoadFile.o \
-		./obj/Utils.o \
-		./obj/Executor.o \
-		./obj/SaveFile.o \
-		./obj/Template.o \
-		./obj/TextEngine.o \
-		./obj/SymbolicLink.o \
-
-
-CXX := g++
-CXXFLAGS := -std=c++11 -pedantic -g #-Wall -Wextra -Werror -I./include
-
-all : $(NAME)
-
-$(NAME) : $(OBJS) $(Header)
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-
-$(OBJS) : ./obj/%.o : ./src/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-clean :
-	rm -f $(OBJS)
-
-fclean : clean
-	rm -f $(NAME)
-
-re : fclean all
-
-.PHONY : all clean fclean re
-Type: Regular
 Name: 1
 Path: /
-Time: 1703974644
-Content: NAME := myShell
-SRCS := ./src/main.cpp \
-		./src/Shell.cpp \
-		./src/File.cpp \
-		./src/Directory.cpp \
-		./src/RegularFile.cpp \
-		./src/LoadFile.cpp \
-		./src/Utils.cpp \
-		./src/Executor.cpp \
-		./src/SaveFile.cpp \
-		./src/Template.cpp \
-		./src/TextEngine.cpp \
-		./src/SymbolicLink.cpp \
-
-OBJS := ./obj/main.o \
-		./obj/Shell.o \
-		./obj/File.o \
-		./obj/Directory.o \
-		./obj/RegularFile.o \
-		./obj/LoadFile.o \
-		./obj/Utils.o \
-		./obj/Executor.o \
-		./obj/SaveFile.o \
-		./obj/Template.o \
-		./obj/TextEngine.o \
-		./obj/SymbolicLink.o \
-
-
-CXX := g++
-CXXFLAGS := -std=c++11 -pedantic -g #-Wall -Wextra -Werror -I./include
-
-all : $(NAME)
-
-$(NAME) : $(OBJS) $(Header)
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-
-$(OBJS) : ./obj/%.o : ./src/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-clean :
-	rm -f $(OBJS)
-
-fclean : clean
-	rm -f $(NAME)
-
-re : fclean all
-
-.PHONY : all clean fclean re
+Time: 1703978024
 Type: Directory
-Name: 222
+Name: ela
 Path: /
-Time: 1703977001
-Type: Directory
-Name: dadad
-Path: /
-Time: 1703977010
-Type: Directory
-Name: 1
-Path: /dadad/
-Time: 1703977020
-Type: Directory
-Name: 2 3
-Path: /dadad/
-Time: 1703977024
+Time: 1703978026
