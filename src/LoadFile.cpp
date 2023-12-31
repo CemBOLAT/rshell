@@ -41,7 +41,7 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file){
 		directory->addFile(new RegularFile(name, data.size(), time_t_time, data, path));
 		return;
 	}
-	directory = Utils::findDirectory(shell, path);
+	directory = Directory::find(shell, path, nullptr);
 
 	if (directory == nullptr)
 		throw runtime_error("Directory coouold not be found."); // not configrated
@@ -68,7 +68,7 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
 	}
 	else{
-		parentDirectory = Utils::findDirectory(shell, path);
+		parentDirectory = Directory::find(shell, path, nullptr);
 		if (parentDirectory == nullptr)
 			throw runtime_error("Directory coould not be found."); // not configrated
 		//myDirectory = parentDirectory / name;
@@ -76,34 +76,36 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 	}
 }
 
+// çöküyor !!
 void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
 	string	name;
 	string	path;
 	string	time;
 	string	linkPath;
 	string	linkerName;
-	string	linkerPath;
 
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
 	time = Utils::getContent(file);
 	linkPath = Utils::getContent(file);
 	linkerName = linkPath.substr(linkPath.find_last_of("/") + 1, linkPath.size() - 1);
-	linkerPath = linkPath.substr(0, linkPath.find_last_of("/"));
 
 	time_t time_t_time = stoi(time);
 
-	RegularFile		*link = Utils::findRegularFile(shell, linkPath);
-	Directory		*linkDirectory = Utils::findDirectory(shell, linkPath);
-	Directory		*directory = Utils::findDirectory(shell, path);
+	RegularFile *link;
+	link = RegularFile::find(shell, linkPath, link);
+	Directory *linkDirectory;
+	linkDirectory = Directory::find(shell, linkPath, linkDirectory);
+	Directory *directory;
+	directory = Directory::find(shell, path, directory);
 
 	if (link == nullptr && linkDirectory == nullptr){
-		directory->addFile(new SymbolicLink(name, path, time_t_time, nullptr, linkerName, linkerPath));
+		directory->addFile(new SymbolicLink(name, path, time_t_time, nullptr, linkerName, linkPath));
 	}
 	else if (link != nullptr)
-		directory->addFile(new SymbolicLink(name, path, time_t_time, link, linkerName, linkerPath));
+		directory->addFile(new SymbolicLink(name, path, time_t_time, link, linkerName, linkPath));
 	else if (linkDirectory != nullptr)
-		directory->addFile(new SymbolicLink(name, path, time_t_time, linkDirectory, linkerName, linkerPath));
+		directory->addFile(new SymbolicLink(name, path, time_t_time, linkDirectory, linkerName, linkPath));
 	else
 		throw runtime_error("Link could not be added.");
 }

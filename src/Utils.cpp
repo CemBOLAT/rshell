@@ -9,7 +9,37 @@
 // trimleri ayrıntılı bak
 using namespace std;
 
-
+namespace {
+	string convertMonth(int month){
+		switch (month)
+		{
+		case 1:
+			return "Jan";
+		case 2:
+			return "Feb";
+		case 3:
+			return "Mar";
+		case 4:
+			return "Apr";
+		case 5:
+			return "May";
+		case 6:
+			return "Jun";
+		case 7:
+			return "Jul";
+		case 8:
+			return "Aug";
+		case 9:
+			return "Sep";
+		case 10:
+			return "Oct";
+		case 11:
+			return "Nov";
+		default:
+			return "Dec";
+		}
+	}
+}
 
 namespace Utils
 {
@@ -45,6 +75,7 @@ namespace Utils
 			throw runtime_error("File content is not configrated!");
 		return content.substr(content.find(" ") + 1, content.size() - 1);
 	}
+
 	ostream &printTime(ostream &os, struct tm *timeinfo)
 	{
 		int day = timeinfo->tm_mday;
@@ -52,10 +83,10 @@ namespace Utils
 		int hour = timeinfo->tm_hour;
 		int minute = timeinfo->tm_min;
 
-		os << std::setw(2) << std::setfill('0') << day << "/"
-		   << std::setw(2) << std::setfill('0') << month << " "
-		   << std::setw(2) << std::setfill('0') << hour << ":"
-		   << std::setw(2) << std::setfill('0') << minute << " ";
+		os << std::setw(3) << std::setfill('0') << convertMonth(month) << " "
+			<< std::setw(2) << std::setfill('0') << day << " "
+			<< std::setw(2) << std::setfill('0') << hour << ":"
+			<< std::setw(2) << std::setfill('0') << minute << " ";
 		return os;
 	}
 	std::string getData(std::ifstream &file)
@@ -116,79 +147,103 @@ namespace Utils
 		}
 		return  ""; // impossible
 	}
-	Directory *findDirTraverse(Directory *directory, const vector<string> &path)
-	{
-		for (auto file : directory->getFiles())
-		{
-			if (file->getName() == path[0])
-			{
-				if (path.size() == 1)
-				{
-					return dynamic_cast<Directory *>(file);
-				}
-				else
-				{
-					return findDirTraverse(dynamic_cast<Directory *>(file), vector<string>(path.begin() + 1, path.end()));
-				}
-			} // throw olabilir
-		}
-		return nullptr;
-	}
-	Directory *findDirectory(const Shell &shell, const std::string &path)
-	{
-		//string absPath = relPathToAbsPath(shell, path);
- 		vector<string> paths = split(path, '/'); // **
-		if (paths.size() == 0)
-		{
-			return shell.getRoot();
-		}
-		//std::cout << "absPath: " << absPath << std::endl;
-		//std::cout << "path  : " << path << std::endl;
-		//for (auto path : paths)
-		 //	std::cout << path << std::endl;
-		Directory *dir = findDirTraverse(shell.getRoot(), paths);
-		// cout << "000000" << endl;
-		return dir;
-	}
-	RegularFile *findRegFileTraverse(Directory *directory, const vector<string> &path)
-	{
-		for (auto file : directory->getFiles())
-		{
-			if (file->getName() == path[0])
-			{
-				if (path.size() == 1)
-				{
-					if (dynamic_cast<RegularFile *>(file))
-						return dynamic_cast<RegularFile *>(file);
-				}
-				else
-				{
-					return findRegFileTraverse(dynamic_cast<Directory *>(file), vector<string>(path.begin() + 1, path.end()));
-				}
-			} // throw olabilir
-		}
-		return nullptr;
-	}
-	RegularFile *findRegularFile(const Shell &shell, const std::string &path)
-	{
-		//string absPath = relPathToAbsPath(shell, path);
-		vector<string> paths = split(path, '/');
-		// std::cout << "absPath: " << absPath << std::endl;
-		// std::cout << "path  : " << path << std::endl;
-		// for (auto path : paths)
-		// 	std::cout << path << std::endl;
-		RegularFile *regFile = findRegFileTraverse(shell.getRoot(), paths);
-		//std::cout << *regFile << std::endl;
-		// cout << "000000" << endl;
-		return regFile;
-	}
+	// Directory *findDirTraverse(Directory *directory, const vector<string> &path)
+	// {
+	// 	for (auto file : directory->getFiles())
+	// 	{
+	// 		if (file->getName() == path[0])
+	// 		{
+	// 			if (path.size() == 1)
+	// 			{
+	// 				if (dynamic_cast<Directory *>(file))
+	// 					return dynamic_cast<Directory *>(file);
+	// 			}
+	// 			else
+	// 			{
+	// 				return findDirTraverse(dynamic_cast<Directory *>(file), vector<string>(path.begin() + 1, path.end()));
+	// 			}
+	// 		} // throw olabilir
+	// 	}
+	// 	return nullptr;
+	// }
+	// Directory *findDirectory(const Shell &shell, const std::string &path)
+	// {
+	// 	//string absPath = relPathToAbsPath(shell, path);
+ 	// 	vector<string> paths = split(path, '/'); // **
+	// 	if (paths.size() == 0)
+	// 	{
+	// 		return shell.getRoot();
+	// 	}
+	// 	//std::cout << "absPath: " << absPath << std::endl;
+	// 	//std::cout << "path  : " << path << std::endl;
+	// 	//for (auto path : paths)
+	// 	 //	std::cout << path << std::endl;
+	// 	Directory *dir = findDirTraverse(shell.getRoot(), paths);
+	// 	// cout << "000000" << endl;
+	// 	return dir;
+	// }
+	// RegularFile *findRegFileTraverse(Directory *directory, const vector<string> &path)
+	// {
+	// 	for (auto file : directory->getFiles())
+	// 	{
+	// 		if (file->getName() == path[0])
+	// 		{
+	// 			if (path.size() == 1)
+	// 			{
+	// 				if (dynamic_cast<RegularFile *>(file))
+	// 					return dynamic_cast<RegularFile *>(file);
+	// 			}
+	// 			else
+	// 			{
+	// 				return findRegFileTraverse(dynamic_cast<Directory *>(file), vector<string>(path.begin() + 1, path.end()));
+	// 			}
+	// 		} // throw olabilir
+	// 	}
+	// 	return nullptr;
+	// }
+	// RegularFile *findRegularFile(const Shell &shell, const std::string &path)
+	// {
+	// 	//string absPath = relPathToAbsPath(shell, path);
+	// 	vector<string> paths = split(path, '/');
+	// 	// std::cout << "absPath: " << absPath << std::endl;
+	// 	// std::cout << "path  : " << path << std::endl;
+	// 	// for (auto path : paths)
+	// 	// 	std::cout << path << std::endl;
+	// 	RegularFile *regFile = findRegFileTraverse(shell.getRoot(), paths);
+	// 	//std::cout << *regFile << std::endl;
+	// 	// cout << "000000" << endl;
+	// 	return regFile;
+	// }
 	string getParentPathOfAbsPath(const string &absPath)
 	{
 		size_t found = absPath.find_last_of('/');
 		if (found != std::string::npos)
 		{
+			if (found == 0)
+				return "/";
 			return absPath.substr(0, found);
 		}
 		return "/";
 	}
 }
+
+namespace Utils
+{
+	void terminate(Directory *directory)
+	{
+		for (auto file : directory->getFiles())
+		{
+			if (dynamic_cast<Directory *>(file))
+			{
+				terminate(dynamic_cast<Directory *>(file));
+			}
+			else
+			{
+				delete file;
+				file = nullptr;
+			}
+		}
+		delete directory;
+		directory = nullptr;
+	}
+} // namespace Utils

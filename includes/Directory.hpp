@@ -19,15 +19,17 @@ class Directory : public File {
 
 
 		template <typename T>
-		void			removeFile(const string &name);
+		void				removeFile(const string &name);
 
 
-		Directory*		getParentDirectory() const;
-		void			setParentDirectory(Directory* parentDirectory);
+		Directory*			getParentDirectory() const;
+		void				setParentDirectory(Directory* parentDirectory);
 
-		string			getOwnFilesPath() const;
-		virtual void	print(ostream& os, size_t maxLen) const override;
-		virtual void	save(ostream &os) const override;
+		string				getOwnFilesPath() const;
+		virtual void		print(ostream& os, size_t maxLen) const override;
+		virtual void		save(ostream &os) const override;
+		static Directory 	*find(const Shell &shell, const string &name, Directory *ptr);
+		virtual void		cat() const override;
 	private:
 		string			ownFilesPath;
 		vector<File*>	files;

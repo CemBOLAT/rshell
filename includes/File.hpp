@@ -6,6 +6,7 @@
 
 using namespace std;
 
+class Shell;
 
 // load ve save kısmını da pure virtual yap
 class File {
@@ -26,6 +27,8 @@ class File {
 		friend ostream&	operator<<(ostream& os, const File& file);
 		virtual void	print(ostream& os, size_t maxLen) const = 0;
 		virtual void	save(ostream &os) const = 0;
+		//virtual void	find(const Shell &shell, const string &name, File *ptr) = 0;
+		virtual void	cat() const = 0;
 	private:
 		string			name;
 		string 			path;

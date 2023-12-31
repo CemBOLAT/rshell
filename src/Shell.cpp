@@ -15,10 +15,9 @@ Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
 
 Shell::~Shell()
 {
-	// free all memory allocated for
-	// the file system (dont forget to delete the root directory) too
-	delete this->root;
-	this->root = nullptr;
+	Utils::terminate(this->root);
+	//delete this->root;
+	//this->root = nullptr;
 }
 
 const string Shell::getFileSystemPath() const
@@ -118,8 +117,10 @@ void Shell::execute(string command)
 		vector<string> args = Utils::split(commandArgument, ' ');
 		if (args.size() != 2)
 			throw runtime_error("link: missing operand");
-		//Executor::link(*this, args[0], args[1]);
+		Executor::link(*this, args[0], args[1]);
 		return;
 	}
+	else
+		throw runtime_error("cemalBolatShell: " + commandName + ": command not found");
 
 }

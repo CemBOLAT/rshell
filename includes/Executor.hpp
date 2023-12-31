@@ -11,7 +11,7 @@ namespace Executor {
 	void	cd(Shell& shell, const string& directoryName);
 	void	lsRecursive(const Directory *directory, const Shell &shell);
 	void	cp(const Shell& shell, const string& source, const string& fileName);
-	//void	link(const Shell& shell, const string& source, const string& fileName);
+	void	link(const Shell& shell, const string& source, const string& fileName);
 }
 
 #endif

@@ -7,6 +7,7 @@
 
 
 // link ekle bu kadar
+// ls geyiğİ
 // disk alanı kalmadıysa hata ver
 // klasörlerin saatini sekron yap
 int main(){

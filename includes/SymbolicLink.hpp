@@ -14,11 +14,13 @@ class SymbolicLink : public File
 		virtual ~SymbolicLink();
 		virtual void	print(std::ostream& os, size_t maxLen) const override;
 
-		File*			getLink() const;
-		void			setLink(File* link);
-		string			getLinkedName() const;
-		string			getLinkedPath() const;
-		virtual void	save(ostream &os) const override;
+		File*				getLink() const;
+		void				setLink(File* link);
+		string				getLinkedName() const;
+		string				getLinkedPath() const;
+		virtual void		save(ostream &os) const override;
+		static SymbolicLink *find(const Shell &shell, const string &name, SymbolicLink *ptr);
+		virtual void		cat() const override;
 	private:
 		File*	link;
 		string	linkedName;

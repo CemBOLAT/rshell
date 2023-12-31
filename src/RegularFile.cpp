@@ -1,6 +1,7 @@
 #include "../includes/RegularFile.hpp"
 #include "../includes/Utils.hpp"
 #include "../includes/TextEngine.hpp"
+#include "./Template.cpp"
 #include <ctime>
 
 RegularFile::RegularFile(const string &name, size_t sizeBytes, time_t time, const string& data, const string& path)
@@ -62,4 +63,22 @@ void RegularFile::save(std::ostream &file) const
 	file << "Path: " << getPath() << std::endl;
 	file << "Time: " << getTime() << std::endl;
 	file << "Content: " << getData() << std::endl;
+}
+
+RegularFile  *RegularFile::find(const Shell &shell, const std::string &path, RegularFile *ptr)
+{
+	// string absPath = relPathToAbsPath(shell, path);
+	vector<string> paths = Utils::split(path, '/'); // **
+	// std::cout << "absPath: " << absPath << std::endl;
+	// std::cout << "path  : " << path << std::endl;
+	// for (auto path : paths)
+	//	std::cout << path << std::endl;
+	ptr = findTraverse<RegularFile>(shell.getRoot(), paths);
+	return ptr;
+	// cout << "000000" << endl;
+}
+
+void RegularFile::cat() const
+{
+	std::cout << getData() << std::endl;
 }
