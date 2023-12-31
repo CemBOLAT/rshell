@@ -43,3 +43,15 @@ void	SymbolicLink::setLink(File* link)
 {
 	this->link = link;
 }
+
+void	SymbolicLink::save(std::ostream &file) const {
+	file << "Type: Link" << std::endl;
+	file << "Name: " << getName() << std::endl;
+	file << "Path: " << getPath() << std::endl;
+	file << "Time: " << getTime() << std::endl;
+	if (getLink()->getPath() == "/")
+		file << "Link: "
+			 << "/" + getLink()->getName() << std::endl;
+	else
+		file << "Link: " << getLink()->getPath() + "/" + getLink()->getName() << std::endl;
+}

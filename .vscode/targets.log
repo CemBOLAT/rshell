@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Sat Dec 30 21:27:56 2023
+# Make data base, printed on Sun Dec 31 15:43:51 2023
 
 # Variables
 
@@ -25,6 +25,7 @@ VSCODE_CRASH_REPORTER_PROCESS_TYPE = extensionHost
 # automatic
 @F = $(notdir $@)
 # makefile
+ 
 CURDIR := /Users/cembolat/Desktop/rshell-gpt-
 # makefile
 SHELL = /bin/sh
@@ -34,8 +35,8 @@ VSCODE_NLS_CONFIG = {"locale":"tr","osLocale":"tr-tr","availableLanguages":{"*":
 _ = /usr/bin/make
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
-# makefile (from `Makefile', line 27)
-CXXFLAGS := -std=c++11 -Wall -Wextra -Werror -pedantic -g
+# makefile (from `Makefile', line 30)
+CXXFLAGS := -std=c++11 -pedantic -g 
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
@@ -54,8 +55,8 @@ ELECTRON_RUN_AS_NODE = 1
 SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.8P8dH8bjb2/Listeners
 # automatic
 %F = $(notdir $%)
-# makefile (from `Makefile', line 14)
-OBJS := ./obj/main.o ./obj/Shell.o ./obj/File.o ./obj/Directory.o ./obj/RegularFile.o ./obj/LoadFile.o ./obj/Utils.o ./obj/Executor.o ./obj/SaveFile.o ./obj/Template.o ./obj/TextEngine.o 
+# makefile (from `Makefile', line 15)
+OBJS := ./obj/main.o ./obj/Shell.o ./obj/File.o ./obj/Directory.o ./obj/RegularFile.o ./obj/LoadFile.o ./obj/Utils.o ./obj/Executor.o ./obj/SaveFile.o ./obj/Template.o ./obj/TextEngine.o ./obj/SymbolicLink.o 
 # environment
 PWD = /Users/cembolat/Desktop/rshell-gpt-
 # environment
@@ -87,7 +88,7 @@ MAKE = $(MAKE_COMMAND)
 # default
 MAKECMDGOALS := all
 # makefile (from `Makefile', line 2)
-SRCS := ./src/main.cpp ./src/Shell.cpp ./src/File.cpp ./src/Directory.cpp ./src/RegularFile.cpp ./src/LoadFile.cpp ./src/Utils.cpp ./src/Executor.cpp ./src/SaveFile.cpp ./src/Template.cpp ./src/TextEngine.cpp 
+SRCS := ./src/main.cpp ./src/Shell.cpp ./src/File.cpp ./src/Directory.cpp ./src/RegularFile.cpp ./src/LoadFile.cpp ./src/Utils.cpp ./src/Executor.cpp ./src/SaveFile.cpp ./src/Template.cpp ./src/TextEngine.cpp ./src/SymbolicLink.cpp 
 # environment
 SHLVL = 1
 # default
@@ -136,7 +137,7 @@ COMMAND_MODE = unix2003
 MAKEFILES := 
 # automatic
 <F = $(notdir $<)
-# makefile (from `Makefile', line 26)
+# makefile (from `Makefile', line 29)
 CXX := g++
 # environment
 LC_ALL = C
@@ -153,7 +154,7 @@ CLICOLOR = 1
 # environment
 LANG = C
 # environment
-VSCODE_PID = 66979
+VSCODE_PID = 82164
 # variable set hash-table stats:
 # Load=71/1024=7%, Rehash=0, Collisions=7/104=7%
 
@@ -178,7 +179,7 @@ obj/Directory.o: src/Directory.cpp
 #  Implicit/static pattern stem: `Directory'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
@@ -192,6 +193,12 @@ all: myShell
 # variable set hash-table stats:
 # Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 
+# Not a target:
+src/SymbolicLink.cpp:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
 .PHONY: all clean fclean re
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -202,7 +209,7 @@ obj/Executor.o: src/Executor.cpp
 #  Implicit/static pattern stem: `Executor'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
@@ -211,9 +218,8 @@ obj/Utils.o: src/Utils.cpp
 #  Implicit/static pattern stem: `Utils'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
- 
 	
 
 obj/RegularFile.o: src/RegularFile.cpp
@@ -221,7 +227,7 @@ obj/RegularFile.o: src/RegularFile.cpp
 #  Implicit/static pattern stem: `RegularFile'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
@@ -249,7 +255,7 @@ obj/main.o: src/main.cpp
 # ? := src/main.cpp
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/14=7%
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
@@ -262,7 +268,7 @@ obj/main.o: src/main.cpp
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2023-12-30 18:31:37
+#  Last modified 2023-12-31 01:17:24
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -279,7 +285,7 @@ obj/TextEngine.o: src/TextEngine.cpp
 #  Implicit/static pattern stem: `TextEngine'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
@@ -288,7 +294,8 @@ obj/Template.o: src/Template.cpp
 #  Implicit/static pattern stem: `Template'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+ 
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
@@ -309,7 +316,7 @@ fclean: clean
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 42):
+#  commands to execute (from `Makefile', line 45):
 	rm -f $(NAME)
 	
 
@@ -324,18 +331,18 @@ obj/SaveFile.o: src/SaveFile.cpp
 #  Implicit/static pattern stem: `SaveFile'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
-myShell: obj/main.o obj/Shell.o obj/File.o obj/Directory.o obj/RegularFile.o obj/LoadFile.o obj/Utils.o obj/Executor.o obj/SaveFile.o obj/Template.o obj/TextEngine.o
+myShell: obj/main.o obj/Shell.o obj/File.o obj/Directory.o obj/RegularFile.o obj/LoadFile.o obj/Utils.o obj/Executor.o obj/SaveFile.o obj/Template.o obj/TextEngine.o obj/SymbolicLink.o
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
 # Load=0/32=0%, Rehash=0, Collisions=0/4=0%
-#  commands to execute (from `Makefile', line 32):
+#  commands to execute (from `Makefile', line 35):
 	$(CXX) $(CXXFLAGS) -o $@ $^
 	
 
@@ -351,11 +358,14 @@ src/Executor.cpp:
 #  Modification time never checked.
 #  File has not been updated.
 
-# Not a target:
-src/Utils.cpp:
+obj/SymbolicLink.o: src/SymbolicLink.cpp
 #  Implicit rule search has not been done.
+#  Implicit/static pattern stem: `SymbolicLink'
 #  Modification time never checked.
 #  File has not been updated.
+#  commands to execute (from `Makefile', line 39):
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	
 
 re: fclean all
 #  Phony target (prerequisite of .PHONY).
@@ -368,7 +378,7 @@ clean:
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 39):
+#  commands to execute (from `Makefile', line 42):
 	rm -f $(OBJS)
 	
 
@@ -381,11 +391,17 @@ src/RegularFile.cpp:
 # Not a target:
 src/main.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2023-12-30 18:37:34
+#  Last modified 2023-12-31 00:09:48
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
 # Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+# Not a target:
+src/Utils.cpp:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 src/TextEngine.cpp:
@@ -404,7 +420,7 @@ obj/File.o: src/File.cpp
 #  Implicit/static pattern stem: `File'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
@@ -413,7 +429,7 @@ obj/LoadFile.o: src/LoadFile.cpp
 #  Implicit/static pattern stem: `LoadFile'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
@@ -422,7 +438,7 @@ obj/Shell.o: src/Shell.cpp
 #  Implicit/static pattern stem: `Shell'
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 39):
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 	
 
@@ -433,7 +449,7 @@ src/SaveFile.cpp:
 #  File has not been updated.
 
 # files hash-table stats:
-# Load=31/1024=3%, Rehash=0, Collisions=0/74=0%
+# Load=33/1024=3%, Rehash=0, Collisions=2/78=3%
 # VPATH Search Paths
 
 # No `vpath' search paths.
@@ -445,6 +461,6 @@ src/SaveFile.cpp:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Sat Dec 30 21:27:56 2023
+# Finished Make data base on Sun Dec 31 15:43:51 2023
 
  

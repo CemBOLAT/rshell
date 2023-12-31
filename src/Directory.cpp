@@ -79,3 +79,10 @@ void Directory::print(std::ostream &os, size_t maxLen) const
 	Utils::TextEngine::resetAll();
 	os << std::endl;
 }
+
+void	Directory::save(std::ostream &file) const {
+	file << "Type: Directory" << std::endl;
+	file << "Name: " << this->getName() << std::endl;
+	file << "Path: " << this->getPath() << std::endl;
+	file << "Time: " << this->getTime() << std::endl;
+}

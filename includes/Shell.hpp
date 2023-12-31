@@ -31,6 +31,7 @@ class Shell {
 		Directory*			currentDirectory;
 		bool				isTerminating;
 		string				prompt;
+		static const size_t	osSize = 1024 * 1024 * 10;
 
 };
 

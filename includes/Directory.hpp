@@ -27,6 +27,7 @@ class Directory : public File {
 
 		string			getOwnFilesPath() const;
 		virtual void	print(ostream& os, size_t maxLen) const override;
+		virtual void	save(ostream &os) const override;
 	private:
 		string			ownFilesPath;
 		vector<File*>	files;

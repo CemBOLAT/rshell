@@ -14,6 +14,7 @@ class SymbolicLink : public File
 
 		File*			getLink() const;
 		void			setLink(File* link);
+		virtual void save(ostream &os) const override;
 	private:
 		File* link;
 };

@@ -25,6 +25,7 @@ class File {
 
 		friend ostream&	operator<<(ostream& os, const File& file);
 		virtual void	print(ostream& os, size_t maxLen) const = 0;
+		virtual void	save(ostream &os) const = 0;
 	private:
 		string			name;
 		string 			path;

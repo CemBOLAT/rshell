@@ -54,3 +54,12 @@ void		RegularFile::print(ostream& os, size_t maxLen) const
 	Utils::TextEngine::reset();
 	os << endl;
 }
+
+void RegularFile::save(std::ostream &file) const
+{
+	file << "Type: Regular" << std::endl;
+	file << "Name: " << getName() << std::endl;
+	file << "Path: " << getPath() << std::endl;
+	file << "Time: " << getTime() << std::endl;
+	file << "Content: " << getData() << std::endl;
+}
