@@ -297,7 +297,6 @@ namespace {
 		directory = new Directory(fileName, sourceStat.st_mtime, path, shell.getCurrentDirectory()->getParentDirectory());
 		while ((entry = readdir(copiedDir)) != nullptr)
 		{
-			std::cout << "544" << endl;
 			if (std::strcmp(entry->d_name, ".") != 0 && std::strcmp(entry->d_name, "..") != 0)
 			{
 				std::string entryPath = source + "/" + entry->d_name;
@@ -331,6 +330,46 @@ namespace {
 	}
 }
 
+namespace {
+	size_t	getDirectorySize(const struct stat &sourcestat, const string &source){
+		DIR *copiedDir = opendir(source.c_str());
+		if (!copiedDir)
+		{
+			throw std::runtime_error("cp: cannot open source directory '" + source + "'");
+		}
+		struct dirent	*entry;
+		size_t size = 0;
+		while ((entry = readdir(copiedDir)) != nullptr)
+		{
+			if (std::strcmp(entry->d_name, ".") != 0 && std::strcmp(entry->d_name, "..") != 0)
+			{
+				std::string entryPath = source + "/" + entry->d_name;
+
+				struct stat entryStat;
+				if (stat(entryPath.c_str(), &entryStat) != 0)
+				{
+					throw std::runtime_error("cp: error accessing file '" + entryPath + "'");
+				}
+
+				if (S_ISREG(entryStat.st_mode))
+				{
+					size += entryStat.st_size;
+				}
+				else if (S_ISDIR(entryStat.st_mode))
+				{
+					size += getDirectorySize(entryStat, entryPath);
+				}
+				else
+				{
+					// Handle other types of files if needed
+				}
+			}
+		}
+		closedir(copiedDir);
+		return (size);
+	}
+}
+
 // linklere bak
 namespace Executor {
 	void cp(const Shell& shell, const string &source, const string &fileName){
@@ -344,9 +383,16 @@ namespace Executor {
 			throw std::runtime_error("cp: source file '" + source + "' does not exist");
 		}
 		RegularFile *regularFile;
+
 		regularFile = RegularFile::find(shell, fileName, nullptr);
 		Directory *directory;
 		directory = Directory::find(shell, fileName, nullptr);
+		// size is not proper for directory
+
+		if (S_ISREG(sourceStat.st_mode)  && sourceStat.st_size + Utils::getProgramSize(shell.getRoot()) > shell.getOsSize())
+			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
+		else if (S_ISDIR(sourceStat.st_mode) && getDirectorySize(sourceStat, source) + Utils::getProgramSize(shell.getRoot()) > shell.getOsSize())
+			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
 		if (regularFile == nullptr && S_ISREG(sourceStat.st_mode)){
 			//std::cout << "buraya girdi" << std::endl;
 			regularFile = copyRegularFile(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());

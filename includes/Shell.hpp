@@ -24,6 +24,7 @@ class Shell {
 		Directory*		getRoot() const;
 		void			execute(string command);
 
+		size_t			getOsSize() const { return osSize; }
 
 	private:
 		static const string	fileSystemPath;

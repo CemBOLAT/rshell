@@ -25,6 +25,7 @@ namespace Utils {
 	//RegularFile		*findRegFileTraverse(Directory *directory, const vector<string> &path);
 	string			getParentPathOfAbsPath(const string &absPath);
 	void			terminate(Directory *directory);
+	size_t			getProgramSize(const Directory *directory);
 }
 
 

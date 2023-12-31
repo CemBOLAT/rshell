@@ -247,3 +247,28 @@ namespace Utils
 		directory = nullptr;
 	}
 } // namespace Utils
+
+
+namespace Utils
+{
+	size_t getProgramSize(const Directory *directory)
+	{
+		size_t size = 0;
+		for (auto file : directory->getFiles())
+		{
+			if (dynamic_cast<Directory *>(file))
+			{
+				size += getProgramSize(dynamic_cast<Directory *>(file)) + 15;
+			}
+			else if (dynamic_cast<RegularFile *>(file))
+			{
+				size += dynamic_cast<RegularFile *>(file)->getSizeBytes() + 15;
+			}
+			else
+			{
+				size += 15;
+			}
+		}
+		return size;
+	}
+} // namespace Utils

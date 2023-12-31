@@ -205,3 +205,13 @@ fclean : clean
 re : fclean all
 
 .PHONY : all clean fclean re
+Type: Link
+Name: cema
+Path: /
+Time: 1704061087
+Link: /here
+Type: Link
+Name: sss
+Path: /
+Time: 1704061103
+Link: /ela
