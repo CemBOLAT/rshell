@@ -72,8 +72,8 @@ namespace Utils
 		while (getline(file, line))
 		{
 			trim(line);
-			if (line.empty())
-				break;
+			// if (line.empty())
+			// 	break;
 			data += line;
 			if (line[line.size() - 1] == static_cast<char>(3))
 			{

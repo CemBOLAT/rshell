@@ -7,6 +7,9 @@
 #include <ctime>
 #include <sys/stat.h>
 #include <fstream>
+#include <dirent.h>
+#include <sys/types.h>
+#include <fcntl.h>
 
 namespace {
 	void listOnlyCurrentDirectory(ostream &os, const Shell& shell, size_t maxNameLength) {
@@ -238,8 +241,9 @@ namespace Executor {
 }
 
 
+/// @brief parametre olarak directory ver ve bu sayede oluştururken pathi o directorynin getCurrentDirectorysini al
 namespace {
-	RegularFile *copyRegularFile(const string &source, const string &fileName, const Shell& shell, const struct stat &sourceStat){
+	RegularFile *copyRegularFile(const string &source, const string &fileName, const Shell& shell, const struct stat &sourceStat, const string &path){
 		ifstream		sourceFile(source);
 		RegularFile		*regularFile;
 		string			data, line;
@@ -252,21 +256,59 @@ namespace {
 		data = data.substr(0, data.size() - 1);
 		data += static_cast<char>(3);
 		sourceFile.close();
-		regularFile = new RegularFile(fileName, data.size(), sourceStat.st_mtime, data, shell.getCurrentDirectory()->getOwnFilesPath());
+		regularFile = new RegularFile(fileName, data.size(), sourceStat.st_mtime, data, path);
 		return regularFile;
 	}
 }
 
-// namespace {
-// 	Directory *copyDirectory(const string &source, const string &fileName, const Shell& shell, const struct stat &sourceStat){
-// 		Directory		*directory;
+namespace {
+	Directory *copyDirectory(const string &source, const string &fileName, const Shell& shell, const struct stat &sourceStat, const string &path){
+		Directory		*directory;
 
-// 	}
-// }
+		DIR *copiedDir = opendir(source.c_str());
+		if (!copiedDir)
+		{
+			throw std::runtime_error("cp: cannot open source directory '" + source + "'");
+		}
+		struct dirent	*entry;
+		directory = new Directory(fileName, sourceStat.st_mtime, path, shell.getCurrentDirectory()->getParentDirectory());
+		while ((entry = readdir(copiedDir)) != nullptr)
+		{
+			std::cout << "544" << endl;
+			if (std::strcmp(entry->d_name, ".") != 0 && std::strcmp(entry->d_name, "..") != 0)
+			{
+				std::string entryPath = source + "/" + entry->d_name;
 
-// 1. cp cannot create a file in a directory that does not exist
-// 2. cp can swap the contents of two files so no need to create new file when the file is exist at that directory
-// kendi pc'inde source file !
+				struct stat entryStat;
+				if (stat(entryPath.c_str(), &entryStat) != 0)
+				{
+					throw std::runtime_error("cp: error accessing file '" + entryPath + "'");
+				}
+
+				if (S_ISREG(entryStat.st_mode))
+				{
+					// Copy regular file
+					RegularFile *regularFile = copyRegularFile(entryPath, entry->d_name, shell, entryStat, directory->getOwnFilesPath());
+					directory->addFile(regularFile);
+				}
+				else if (S_ISDIR(entryStat.st_mode))
+				{
+					// Recursively copy subdirectories
+					Directory *subDirectory = copyDirectory(entryPath, entry->d_name, shell, entryStat, directory->getOwnFilesPath());
+					directory->addFile(subDirectory);
+				}
+				else
+				{
+					// Handle other types of files if needed
+				}
+			}
+		}
+		closedir(copiedDir);
+		return (directory);
+	}
+}
+
+
 namespace Executor {
 	void cp(const Shell& shell, const string &source, const string &fileName){
 
@@ -282,19 +324,22 @@ namespace Executor {
 		Directory *directory = Utils::findDirectory(shell, fileName);
 		if (regularFile == nullptr && S_ISREG(sourceStat.st_mode)){
 			//std::cout << "buraya girdi" << std::endl;
-			regularFile = copyRegularFile(source, fileName, shell, sourceStat);
+			regularFile = copyRegularFile(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
 			shell.getCurrentDirectory()->addFile(regularFile);
 		}
 		else if (directory == nullptr && S_ISDIR(sourceStat.st_mode)){ // reküfsif
-			//directory = copyDirectory(source, fileName, shell, sourceStat);
+			directory = copyDirectory(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
+			shell.getCurrentDirectory()->addFile(directory);
 		}
 		else if (directory && S_ISDIR(sourceStat.st_mode)){ // rekürsif üstüne yaz
-			throw std::runtime_error("cp: cannot overwrite directory '" + fileName + "' with non-directory");
+			shell.getCurrentDirectory()->removeFile<Directory>(fileName);
+			directory = copyDirectory(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
+			shell.getCurrentDirectory()->addFile(directory);
 		}
 		else if (regularFile && S_ISREG(sourceStat.st_mode)){
 			//std::cout << "buraya gir11di" << std::endl;
 			shell.getCurrentDirectory()->removeFile<RegularFile>(fileName);
-			regularFile = copyRegularFile(source, fileName, shell, sourceStat);
+			regularFile = copyRegularFile(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
 			shell.getCurrentDirectory()->addFile(regularFile);
 		}
 	}

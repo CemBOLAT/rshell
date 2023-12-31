@@ -3,8 +3,8 @@
 #include "../includes/TextEngine.hpp"
 
 // link nullptr olabilir !
-SymbolicLink::SymbolicLink(const string& name, const string& path, time_t time, File* link)
-	: File(name, time, path), link(link)
+SymbolicLink::SymbolicLink(const string& name, const string& path, time_t time, File* link, const string& linkedName, const string& linkPath)
+	: File(name, time, path), link(link), linkedName(linkedName), linkPath(linkPath)
 {/*Body inintentionally left empty! */}
 
 SymbolicLink::~SymbolicLink()
@@ -28,7 +28,7 @@ void	SymbolicLink::print(ostream& os, size_t maxLen) const
 	Utils::TextEngine::reset();
 	Utils::TextEngine::yellow();
 	Utils::TextEngine::bold();
-	os << this->getName() << " -> " << this->link->getName();
+	os << this->getName() << " -> " << this->getLinkedName();
 	Utils::TextEngine::reset();
 
 	os << endl;
@@ -39,9 +39,19 @@ File*	SymbolicLink::getLink() const
 	return this->link;
 }
 
+string	SymbolicLink::getLinkedName() const
+{
+	return this->linkedName;
+}
+
 void	SymbolicLink::setLink(File* link)
 {
 	this->link = link;
+}
+
+string	SymbolicLink::getLinkedPath() const
+{
+	return this->linkPath;
 }
 
 void	SymbolicLink::save(std::ostream &file) const {
@@ -49,9 +59,5 @@ void	SymbolicLink::save(std::ostream &file) const {
 	file << "Name: " << getName() << std::endl;
 	file << "Path: " << getPath() << std::endl;
 	file << "Time: " << getTime() << std::endl;
-	if (getLink()->getPath() == "/")
-		file << "Link: "
-			 << "/" + getLink()->getName() << std::endl;
-	else
-		file << "Link: " << getLink()->getPath() + "/" + getLink()->getName() << std::endl;
+	file << "Link: " << linkPath + "/" + linkedName << std::endl;
 }

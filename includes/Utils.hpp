@@ -17,13 +17,13 @@ namespace Utils {
 	std::ostream&	printTime(std::ostream& os, struct tm* timeinfo);
 	std::string		getData(std::ifstream &file);
 	vector<string>	split(const string &str, char delim);
-	string relPathToAbsPath(const Shell &shell, const string &path);
+	string			relPathToAbsPath(const Shell &shell, const string &path);
 
 	Directory		*findDirectory(const Shell &shell, const std::string &path);
 	Directory		*findDirTraverse(Directory *directory, const vector<string> &path);
 	RegularFile		*findRegularFile(const Shell &shell, const std::string &path);
 	RegularFile		*findRegFileTraverse(Directory *directory, const vector<string> &path);
-	string getParentPathOfAbsPath(const string &absPath);
+	string			getParentPathOfAbsPath(const string &absPath);
 }
 
 

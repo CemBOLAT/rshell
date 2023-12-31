@@ -77,16 +77,19 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 }
 
 void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
-	string name;
-	string path;
-	string time;
-	string linkPath;
-
+	string	name;
+	string	path;
+	string	time;
+	string	linkPath;
+	string	linkerName;
+	string	linkerPath;
 
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
 	time = Utils::getContent(file);
 	linkPath = Utils::getContent(file);
+	linkerName = linkPath.substr(linkPath.find_last_of("/") + 1, linkPath.size() - 1);
+	linkerPath = linkPath.substr(0, linkPath.find_last_of("/"));
 
 	time_t time_t_time = stoi(time);
 
@@ -94,12 +97,13 @@ void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
 	Directory		*linkDirectory = Utils::findDirectory(shell, linkPath);
 	Directory		*directory = Utils::findDirectory(shell, path);
 
-	if (link == nullptr && linkDirectory == nullptr)
-		directory->addFile(new SymbolicLink(name, path, time_t_time, nullptr));
+	if (link == nullptr && linkDirectory == nullptr){
+		directory->addFile(new SymbolicLink(name, path, time_t_time, nullptr, linkerName, linkerPath));
+	}
 	else if (link != nullptr)
-		directory->addFile(new SymbolicLink(name, path, time_t_time, link));
+		directory->addFile(new SymbolicLink(name, path, time_t_time, link, linkerName, linkerPath));
 	else if (linkDirectory != nullptr)
-		directory->addFile(new SymbolicLink(name, path, time_t_time, linkDirectory));
+		directory->addFile(new SymbolicLink(name, path, time_t_time, linkDirectory, linkerName, linkerPath));
 	else
 		throw runtime_error("Link could not be added.");
 }
@@ -125,8 +129,9 @@ void LoadFile::load(const std::string &path, Shell &shell){
 		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Link"){
 			addSymbolicLink(shell, file);
 		}
-		else
+		else{
 			throw runtime_error("Filesystem is not in correct format.");
+		}
 	}
 	file.close();
 }
