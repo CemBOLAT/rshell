@@ -16,8 +16,6 @@ namespace {
 	}
 }
 
-
-// poly kullan sonra bAK
 void SaveFile::save(const std::string &path, Shell &shell){
 	std::ofstream file(path);
 	if(!file.is_open()){

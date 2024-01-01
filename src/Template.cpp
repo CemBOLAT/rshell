@@ -31,7 +31,7 @@ T	*findTraverse(Directory *directory, const vector<string> &path)
 			{
 				return findTraverse<T>(dynamic_cast<Directory *>(file), vector<string>(path.begin() + 1, path.end()));
 			}
-		} // throw olabilir
+		}
 	}
 	return nullptr;
 }

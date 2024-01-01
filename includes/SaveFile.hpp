@@ -13,7 +13,7 @@ class SaveFile{
 		SaveFile& operator=(const SaveFile& other) = delete;
 		~SaveFile() = delete;
 
-		static void save(const std::string &path, Shell &shell);
+		static void	save(const std::string &path, Shell &shell);
 };
 
 #endif

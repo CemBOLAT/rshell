@@ -5,7 +5,6 @@
 #include <ctime>
 #include <iomanip>
 
-// link nullptr olabilir !
 SymbolicLink::SymbolicLink(const string& name, const string& path, time_t time, File* link, const string& linkedName, const string& linkPath)
 	: File(name, time, path), link(link), linkedName(linkedName), linkPath(linkPath)
 {/*Body inintentionally left empty! */}
