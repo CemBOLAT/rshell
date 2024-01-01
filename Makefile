@@ -27,7 +27,7 @@ OBJS := ./obj/main.o \
 
 
 CXX := g++
-CXXFLAGS := -std=c++11 -pedantic -g #-Wall -Wextra -Werror -I./include
+CXXFLAGS := -std=c++11 -pedantic -g -Wall -Wextra -Werror -I./include
 
 all : $(NAME)
 

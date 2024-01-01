@@ -1,5 +1,6 @@
 #include "../includes/Utils.hpp"
 #include "../includes/RegularFile.hpp"
+#include "../includes/SymbolicLink.hpp"
 #include <iomanip>
 #include <vector>
 #include <sstream>
@@ -147,73 +148,6 @@ namespace Utils
 		}
 		return  ""; // impossible
 	}
-	// Directory *findDirTraverse(Directory *directory, const vector<string> &path)
-	// {
-	// 	for (auto file : directory->getFiles())
-	// 	{
-	// 		if (file->getName() == path[0])
-	// 		{
-	// 			if (path.size() == 1)
-	// 			{
-	// 				if (dynamic_cast<Directory *>(file))
-	// 					return dynamic_cast<Directory *>(file);
-	// 			}
-	// 			else
-	// 			{
-	// 				return findDirTraverse(dynamic_cast<Directory *>(file), vector<string>(path.begin() + 1, path.end()));
-	// 			}
-	// 		} // throw olabilir
-	// 	}
-	// 	return nullptr;
-	// }
-	// Directory *findDirectory(const Shell &shell, const std::string &path)
-	// {
-	// 	//string absPath = relPathToAbsPath(shell, path);
- 	// 	vector<string> paths = split(path, '/'); // **
-	// 	if (paths.size() == 0)
-	// 	{
-	// 		return shell.getRoot();
-	// 	}
-	// 	//std::cout << "absPath: " << absPath << std::endl;
-	// 	//std::cout << "path  : " << path << std::endl;
-	// 	//for (auto path : paths)
-	// 	 //	std::cout << path << std::endl;
-	// 	Directory *dir = findDirTraverse(shell.getRoot(), paths);
-	// 	// cout << "000000" << endl;
-	// 	return dir;
-	// }
-	// RegularFile *findRegFileTraverse(Directory *directory, const vector<string> &path)
-	// {
-	// 	for (auto file : directory->getFiles())
-	// 	{
-	// 		if (file->getName() == path[0])
-	// 		{
-	// 			if (path.size() == 1)
-	// 			{
-	// 				if (dynamic_cast<RegularFile *>(file))
-	// 					return dynamic_cast<RegularFile *>(file);
-	// 			}
-	// 			else
-	// 			{
-	// 				return findRegFileTraverse(dynamic_cast<Directory *>(file), vector<string>(path.begin() + 1, path.end()));
-	// 			}
-	// 		} // throw olabilir
-	// 	}
-	// 	return nullptr;
-	// }
-	// RegularFile *findRegularFile(const Shell &shell, const std::string &path)
-	// {
-	// 	//string absPath = relPathToAbsPath(shell, path);
-	// 	vector<string> paths = split(path, '/');
-	// 	// std::cout << "absPath: " << absPath << std::endl;
-	// 	// std::cout << "path  : " << path << std::endl;
-	// 	// for (auto path : paths)
-	// 	// 	std::cout << path << std::endl;
-	// 	RegularFile *regFile = findRegFileTraverse(shell.getRoot(), paths);
-	// 	//std::cout << *regFile << std::endl;
-	// 	// cout << "000000" << endl;
-	// 	return regFile;
-	// }
 	string getParentPathOfAbsPath(const string &absPath)
 	{
 		size_t found = absPath.find_last_of('/');
@@ -272,3 +206,26 @@ namespace Utils
 		return size;
 	}
 } // namespace Utils
+
+
+namespace Utils {
+	void recheckLinks(Shell &shell, Directory *directory){
+		for (auto &file : directory->getFiles()){
+			if (dynamic_cast<SymbolicLink *>(file) != nullptr){
+				SymbolicLink *link = dynamic_cast<SymbolicLink *>(file);
+				if (link->getLink() == nullptr){
+					RegularFile		*linkFile = RegularFile::find(shell, link->getLinkedPath(), nullptr);
+					Directory		*linkDirectory = Directory::find(shell, link->getLinkedPath(), nullptr);
+					if (linkFile != nullptr)
+						link->setLink(linkFile);
+					else if (linkDirectory != nullptr)
+						link->setLink(linkDirectory);
+				}
+			}
+			else if (dynamic_cast<Directory *>(file) != nullptr){
+				Directory *dir = dynamic_cast<Directory *>(file);
+				recheckLinks(shell, dir);
+			}
+		}
+	}
+}

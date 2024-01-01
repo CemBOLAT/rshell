@@ -6,9 +6,6 @@
 #include "../includes/SaveFile.hpp"
 
 
-// link ekle bu kadar
-// ls geyiğİ
-// disk alanı kalmadıysa hata ver
 // klasörlerin saatini sekron yap
 int main(){
 
@@ -20,7 +17,6 @@ int main(){
 				Utils::TextEngine::green();
 				Utils::TextEngine::bold();
 				cout << shell.getPrompt();
-				//Utils::TextEngine::reset();
 				Utils::TextEngine::magenta();
 				string command;
 				getline(cin, command);

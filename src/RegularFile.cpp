@@ -3,11 +3,11 @@
 #include "../includes/TextEngine.hpp"
 #include "./Template.cpp"
 #include <ctime>
+#include <iomanip>
 
 RegularFile::RegularFile(const string &name, size_t sizeBytes, time_t time, const string& data, const string& path)
 	: File(name, time, path), sizeBytes(sizeBytes), data(data)
 {/*Body inintentionally left empty! */}
-// I can add error check for valid day and month here, but I don't want to.
 
 RegularFile::~RegularFile()
 {/*Body inintentionally left empty! */}
@@ -67,15 +67,9 @@ void RegularFile::save(std::ostream &file) const
 
 RegularFile  *RegularFile::find(const Shell &shell, const std::string &path, RegularFile *ptr)
 {
-	// string absPath = relPathToAbsPath(shell, path);
 	vector<string> paths = Utils::split(path, '/'); // **
-	// std::cout << "absPath: " << absPath << std::endl;
-	// std::cout << "path  : " << path << std::endl;
-	// for (auto path : paths)
-	//	std::cout << path << std::endl;
 	ptr = findTraverse<RegularFile>(shell.getRoot(), paths);
 	return ptr;
-	// cout << "000000" << endl;
 }
 
 void RegularFile::cat() const

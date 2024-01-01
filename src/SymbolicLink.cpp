@@ -2,6 +2,8 @@
 #include "../includes/Utils.hpp"
 #include "../includes/TextEngine.hpp"
 #include "./Template.cpp"
+#include <ctime>
+#include <iomanip>
 
 // link nullptr olabilir !
 SymbolicLink::SymbolicLink(const string& name, const string& path, time_t time, File* link, const string& linkedName, const string& linkPath)
@@ -65,15 +67,9 @@ void	SymbolicLink::save(std::ostream &file) const {
 
 SymbolicLink *SymbolicLink::find(const Shell &shell, const std::string &path, SymbolicLink *ptr)
 {
-	// string absPath = relPathToAbsPath(shell, path);
 	vector<string> paths = Utils::split(path, '/'); // **
-	// std::cout << "absPath: " << absPath << std::endl;
-	// std::cout << "path  : " << path << std::endl;
-	// for (auto path : paths)
-	//	std::cout << path << std::endl;
 	ptr = findTraverse<SymbolicLink>(shell.getRoot(), paths);
 	return ptr;
-	// cout << "000000" << endl;
 }
 
 void SymbolicLink::cat() const
@@ -83,16 +79,4 @@ void SymbolicLink::cat() const
 		throw std::runtime_error("cat :" + getName() + " : No such file or directory");
 	}
 	link->cat();
-	// if (dynamic_cast<RegularFile*>(link) != nullptr)
-	// {
-	// 	std::cout << dynamic_cast<RegularFile*>(link)->getData() << std::endl;
-	// }
-	// else if (dynamic_cast<Directory *>(link) != nullptr)
-	// {
-	// 	throw std::runtime_error("cat :" + getName() + " : Is a directory");
-	// }
-	// else if (dynamic_cast<SymbolicLink *>(link) != nullptr) // I am not sure
-	// {
-	// 	link->cat();
-	// }
 }

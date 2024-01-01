@@ -16,8 +16,6 @@ Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
 Shell::~Shell()
 {
 	Utils::terminate(this->root);
-	//delete this->root;
-	//this->root = nullptr;
 }
 
 const string Shell::getFileSystemPath() const
@@ -90,11 +88,13 @@ void Shell::execute(string command)
 	else if (commandName == "rm")
 	{
 		Executor::rm(*this, commandArgument);
+		Utils::recheckLinks(*this, getRoot());
 		return;
 	}
 	else if (commandName == "mkdir")
 	{
 		Executor::mkdir(*this, commandArgument);
+		Utils::recheckLinks(*this, getRoot());
 		return;
 	}
 	else if (commandName == "cd")
@@ -111,6 +111,7 @@ void Shell::execute(string command)
 		if (args.size() != 2)
 			throw runtime_error("cp: missing operand");
 		Executor::cp(*this, args[0], args[1]);
+		Utils::recheckLinks(*this, getRoot());
 		return;
 	}
 	else if (commandName == "link"){

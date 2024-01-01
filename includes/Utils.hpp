@@ -18,14 +18,10 @@ namespace Utils {
 	std::string		getData(std::ifstream &file);
 	vector<string>	split(const string &str, char delim);
 	string			relPathToAbsPath(const Shell &shell, const string &path);
-
-	//Directory		*findDirectory(const Shell &shell, const std::string &path);
-	//Directory		*findDirTraverse(Directory *directory, const vector<string> &path);
-	//RegularFile		*findRegularFile(const Shell &shell, const std::string &path);
-	//RegularFile		*findRegFileTraverse(Directory *directory, const vector<string> &path);
 	string			getParentPathOfAbsPath(const string &absPath);
 	void			terminate(Directory *directory);
 	size_t			getProgramSize(const Directory *directory);
+	void			recheckLinks(Shell &shell, Directory *directory);
 }
 
 

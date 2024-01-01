@@ -11,6 +11,8 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <iomanip>
+#include <cstring>
 
 namespace {
 	void listOnlyCurrentDirectory(ostream &os, const Shell& shell, size_t maxNameLength) {
@@ -34,11 +36,11 @@ namespace {
 }
 
 namespace Executor {
-
 	void ls(const Shell& Shell) {
-		Directory* currentDirectory = Shell.getCurrentDirectory();
-		vector<File *> files = currentDirectory->getFiles();
-		size_t maxNameLength = 0;
+		Directory*		currentDirectory = Shell.getCurrentDirectory();
+		vector<File *>	files = currentDirectory->getFiles();
+		size_t			maxNameLength = 0;
+
 		for (File *file : files)
 		{
 			if (file->getName().size() > maxNameLength)
@@ -55,10 +57,6 @@ namespace Executor {
 
 		for (File* file : files) {
 			file->print(cout, maxNameLength);
-			//else if (dynamic_cast<SymbolicLink*>(file)) {
-			//	SymbolicLink* symbolicLink = dynamic_cast<SymbolicLink*>(file);
-			//	cout << *symbolicLink;
-			//}
 		}
 	}
 }
@@ -82,16 +80,15 @@ namespace Executor {
 				throw invalid_argument("cat: " + fileName + ": No such file or directory");
 			else if (regularFile != nullptr)
 				regularFile->cat();
-			else if (directory != nullptr)
-				directory->cat();
 			else if (symbolicLink != nullptr)
 				symbolicLink->cat();
+			else if (directory != nullptr)
+				directory->cat();
 		} catch (const runtime_error& e) {
 			throw e;
 		} catch (const invalid_argument& e) {
 			throw e;
 		}
-		// cout << regularFile->getData() << endl;
 	}
 }
 
@@ -108,11 +105,7 @@ namespace Executor {
 			string absPath = Utils::relPathToAbsPath(shell, fileName);
 			regularFile = RegularFile::find(shell, absPath, nullptr);
 			symbolicLink = SymbolicLink::find(shell, absPath, nullptr);
-			//regularFile = Utils::findRegularFile(shell, absPath);
 			directory = Directory::find(shell, absPath.substr(0, absPath.find_last_of('/')), nullptr);
-
-			//directory = Utils::findDirectory(shell, absPath.substr(0, absPath.find_last_of('/')));
-			//std::cout << fileName << " AA" << std::endl;
 
 			if (regularFile == nullptr && symbolicLink == nullptr && directory == nullptr)
 				throw invalid_argument("rm: cannot remove '" + fileName + "': No such file or directory");
@@ -123,7 +116,7 @@ namespace Executor {
 			else if (directory != nullptr)
 				throw runtime_error("rm: cannot remove '" + fileName + "': Is a directory");
 		} catch (const runtime_error& e) {
-			throw runtime_error("rm: cannot remove '" + fileName + "': Is a directory");
+			throw e;
 		} catch (const invalid_argument& e) {
 			throw e;
 		}
@@ -132,8 +125,8 @@ namespace Executor {
 
 namespace Executor{
 	void mkdir(const Shell& shell, const string& fileName) {
-		Directory *directory = nullptr;
-		Directory *parentDirectory = nullptr;
+		Directory	*directory = nullptr;
+		Directory	*parentDirectory = nullptr;
 		if (fileName.empty())
 			throw runtime_error("mkdir: missing operand");
 		else if (fileName == "." || fileName == "..")
@@ -141,12 +134,8 @@ namespace Executor{
 		try {
 			string absPath = Utils::relPathToAbsPath(shell, fileName);
 			directory = Directory::find(shell, absPath, nullptr);
-			//directory = Utils::findDirectory(shell, absPath);
-			//std::cout << "abs BB : " << Utils::relPathToAbsPath(shell, fileName) << std::endl;
 			string pPath = Utils::getParentPathOfAbsPath(Utils::relPathToAbsPath(shell, fileName));
-			//std::cout << "abs AA : " << pPath << std::endl;
 			parentDirectory = Directory::find(shell, pPath, nullptr);
-			//parentDirectory = Utils::findDirectory(shell, pPath);
 			if (directory != nullptr)
 				throw invalid_argument("mkdir: cannot create directory '" + fileName + "': File exists");
 			else if (parentDirectory == nullptr)
@@ -159,8 +148,6 @@ namespace Executor{
 				directory = new Directory(name,
 										time(nullptr), parentDirectory->getPath() + parentDirectory->getName() + "/", parentDirectory);
 			parentDirectory->addFile(directory);
-		} catch (const runtime_error& e) {
-			throw runtime_error("mkdir: cannot create directory '" + fileName + "': File exists");
 		} catch (const invalid_argument& e) {
 			throw e;
 		}
@@ -218,8 +205,8 @@ namespace Executor {
 
 namespace Executor {
 	void lsRecursive(const Directory *directory, const Shell& Shell) {
-		vector<File *> files = directory->getFiles();
-		size_t maxNameLength = 0;
+		vector<File *>	files = directory->getFiles();
+		size_t			maxNameLength = 0;
 		for (File *file : files)
 		{
 			if (file->getName().length() > maxNameLength)
@@ -243,10 +230,6 @@ namespace Executor {
 		for (File *file : files)
 		{
 			file->print(cout, maxNameLength);
-			// else if (dynamic_cast<SymbolicLink*>(file)) {
-			//	SymbolicLink* symbolicLink = dynamic_cast<SymbolicLink*>(file);
-			//	cout << *symbolicLink;
-			// }
 		}
 		for (File *file : files)
 		{
@@ -258,8 +241,7 @@ namespace Executor {
 				cout << "." << directory->getPath() + directory->getName() << ":";
 				Utils::TextEngine::reset();
 				cout << endl;
-				// (. ve ..) var untuma
-				lsRecursive(directory, Shell); // sonra karar verirsin
+				lsRecursive(directory, Shell);
 			}
 		}
 	}
@@ -270,6 +252,7 @@ namespace {
 		ifstream		sourceFile(source);
 		RegularFile		*regularFile;
 		string			data, line;
+		(void)shell;
 		if (!sourceFile.is_open())
 			throw runtime_error("file cannot open at your OS");
 		while (getline(sourceFile, line))
@@ -297,7 +280,7 @@ namespace {
 		directory = new Directory(fileName, sourceStat.st_mtime, path, shell.getCurrentDirectory()->getParentDirectory());
 		while ((entry = readdir(copiedDir)) != nullptr)
 		{
-			if (std::strcmp(entry->d_name, ".") != 0 && std::strcmp(entry->d_name, "..") != 0)
+			if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
 			{
 				std::string entryPath = source + "/" + entry->d_name;
 
@@ -337,11 +320,12 @@ namespace {
 		{
 			throw std::runtime_error("cp: cannot open source directory '" + source + "'");
 		}
+		(void)sourcestat; // unused
 		struct dirent	*entry;
 		size_t size = 0;
 		while ((entry = readdir(copiedDir)) != nullptr)
 		{
-			if (std::strcmp(entry->d_name, ".") != 0 && std::strcmp(entry->d_name, "..") != 0)
+			if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
 			{
 				std::string entryPath = source + "/" + entry->d_name;
 
@@ -424,7 +408,7 @@ namespace Executor {
 		Directory		*sourceDirectory = nullptr;
 		Directory		*destDirectory = nullptr;
 		File			*sourceFile = nullptr;
-		File *destFile = nullptr;
+		File			*destFile = nullptr;
 		string absSourcePath = Utils::relPathToAbsPath(shell, source);
 		string absDestPath = Utils::relPathToAbsPath(shell, dest);
 		if (dest.empty() || source.empty())
@@ -441,14 +425,6 @@ namespace Executor {
 			destDirectory = Directory::find(shell, absDestPath, nullptr);
 			if (destDirectory != nullptr) // dest directory mi
 				return;
-
-			std::cout << "absSourcePath : " << absSourcePath << std::endl;
-			std::cout << "absDestPath : " << absDestPath << std::endl;
-			std::cout << "name : " << dest.substr(dest.find_last_of('/') + 1) << std::endl;
-			std::cout << "path : " << absDestPath.substr(0, absDestPath.find_last_of('/') - 1) << std::endl;
-			std::cout << "linkP : " << absSourcePath.substr(0, absSourcePath.find_last_of('/') - 1) << std::endl;
-			std::cout << "Parent of abs :" << Utils::getParentPathOfAbsPath(absDestPath) << std::endl;
-			// dest dosyam temiz
 			sourceDirectory = Directory::find(shell, Utils::getParentPathOfAbsPath(absSourcePath), nullptr);
 			destDirectory = Directory::find(shell, Utils::getParentPathOfAbsPath(absDestPath), nullptr);
 			if (destDirectory == nullptr)
@@ -475,8 +451,6 @@ namespace Executor {
 				return;
 			}
 			destDirectory->addFile(new SymbolicLink(dest.substr(dest.find_last_of('/') + 1), Utils::getParentPathOfAbsPath(absDestPath), time(nullptr), sourceFile, source, absSourcePath.substr(0, absSourcePath.find_last_of('/') - 1)));
-			// destteki dosyayı linkleyip kendimde oluştururum.
-			// null gösteren symbolicLink oluşur.
 		} catch (const invalid_argument& e) {
 			throw e;
 		}
