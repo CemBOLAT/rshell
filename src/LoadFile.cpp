@@ -95,7 +95,7 @@ void LoadFile::load(const std::string &path, Shell &shell){
 	if (!file.is_open())
 		throw runtime_error("File could not be opened.");
 	string lineTmp; // to ignore first line for roots time
-	getline(file, lineTmp);
+	getline(file, lineTmp); // ignore first line
 	while (!file.eof())
 	{
 		string line;
