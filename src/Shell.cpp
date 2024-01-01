@@ -9,8 +9,16 @@ const std::string Shell::fileSystemPath = "./os/filesystem.txt";
 
 Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
 {
-	this->root = new Directory("/", time(nullptr), "/");
+	std::ifstream	file(Shell::fileSystemPath);
+	time_t			timeT;
+	string			timeStr;
+	if (!file.is_open())
+		throw std::runtime_error("filesystem.txt not found");
+	timeStr = Utils::getContent(file);
+	timeT = std::stol(timeStr);
+	this->root = new Directory("/", timeT, "/");
 	this->currentDirectory = this->root;
+	file.close();
 }
 
 Shell::~Shell()

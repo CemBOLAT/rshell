@@ -23,6 +23,7 @@ void SaveFile::save(const std::string &path, Shell &shell){
 	if(!file.is_open()){
 		throw std::runtime_error("File cannot be opened!");
 	}
+	file << "Time: " << shell.getRoot()->getTime() << std::endl;
 	for (const auto &vfile : shell.getRoot()->getFiles()){
 		vfile->save(file);
 		if (dynamic_cast<Directory*>(vfile) != nullptr){

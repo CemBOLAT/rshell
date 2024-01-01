@@ -97,6 +97,8 @@ namespace Executor {
 		RegularFile		*regularFile = nullptr;
 		Directory		*directory = nullptr;
 		SymbolicLink	*symbolicLink = nullptr;
+		Directory		*parentDirectory = nullptr;
+
 		if (fileName.empty())
 			throw runtime_error("rm: missing operand");
 		else if (fileName == "." || fileName == "..")
@@ -106,7 +108,7 @@ namespace Executor {
 			regularFile = RegularFile::find(shell, absPath, nullptr);
 			symbolicLink = SymbolicLink::find(shell, absPath, nullptr);
 			directory = Directory::find(shell, absPath.substr(0, absPath.find_last_of('/')), nullptr);
-
+			parentDirectory = Directory::find(shell, Utils::getParentPathOfAbsPath(absPath), nullptr);
 			if (regularFile == nullptr && symbolicLink == nullptr && directory == nullptr)
 				throw invalid_argument("rm: cannot remove '" + fileName + "': No such file or directory");
 			else if (regularFile != nullptr)
@@ -115,6 +117,7 @@ namespace Executor {
 				directory->removeFile<SymbolicLink>(symbolicLink->getName());
 			else if (directory != nullptr)
 				throw runtime_error("rm: cannot remove '" + fileName + "': Is a directory");
+			parentDirectory->setTime(time(nullptr));
 		} catch (const runtime_error& e) {
 			throw e;
 		} catch (const invalid_argument& e) {
@@ -148,6 +151,7 @@ namespace Executor{
 				directory = new Directory(name,
 										time(nullptr), parentDirectory->getPath() + parentDirectory->getName() + "/", parentDirectory);
 			parentDirectory->addFile(directory);
+			parentDirectory->setTime(time(nullptr));
 		} catch (const invalid_argument& e) {
 			throw e;
 		}
@@ -359,6 +363,8 @@ namespace Executor {
 	void cp(const Shell& shell, const string &source, const string &fileName){
 
 		struct stat	sourceStat;
+		Directory *directory = nullptr;
+		RegularFile *regularFile = nullptr;
 
 		if (source.empty() || fileName.empty())
 			throw runtime_error("cp: missing operand");
@@ -366,19 +372,15 @@ namespace Executor {
 		{
 			throw std::runtime_error("cp: source file '" + source + "' does not exist");
 		}
-		RegularFile *regularFile;
 
 		regularFile = RegularFile::find(shell, fileName, nullptr);
-		Directory *directory;
 		directory = Directory::find(shell, fileName, nullptr);
-		// size is not proper for directory
 
 		if (S_ISREG(sourceStat.st_mode)  && sourceStat.st_size + Utils::getProgramSize(shell.getRoot()) > shell.getOsSize())
 			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
 		else if (S_ISDIR(sourceStat.st_mode) && getDirectorySize(sourceStat, source) + Utils::getProgramSize(shell.getRoot()) > shell.getOsSize())
 			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
 		if (regularFile == nullptr && S_ISREG(sourceStat.st_mode)){
-			//std::cout << "buraya girdi" << std::endl;
 			regularFile = copyRegularFile(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
 			shell.getCurrentDirectory()->addFile(regularFile);
 		}
@@ -397,6 +399,7 @@ namespace Executor {
 			regularFile = copyRegularFile(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
 			shell.getCurrentDirectory()->addFile(regularFile);
 		}
+		shell.getCurrentDirectory()->setTime(time(nullptr));
 	}
 
 }
@@ -431,26 +434,35 @@ namespace Executor {
 				throw invalid_argument("link: cannot create link '" + dest + "': No such file or directory");
 			if (sourceDirectory == nullptr){
 				destDirectory->addFile(new SymbolicLink(dest.substr(dest.find_last_of('/') + 1), Utils::getParentPathOfAbsPath(absDestPath), time(nullptr), sourceFile, source, absSourcePath.substr(0, absSourcePath.find_last_of('/') - 1)));
+				destDirectory->setTime(time(nullptr));
+
 				return;
 			}
 			sourceFile = SymbolicLink::find(shell, absSourcePath, nullptr);
 			if (sourceFile != nullptr){
 				destDirectory->addFile(new SymbolicLink(dest.substr(dest.find_last_of('/') + 1), Utils::getParentPathOfAbsPath(absDestPath), time(nullptr), sourceFile, source, absSourcePath.substr(0, absSourcePath.find_last_of('/') - 1)));
+				destDirectory->setTime(time(nullptr));
+
 				return;
 			}
 				// destteki dosyayı linkleyip kendimde oluştururum.
 			sourceFile = RegularFile::find(shell, absSourcePath, nullptr);
 			if (sourceFile != nullptr){
 				destDirectory->addFile(new SymbolicLink(dest.substr(dest.find_last_of('/') + 1), Utils::getParentPathOfAbsPath(absDestPath), time(nullptr), sourceFile, source, absSourcePath.substr(0, absSourcePath.find_last_of('/') - 1)));
+				destDirectory->setTime(time(nullptr));
+
 				return;
 			}
 				// destteki dosyayı linkleyip kendimde oluştururum.
 			sourceFile = Directory::find(shell, absSourcePath, nullptr);
 			if (sourceFile != nullptr){
 				destDirectory->addFile(new SymbolicLink(dest.substr(dest.find_last_of('/') + 1), Utils::getParentPathOfAbsPath(absDestPath), time(nullptr), sourceFile, source, absSourcePath.substr(0, absSourcePath.find_last_of('/') - 1)));
+				destDirectory->setTime(time(nullptr));
+
 				return;
 			}
 			destDirectory->addFile(new SymbolicLink(dest.substr(dest.find_last_of('/') + 1), Utils::getParentPathOfAbsPath(absDestPath), time(nullptr), sourceFile, source, absSourcePath.substr(0, absSourcePath.find_last_of('/') - 1)));
+			destDirectory->setTime(time(nullptr));
 		} catch (const invalid_argument& e) {
 			throw e;
 		}

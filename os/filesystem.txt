@@ -1,3 +1,4 @@
+Time: 1704126842
 Type: Directory
 Name: 1
 Path: /
@@ -204,7 +205,8 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : all clean fclean re
+.PHONY : all clean fclean re
+
 Type: Link
 Name: cema
 Path: /
@@ -215,3 +217,7 @@ Name: sss
 Path: /
 Time: 1704061103
 Link: /ela
+Type: Directory
+Name: attempt
+Path: /
+Time: 1704126842
