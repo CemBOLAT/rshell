@@ -2,12 +2,12 @@
 #include "../includes/Shell.hpp"
 #include "../includes/RegularFile.hpp"
 #include "../includes/SymbolicLink.hpp"
+#include "../includes/Utils.hpp"
 #include <fstream>
 #include <string>
 #include <ctime>
 #include <sstream>
 
-#include "../includes/Utils.hpp"
 
 using namespace std;
 
@@ -26,7 +26,7 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file){
 		directory->addFile(new RegularFile(name, data.size(), time_t_time, data, path));
 		return;
 	}
-	directory = Directory::find(shell, path, nullptr);
+	directory = File::find<Directory>(shell, path);
 
 	if (directory == nullptr)
 		throw runtime_error("Directory coouold not be found."); // not configrated
@@ -49,7 +49,7 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
 	}
 	else{
-		parentDirectory = Directory::find(shell, path, nullptr);
+		parentDirectory = File::find<Directory>(shell, path);
 		if (parentDirectory == nullptr)
 			throw runtime_error("Directory coould not be found."); // not configrated
 		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
@@ -72,9 +72,10 @@ void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
 
 	time_t time_t_time = stoi(time);
 
-	link = RegularFile::find(shell, linkPath, link);
-	linkDirectory = Directory::find(shell, linkPath, linkDirectory);
-	directory = Directory::find(shell, path, directory);
+
+	link = File::find<RegularFile>(shell, linkPath);
+	linkDirectory = File::find<Directory>(shell, linkPath);
+	directory = File::find<Directory>(shell, path);
 
 	if (link == nullptr && linkDirectory == nullptr){
 		directory->addFile(new SymbolicLink(name, path, time_t_time, nullptr, linkerName, linkPath));

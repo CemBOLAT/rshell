@@ -1,4 +1,6 @@
 #include "../includes/Directory.hpp"
+#include "../includes/Utils.hpp"
+#include <memory>
 
 template <typename T>
 void Directory::removeFile(const string &name)
@@ -7,9 +9,12 @@ void Directory::removeFile(const string &name)
 	{
 		if ((*it)->getName() == name && dynamic_cast<T *>(*it))
 		{
+			//std::shared_ptr<T> file = std::static_pointer_cast<T>(*it);
+
 			this->files.erase(it);
-			delete *it;
-			*it = nullptr;
+			//file = std::shared_ptr<T>(dynamic_cast<T *>(*it));
+			//delete *it;
+			//*it = nullptr;
 			return;
 		}
 	}
@@ -34,4 +39,22 @@ T	*findTraverse(Directory *directory, const vector<string> &path)
 		}
 	}
 	return nullptr;
+}
+
+template <>
+Directory	*File::find<Directory>(const Shell &shell, const string &path)
+{
+	vector<string> paths = Utils::split(path, '/'); // **
+	if (paths.size() == 0)
+	{
+		return shell.getRoot();
+	}
+	return (findTraverse<Directory>(shell.getRoot(), paths));
+}
+
+template <typename T>
+T	*File::find(const Shell &shell, const string &path)
+{
+	vector<string> paths = Utils::split(path, '/'); // **
+	return (findTraverse<T>(shell.getRoot(), paths));
 }

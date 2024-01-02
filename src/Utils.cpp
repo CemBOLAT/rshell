@@ -1,6 +1,7 @@
 #include "../includes/Utils.hpp"
 #include "../includes/RegularFile.hpp"
 #include "../includes/SymbolicLink.hpp"
+#include "../includes/Shell.hpp"
 #include <iomanip>
 #include <vector>
 #include <sstream>
@@ -128,11 +129,11 @@ namespace Utils
 		}
 		if ((path[0] == '.' && path[1] == '/') ||  path[0] != '.'){ // path for child directory of current directory
 			if (path[0] == '.')
-				return shell.getCurrentDirectory()->getOwnFilesPath() + "/" + path.substr(2, path.size() - 1);
-			return shell.getCurrentDirectory()->getOwnFilesPath() + "/" + path;
+				return shell.getCurrentDirectory()->getOwnFilesPath() + path.substr(2, path.size() - 1);
+			return shell.getCurrentDirectory()->getOwnFilesPath() + path;
 		}
 		if (path[0] == '.' && path[1] == '.' && path[2] == '/'){ // path for parent directory of current directory
-			return shell.getCurrentDirectory()->getParentDirectory()->getOwnFilesPath() + "/" + path.substr(3, path.size() - 1);
+			return shell.getCurrentDirectory()->getParentDirectory()->getOwnFilesPath() + path.substr(3, path.size() - 1);
 		}
 		return "";
 	}
@@ -207,12 +208,31 @@ namespace Utils {
 	// Precondition: shell is a Shell
 	// Postcondition: rechecks the links of shell recursively because of the possibility of deleting linked files or creating new files for linking to them
 	void recheckLinks(Shell &shell, Directory *directory){
+		//for (auto it = directory->getFiles().begin(); it != directory->getFiles().end(); ++it){
+		//	if (dynamic_cast<SymbolicLink *>(*it) != nullptr){ // if file is a symbolic link
+		//		SymbolicLink *link = dynamic_cast<SymbolicLink *>(*it);
+		//		if (link->getLink() == nullptr){
+		//			RegularFile		*linkFile = File::find<RegularFile>(shell, link->getLinkedPath());
+		//			Directory		*linkDirectory = File::find<Directory>(shell, link->getLinkedPath());
+		//			if (linkFile != nullptr)
+		//				link->setLink(linkFile);
+		//			else if (linkDirectory != nullptr)
+		//				link->setLink(linkDirectory);
+		//		}
+		//	}
+		//	else if (dynamic_cast<Directory *>(*it) != nullptr){ // if file is a directory then recursive call
+		//		Directory *dir = dynamic_cast<Directory *>(*it);
+		//		recheckLinks(shell, dir);
+		//	}
+		//}
+
 		for (auto &file : directory->getFiles()){
+			//std::cout << file->getName() << std::endl;
 			if (dynamic_cast<SymbolicLink *>(file) != nullptr){ // if file is a symbolic link
 				SymbolicLink *link = dynamic_cast<SymbolicLink *>(file);
 				if (link->getLink() == nullptr){
-					RegularFile		*linkFile = RegularFile::find(shell, link->getLinkedPath(), nullptr);
-					Directory		*linkDirectory = Directory::find(shell, link->getLinkedPath(), nullptr);
+					RegularFile		*linkFile = File::find<RegularFile>(shell, link->getLinkedPath());
+					Directory		*linkDirectory = File::find<Directory>(shell, link->getLinkedPath());
 					if (linkFile != nullptr)
 						link->setLink(linkFile);
 					else if (linkDirectory != nullptr)

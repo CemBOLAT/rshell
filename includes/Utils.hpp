@@ -3,11 +3,14 @@
 # define UTILS_HPP
 
 # include <string>
+# include <vector>
 # include <fstream>
-# include "Shell.hpp"
-# include "RegularFile.hpp"
 
+class Directory;
 class Shell;
+class RegularFile;
+class SymbolicLink;
+class File;
 
 using namespace std;
 
@@ -23,7 +26,5 @@ namespace Utils {
 	size_t			getProgramSize(const Directory *directory);
 	void			recheckLinks(Shell &shell, Directory *directory);
 }
-
-
 
 #endif

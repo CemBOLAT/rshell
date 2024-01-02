@@ -1,108 +1,33 @@
-Time: 1704126842
+Time: 1704232016
 Type: Directory
-Name: 1
+Name: here
 Path: /
-Time: 1704056012
-Type: Directory
-Name: 32
-Path: /1/
-Time: 1704056016
-Type: Directory
-Name: 11
-Path: /1/
-Time: 1704056023
-Type: Directory
-Name: cemal
-Path: /1/11/
-Time: 1704056028
-Type: Directory
-Name: 65
-Path: /1/11/
-Time: 1704056062
-Type: Directory
-Name: 44
-Path: /1/11/65/
-Time: 1704056083
+Time: 1704205809
 Type: Regular
-Name: ela
-Path: /1/
-Time: 1704051889
-Content: NAME := myShell
-SRCS := ./src/main.cpp \
-		./src/Shell.cpp \
-		./src/File.cpp \
-		./src/Directory.cpp \
-		./src/RegularFile.cpp \
-		./src/LoadFile.cpp \
-		./src/Utils.cpp \
-		./src/Executor.cpp \
-		./src/SaveFile.cpp \
-		./src/Template.cpp \
-		./src/TextEngine.cpp \
-		./src/SymbolicLink.cpp \
-
-OBJS := ./obj/main.o \
-		./obj/Shell.o \
-		./obj/File.o \
-		./obj/Directory.o \
-		./obj/RegularFile.o \
-		./obj/LoadFile.o \
-		./obj/Utils.o \
-		./obj/Executor.o \
-		./obj/SaveFile.o \
-		./obj/Template.o \
-		./obj/TextEngine.o \
-		./obj/SymbolicLink.o \
-
-
-CXX := g++
-CXXFLAGS := -std=c++11 -pedantic -g #-Wall -Wextra -Werror -I./include
-
-all : $(NAME)
-
-$(NAME) : $(OBJS) $(Header)
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-
-$(OBJS) : ./obj/%.o : ./src/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-clean :
-	rm -f $(OBJS)
-
-fclean : clean
-	rm -f $(NAME)
-
-re : fclean all
-
-.PHONY : all clean fclean re
-
-Type: Regular
-Name: 1
-Path: /
-Time: 1703948201
-Content: Cemal Bolat
-GTU, Turkey
+Name: cemla
+Path: /here/
+Time: 1704204959
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 cemla
 Type: Directory
-Name: oop
-Path: /
-Time: 1704056294
+Name: cse101
+Path: /here/
+Time: 1704205761
 Type: Directory
-Name: hasan
-Path: /oop/
-Time: 1704056299
+Name: cse107
+Path: /here/cse101/
+Time: 1704205750
 Type: Directory
-Name: gul
-Path: /oop/
-Time: 1704056314
-Type: Directory
-Name: cemal
-Path: /oop/gul/
-Time: 1704056326
+Name: cse108
+Path: /here/cse101/
+Time: 1704205761
 Type: Regular
 Name: here
 Path: /
-Time: 1704051889
+Time: 1704205193
 Content: NAME := myShell
 SRCS := ./src/main.cpp \
 		./src/Shell.cpp \
@@ -113,7 +38,6 @@ SRCS := ./src/main.cpp \
 		./src/Utils.cpp \
 		./src/Executor.cpp \
 		./src/SaveFile.cpp \
-		./src/Template.cpp \
 		./src/TextEngine.cpp \
 		./src/SymbolicLink.cpp \
 
@@ -126,10 +50,8 @@ OBJS := ./obj/main.o \
 		./obj/Utils.o \
 		./obj/Executor.o \
 		./obj/SaveFile.o \
-		./obj/Template.o \
 		./obj/TextEngine.o \
 		./obj/SymbolicLink.o \
-
 
 CXX := g++
 CXXFLAGS := -std=c++11 -pedantic -g #-Wall -Wextra -Werror -I./include
@@ -151,12 +73,11 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : all clean fclean re
-
+.PHONY : all clean fclean re
 Type: Regular
-Name: herererer
+Name: 5
 Path: /
-Time: 1704051889
+Time: 1704205193
 Content: NAME := myShell
 SRCS := ./src/main.cpp \
 		./src/Shell.cpp \
@@ -167,7 +88,6 @@ SRCS := ./src/main.cpp \
 		./src/Utils.cpp \
 		./src/Executor.cpp \
 		./src/SaveFile.cpp \
-		./src/Template.cpp \
 		./src/TextEngine.cpp \
 		./src/SymbolicLink.cpp \
 
@@ -180,10 +100,8 @@ OBJS := ./obj/main.o \
 		./obj/Utils.o \
 		./obj/Executor.o \
 		./obj/SaveFile.o \
-		./obj/Template.o \
 		./obj/TextEngine.o \
 		./obj/SymbolicLink.o \
-
 
 CXX := g++
 CXXFLAGS := -std=c++11 -pedantic -g #-Wall -Wextra -Werror -I./include
@@ -205,19 +123,4 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : all clean fclean re
-
-Type: Link
-Name: cema
-Path: /
-Time: 1704061087
-Link: /here
-Type: Link
-Name: sss
-Path: /
-Time: 1704061103
-Link: /ela
-Type: Directory
-Name: attempt
-Path: /
-Time: 1704126842
+.PHONY : all clean fclean re

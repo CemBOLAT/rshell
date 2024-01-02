@@ -1,7 +1,6 @@
 #include "../includes/RegularFile.hpp"
 #include "../includes/Utils.hpp"
 #include "../includes/TextEngine.hpp"
-#include "./Template.cpp"
 #include <ctime>
 #include <iomanip>
 
@@ -63,13 +62,6 @@ void RegularFile::save(std::ostream &file) const
 	file << "Path: " << getPath() << std::endl;
 	file << "Time: " << getTime() << std::endl;
 	file << "Content: " << getData() << std::endl;
-}
-
-RegularFile  *RegularFile::find(const Shell &shell, const std::string &path, RegularFile *ptr)
-{
-	vector<string> paths = Utils::split(path, '/'); // **
-	ptr = findTraverse<RegularFile>(shell.getRoot(), paths);
-	return ptr;
 }
 
 void RegularFile::cat() const

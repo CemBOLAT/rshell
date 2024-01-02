@@ -8,7 +8,6 @@ SRCS := ./src/main.cpp \
 		./src/Utils.cpp \
 		./src/Executor.cpp \
 		./src/SaveFile.cpp \
-		./src/Template.cpp \
 		./src/TextEngine.cpp \
 		./src/SymbolicLink.cpp \
 
@@ -21,13 +20,11 @@ OBJS := ./obj/main.o \
 		./obj/Utils.o \
 		./obj/Executor.o \
 		./obj/SaveFile.o \
-		./obj/Template.o \
 		./obj/TextEngine.o \
 		./obj/SymbolicLink.o \
 
-
 CXX := g++
-CXXFLAGS := -std=c++11 -pedantic -g -Wall -Wextra -Werror -I./include
+CXXFLAGS := -std=c++11 -pedantic -g #-Wall -Wextra -Werror -I./include
 
 all : $(NAME)
 

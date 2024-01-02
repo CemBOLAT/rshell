@@ -1,7 +1,6 @@
 #include "../includes/SymbolicLink.hpp"
 #include "../includes/Utils.hpp"
 #include "../includes/TextEngine.hpp"
-#include "./Template.cpp"
 #include <ctime>
 #include <iomanip>
 
@@ -62,13 +61,6 @@ void	SymbolicLink::save(std::ostream &file) const {
 	file << "Path: " << getPath() << std::endl;
 	file << "Time: " << getTime() << std::endl;
 	file << "Link: " << linkPath << std::endl;
-}
-
-SymbolicLink *SymbolicLink::find(const Shell &shell, const std::string &path, SymbolicLink *ptr)
-{
-	vector<string> paths = Utils::split(path, '/'); // **
-	ptr = findTraverse<SymbolicLink>(shell.getRoot(), paths);
-	return ptr;
 }
 
 void SymbolicLink::cat() const

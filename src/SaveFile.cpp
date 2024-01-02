@@ -23,10 +23,12 @@ void SaveFile::save(const std::string &path, Shell &shell){
 	}
 	file << "Time: " << shell.getRoot()->getTime() << std::endl;
 	for (const auto &vfile : shell.getRoot()->getFiles()){
-		vfile->save(file);
-		if (dynamic_cast<Directory*>(vfile) != nullptr){
-			Directory *vdFile = dynamic_cast<Directory*>(vfile);
-			recursive(file, vdFile);
+		if (vfile != nullptr){
+			vfile->save(file);
+			if (dynamic_cast<Directory*>(vfile) != nullptr){
+				Directory *vdFile = dynamic_cast<Directory*>(vfile);
+				recursive(file, vdFile);
+			}
 		}
 	}
 	file.close();

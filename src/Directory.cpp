@@ -1,7 +1,6 @@
 #include "../includes/Directory.hpp"
 #include "../includes/Utils.hpp"
 #include "../includes/TextEngine.hpp"
-#include "./Template.cpp"
 #include <ctime>
 #include <sstream>
 #include <iomanip>
@@ -86,24 +85,6 @@ void	Directory::save(std::ostream &file) const {
 	file << "Name: " << this->getName() << std::endl;
 	file << "Path: " << this->getPath() << std::endl;
 	file << "Time: " << this->getTime() << std::endl;
-}
-
-Directory *Directory::find(const Shell &shell, const std::string &path, Directory *ptr)
-{
-	// string absPath = relPathToAbsPath(shell, path);
-	vector<string> paths = Utils::split(path, '/'); // **
-	if (paths.size() == 0)
-	{
-		ptr = (shell.getRoot());
-		return ptr;
-	}
-	// std::cout << "absPath: " << absPath << std::endl;
-	// std::cout << "path  : " << path << std::endl;
-	// for (auto path : paths)
-	//	std::cout << path << std::endl;
-	ptr = findTraverse<Directory>(shell.getRoot(), paths);
-	return ptr;
-	// cout << "000000" << endl;
 }
 
 void Directory::cat() const
