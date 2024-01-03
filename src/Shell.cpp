@@ -78,6 +78,7 @@ void Shell::execute(string command)
 	if (commandName == "exit")
 	{
 		this->setTerminated(true);
+		SaveFile::save("./os/backup.txt", *this);
 		return;
 	}
 	else if (commandName == "ls") // bu kısımlara baK

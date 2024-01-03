@@ -107,6 +107,7 @@ namespace Utils
 			}
 			data += "\n";
 		}
+		line += static_cast<char>(3) + '\0';
 		return data;
 	}
 	// Precondition: path is a string

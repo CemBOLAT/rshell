@@ -81,7 +81,7 @@ namespace Executor
 
 		if (fileName.empty())
 			throw runtime_error("cat: missing operand");
-		else if (fileName == "." || fileName == "..")
+		else if (fileName == "." || fileName == ".." || fileName == "/")
 			throw runtime_error("cat: " + fileName + ": Is a directory");
 		try
 		{
@@ -294,7 +294,7 @@ namespace
 		{
 			data += line + "\n";
 		}
-		data = data.substr(0, data.size() - 1);
+		data = data.substr(0, data.size() - 2);
 		data += static_cast<char>(3);
 		sourceFile.close();
 		regularFile = new RegularFile(fileName, data.size(), sourceStat.st_mtime, data, path);

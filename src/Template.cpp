@@ -7,14 +7,10 @@ void Directory::removeFile(const string &name)
 {
 	for (auto it = this->files.begin(); it != this->files.end(); ++it)
 	{
-		if ((*it)->getName() == name && dynamic_cast<T *>(*it))
+		if (((*it)->getName() == name && dynamic_cast<T *>(*it)))
 		{
-			//std::shared_ptr<T> file = std::static_pointer_cast<T>(*it);
-
+			delete *it;
 			this->files.erase(it);
-			//file = std::shared_ptr<T>(dynamic_cast<T *>(*it));
-			//delete *it;
-			//*it = nullptr;
 			return;
 		}
 	}
