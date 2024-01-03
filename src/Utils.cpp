@@ -209,24 +209,6 @@ namespace Utils {
 	// Precondition: shell is a Shell
 	// Postcondition: rechecks the links of shell recursively because of the possibility of deleting linked files or creating new files for linking to them
 	void recheckLinks(Shell &shell, Directory *directory){
-		//for (auto it = directory->getFiles().begin(); it != directory->getFiles().end(); ++it){
-		//	if (dynamic_cast<SymbolicLink *>(*it) != nullptr){ // if file is a symbolic link
-		//		SymbolicLink *link = dynamic_cast<SymbolicLink *>(*it);
-		//		if (link->getLink() == nullptr){
-		//			RegularFile		*linkFile = File::find<RegularFile>(shell, link->getLinkedPath());
-		//			Directory		*linkDirectory = File::find<Directory>(shell, link->getLinkedPath());
-		//			if (linkFile != nullptr)
-		//				link->setLink(linkFile);
-		//			else if (linkDirectory != nullptr)
-		//				link->setLink(linkDirectory);
-		//		}
-		//	}
-		//	else if (dynamic_cast<Directory *>(*it) != nullptr){ // if file is a directory then recursive call
-		//		Directory *dir = dynamic_cast<Directory *>(*it);
-		//		recheckLinks(shell, dir);
-		//	}
-		//}
-
 		for (auto &file : directory->getFiles()){
 			//std::cout << file->getName() << std::endl;
 			if (dynamic_cast<SymbolicLink *>(file) != nullptr){ // if file is a symbolic link

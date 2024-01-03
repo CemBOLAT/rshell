@@ -61,6 +61,7 @@ void	SymbolicLink::save(std::ostream &file) const {
 	file << "Path: " << getPath() << std::endl;
 	file << "Time: " << getTime() << std::endl;
 	file << "Link: " << linkPath << std::endl;
+	file << "LinkedName: " << linkedName << std::endl;
 }
 
 void SymbolicLink::cat() const

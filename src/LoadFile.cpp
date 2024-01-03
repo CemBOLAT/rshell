@@ -8,7 +8,6 @@
 #include <ctime>
 #include <sstream>
 
-
 using namespace std;
 
 void LoadFile::addRegularFile(Shell &shell, ifstream &file){
@@ -68,7 +67,7 @@ void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
 	path = Utils::getContent(file);
 	time = Utils::getContent(file);
 	linkPath = Utils::getContent(file);
-	linkerName = linkPath.substr(linkPath.find_last_of("/") + 1, linkPath.size() - 1);
+	linkerName = Utils::getContent(file);
 
 	time_t time_t_time = stoi(time);
 

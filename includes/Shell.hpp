@@ -1,7 +1,9 @@
 #ifndef SHELL_HPP
 # define SHELL_HPP
 
-#include "Directory.hpp"
+#include "RegularFile.hpp"
+
+class Directory;
 
 class Shell {
 	public:

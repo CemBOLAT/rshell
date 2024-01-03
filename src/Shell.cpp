@@ -111,7 +111,6 @@ void Shell::execute(string command)
 			Executor::rm(*this, commandArgument);
 			Utils::recheckLinks(*this, getRoot());
 			SaveFile::save(getFileSystemPath(), *this);
-			//exit(0);
 			return;
 		}
 	}

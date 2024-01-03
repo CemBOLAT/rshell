@@ -1,4 +1,4 @@
-Time: 1704289447
+Time: 1704302293
 Type: Directory
 Name: gtu
 Path: /
@@ -30,15 +30,59 @@ Time: 1704288489
 Type: Directory
 Name: ssn
 Path: /
-Time: 1704290625
-Type: Directory
-Name: photo
-Path: /ssn/
-Time: 1704288518
+Time: 1704299052
 Type: Regular
-Name: ssn
+Name: cemla
 Path: /ssn/
-Time: 1704205193
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Directory
+Name: hobies
+Path: /
+Time: 1704299052
+Type: Regular
+Name: cemla
+Path: /hobies/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Directory
+Name: here
+Path: /
+Time: 1704301850
+Type: Regular
+Name: cemla
+Path: /here/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Directory
+Name: here
+Path: /here/
+Time: 1704299052
+Type: Regular
+Name: cemla
+Path: /here/here/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Regular
+Name: makefile
+Path: /here/
+Time: 1704299052
 Content: NAME := myShell
 SRCS := ./src/main.cpp \
 		./src/Shell.cpp \
@@ -86,6 +130,37 @@ re : fclean all
 
 .PHONY : all clean fclean re
 Type: Directory
-Name: hobies
+Name: aswellhere
 Path: /
-Time: 1704289447
+Time: 1704302015
+Type: Regular
+Name: cemla
+Path: /aswellhere/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Directory
+Name: linking
+Path: /
+Time: 1704302077
+Type: Regular
+Name: cemla
+Path: /linking/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Regular
+Name: here
+Path: /linking/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml

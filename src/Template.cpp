@@ -1,6 +1,35 @@
-#include "../includes/Directory.hpp"
 #include "../includes/Utils.hpp"
 #include <memory>
+
+namespace {
+	void	removeRecursive(File *file)
+	{
+		Directory *directory = dynamic_cast<Directory *>(file);
+		if (directory)
+		{
+			for (auto file : directory->getFiles())
+			{
+				removeRecursive(file);
+				delete file;
+			}
+		}
+	}
+}
+
+template <>
+void	Directory::removeFile<Directory>(const string &name)
+{
+	for (auto it = this->files.begin(); it != this->files.end(); ++it)
+	{
+		if (((*it)->getName() == name && dynamic_cast<Directory *>(*it)))
+		{
+			removeRecursive(*it);
+			delete *it;
+			this->files.erase(it);
+			return;
+		}
+	}
+}
 
 template <typename T>
 void Directory::removeFile(const string &name)
