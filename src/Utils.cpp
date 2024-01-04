@@ -213,14 +213,8 @@ namespace Utils {
 			//std::cout << file->getName() << std::endl;
 			if (dynamic_cast<SymbolicLink *>(file) != nullptr){ // if file is a symbolic link
 				SymbolicLink *link = dynamic_cast<SymbolicLink *>(file);
-				if (link->getLink() == nullptr){
-					RegularFile		*linkFile = File::find<RegularFile>(shell, link->getLinkedPath());
-					Directory		*linkDirectory = File::find<Directory>(shell, link->getLinkedPath());
-					if (linkFile != nullptr)
-						link->setLink(linkFile);
-					else if (linkDirectory != nullptr)
-						link->setLink(linkDirectory);
-				}
+				File		*linkFile = File::find<File>(shell, link->getLinkedPath() + "/" + link->getLinkedName());
+				link->setLink(linkFile);
 			}
 			else if (dynamic_cast<Directory *>(file) != nullptr){ // if file is a directory then recursive call
 				Directory *dir = dynamic_cast<Directory *>(file);

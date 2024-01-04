@@ -57,11 +57,9 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 
 
 void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
-	string	name, path, time, linkPath, linkerName;
-	RegularFile *link = nullptr;
-	Directory *linkDirectory = nullptr;
-	Directory *directory = nullptr;
-
+	string		name, path, time, linkPath, linkerName;
+	File		*link = nullptr;
+	Directory	*directory = nullptr;
 
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
@@ -71,20 +69,12 @@ void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
 
 	time_t time_t_time = stoi(time);
 
-
-	link = File::find<RegularFile>(shell, linkPath);
-	linkDirectory = File::find<Directory>(shell, linkPath);
+	link = File::find<File>(shell, linkPath + linkerName);
 	directory = File::find<Directory>(shell, path);
 
-	if (link == nullptr && linkDirectory == nullptr){
-		directory->addFile(new SymbolicLink(name, path, time_t_time, nullptr, linkerName, linkPath));
-	}
-	else if (link != nullptr)
-		directory->addFile(new SymbolicLink(name, path, time_t_time, link, linkerName, linkPath));
-	else if (linkDirectory != nullptr)
-		directory->addFile(new SymbolicLink(name, path, time_t_time, linkDirectory, linkerName, linkPath));
-	else
-		throw runtime_error("Link could not be added.");
+	if (directory == nullptr)
+		throw runtime_error("Filesystem file is broken"); // not configrated
+	directory->addFile(new SymbolicLink(name, path, time_t_time, link, linkerName, linkPath));
 }
 
 

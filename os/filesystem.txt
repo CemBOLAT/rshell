@@ -1,4 +1,4 @@
-Time: 1704302293
+Time: 1704373704
 Type: Directory
 Name: gtu
 Path: /
@@ -164,3 +164,13 @@ drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
 drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
 -rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
 -rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Directory
+Name: ls
+Path: /
+Time: 1704373608
+Type: Link
+Name: dd
+Path: /
+Time: 1704373699
+Link: /
+LinkedName: asdas

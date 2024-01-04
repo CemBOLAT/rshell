@@ -70,8 +70,8 @@ void Shell::setCurrentDirectory(Directory *directory)
 void Shell::execute(string command)
 {
 	command = Utils::trim(command);
-	string commandName = command.substr(0, command.find(' '));
-	string commandArgument = command.substr(command.find(' ') + 1, command.size() - 1);
+	string		commandName = command.substr(0, command.find(' '));
+	string		commandArgument = command.substr(command.find(' ') + 1, command.size() - 1);
 
 	if (command.find(' ') == string::npos)
 		commandArgument = "";

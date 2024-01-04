@@ -338,12 +338,6 @@ namespace
 					Directory *subDirectory = copyDirectory(entryPath, entry->d_name, shell, entryStat, directory->getOwnFilesPath());
 					directory->addFile(subDirectory);
 				}
-				else if (S_ISLNK(entryStat.st_mode))
-				{
-					// Copy symbolic link
-					SymbolicLink *symbolicLink = new SymbolicLink(entry->d_name, directory->getOwnFilesPath(), entryStat.st_mtime, nullptr, entryPath, entryPath.substr(0, entryPath.find_last_of('/') - 1));
-					directory->addFile(symbolicLink);
-				}
 			}
 		}
 		closedir(copiedDir);
@@ -409,11 +403,6 @@ namespace
 			Directory *directory = copyDirectory(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
 			shell.getCurrentDirectory()->addFile(directory);
 		}
-		else if (S_ISLNK(sourceStat.st_mode))
-		{
-			SymbolicLink *symbolicLink = new SymbolicLink(fileName, shell.getCurrentDirectory()->getOwnFilesPath(), sourceStat.st_mtime, nullptr, source, source.substr(0, source.find_last_of('/') - 1));
-			shell.getCurrentDirectory()->addFile(symbolicLink);
-		}
 		shell.getCurrentDirectory()->setTime(time(nullptr));
 	}
 }
@@ -442,8 +431,7 @@ namespace Executor
 		if (file == nullptr)
 			onlyAddToDirectory(shell, source, fileName, sourceStat);
 		else if ((dynamic_cast<Directory *>(file) && !S_ISDIR(sourceStat.st_mode)) ||
-				 (dynamic_cast<RegularFile *>(file) && !S_ISREG(sourceStat.st_mode)) ||
-				 (dynamic_cast<SymbolicLink *>(file) && !S_ISLNK(sourceStat.st_mode)))
+				 (dynamic_cast<RegularFile *>(file) && !S_ISREG(sourceStat.st_mode)))
 		{
 			throw runtime_error("cp: cannot copy '" + source + "' -- '" + fileName + "' : File exists");
 		}
@@ -456,12 +444,14 @@ namespace Executor
 	}
 }
 
+// copy isLNK SAÇMALIK VAR
 // @brief optimazsion probs in here
 namespace Executor
 {
-	void link(const Shell &shell, const string &source, const string &dest)
+	void	link(const Shell &shell, const string &source, const string &dest)
 	{
 		Directory		*destDirectory = nullptr;
+		Directory		*sourceDirectory = nullptr;
 		File			*sourceFile = nullptr;
 		File			*destFile = nullptr;
 		SymbolicLink	*symbolicLink = nullptr;
@@ -479,18 +469,11 @@ namespace Executor
 				throw invalid_argument("link: cannot create link '" + dest + "': File exists");
 			sourceFile = File::find<File>(shell, absSourcePath);
 			destDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absDestPath));
-			if (sourceFile == nullptr)
-			{
-				symbolicLink = new SymbolicLink(dest.substr(dest.find_last_of('/') + 1),
-												absDestPath.substr(0, absDestPath.find_last_of('/') + 1),
-												time(nullptr), nullptr, absSourcePath.substr(dest.find_last_of('/') + 1),
-												absSourcePath.substr(0, absSourcePath.find_last_of('/') + 1));
-			}
-			else
-				symbolicLink = new SymbolicLink(dest.substr(dest.find_last_of('/') + 1),
-												absDestPath.substr(0, absDestPath.find_last_of('/') + 1),
-												time(nullptr), sourceFile, absSourcePath.substr(dest.find_last_of('/') + 1),
-												absSourcePath.substr(0, absSourcePath.find_last_of('/') + 1));
+			sourceDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absSourcePath));
+			std::cout << "source file null" << std::endl;
+			symbolicLink = new SymbolicLink(absDestPath.substr(absDestPath.find_last_of('/') + 1)
+										,destDirectory->getOwnFilesPath(), time(nullptr),sourceFile,
+										absSourcePath.substr(absSourcePath.find_last_of('/') + 1), sourceDirectory->getOwnFilesPath());
 			// root trick sonra bak!
 			destDirectory->addFile(symbolicLink);
 			destDirectory->setTime(time(nullptr));
