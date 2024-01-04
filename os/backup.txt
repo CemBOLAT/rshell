@@ -1,8 +1,8 @@
-Time: 1704373704
+Time: 1704386354
 Type: Directory
 Name: gtu
 Path: /
-Time: 1704289235
+Time: 1704385674
 Type: Directory
 Name: cse
 Path: /gtu/
@@ -10,78 +10,98 @@ Time: 1704289277
 Type: Directory
 Name: CSE101
 Path: /gtu/cse/
-Time: 1704289249
+Time: 1704385703
+Type: Directory
+Name: notes
+Path: /gtu/cse/CSE101/
+Time: 1704385360
+Type: Regular
+Name: notes
+Path: /gtu/cse/CSE101/notes/
+Time: 1704299052
+Content: NAME := myShell
+SRCS := ./src/main.cpp \
+		./src/Shell.cpp \
+		./src/File.cpp \
+		./src/Directory.cpp \
+		./src/RegularFile.cpp \
+		./src/LoadFile.cpp \
+		./src/Utils.cpp \
+		./src/Executor.cpp \
+		./src/SaveFile.cpp \
+		./src/TextEngine.cpp \
+		./src/SymbolicLink.cpp \
+
+OBJS := ./obj/main.o \
+		./obj/Shell.o \
+		./obj/File.o \
+		./obj/Directory.o \
+		./obj/RegularFile.o \
+		./obj/LoadFile.o \
+		./obj/Utils.o \
+		./obj/Executor.o \
+		./obj/SaveFile.o \
+		./obj/TextEngine.o \
+		./obj/SymbolicLink.o \
+
+CXX := g++
+CXXFLAGS := -std=c++11 -pedantic -g #-Wall -Wextra -Werror -I./include
+
+all : $(NAME)
+
+$(NAME) : $(OBJS) $(Header)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+
+$(OBJS) : ./obj/%.o : ./src/%.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+clean :
+	rm -f $(OBJS)
+
+fclean : clean
+	rm -f $(NAME)
+
+re : fclean all
+
+.PHONY : all clean fclean re
+Type: Link
+Name: linkedNotes
+Path: /gtu/cse/CSE101/
+Time: 1704385703
+Link: /gtu/cse/CSE101/notes/
+LinkedName: notes
 Type: Directory
 Name: CSE102
 Path: /gtu/cse/
-Time: 1704289255
+Time: 1704385192
+Type: Directory
+Name: notes
+Path: /gtu/cse/CSE102/
+Time: 1704385233
+Type: Directory
+Name: midterm
+Path: /gtu/cse/CSE102/notes/
+Time: 1704385233
 Type: Directory
 Name: CSE107
 Path: /gtu/cse/
-Time: 1704289267
+Time: 1704385261
+Type: Directory
+Name: labNotes
+Path: /gtu/cse/CSE107/
+Time: 1704385261
 Type: Directory
 Name: CSE108
 Path: /gtu/cse/
-Time: 1704289277
+Time: 1704385272
 Type: Directory
-Name: family
-Path: /
-Time: 1704288489
-Type: Directory
-Name: ssn
-Path: /
-Time: 1704299052
+Name: labNotes
+Path: /gtu/cse/CSE108/
+Time: 1704385272
 Type: Regular
-Name: cemla
-Path: /ssn/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Directory
-Name: hobies
-Path: /
-Time: 1704299052
-Type: Regular
-Name: cemla
-Path: /hobies/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Directory
-Name: here
-Path: /
-Time: 1704301850
-Type: Regular
-Name: cemla
-Path: /here/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Directory
-Name: here
-Path: /here/
-Time: 1704299052
-Type: Regular
-Name: cemla
-Path: /here/here/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Regular
-Name: makefile
-Path: /here/
+Name: cemal
+Path: /gtu/
 Time: 1704299052
 Content: NAME := myShell
 SRCS := ./src/main.cpp \
@@ -130,47 +150,29 @@ re : fclean all
 
 .PHONY : all clean fclean re
 Type: Directory
-Name: aswellhere
+Name: family
 Path: /
-Time: 1704302015
+Time: 1704288489
+Type: Directory
+Name: ssn
+Path: /
+Time: 1704390265
 Type: Regular
 Name: cemla
-Path: /aswellhere/
+Path: /ssn/
 Time: 1704299052
 Content: total 0
 drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
 drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
 -rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
 -rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Directory
-Name: linking
-Path: /
-Time: 1704302077
-Type: Regular
-Name: cemla
-Path: /linking/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Regular
-Name: here
-Path: /linking/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Directory
-Name: ls
-Path: /
-Time: 1704373608
 Type: Link
-Name: dd
-Path: /
-Time: 1704373699
+Name: linkedGtu
+Path: /ssn/
+Time: 1704385645
 Link: /
-LinkedName: asdas
+LinkedName: gtu
+Type: Directory
+Name: shoeN
+Path: /ssn/
+Time: 1704390265

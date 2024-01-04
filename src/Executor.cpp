@@ -86,6 +86,8 @@ namespace Executor
 		try
 		{
 			string absPath = Utils::relPathToAbsPath(shell, fileName);
+			if (absPath == "/")
+				throw runtime_error("cat: " + fileName + ": Is a directory");
 			filePtr = File::find<File>(shell, absPath);
 			if (filePtr == nullptr)
 				throw invalid_argument("cat: " + fileName + ": No such file or directory");
@@ -111,18 +113,16 @@ namespace Executor
 			throw runtime_error("rm: " + fileName + ": Is a directory");
 		try
 		{
-			string absPath = Utils::relPathToAbsPath(shell, fileName);
+			string	absPath = Utils::relPathToAbsPath(shell, fileName);
+			if (absPath == "/")
+				throw runtime_error("rm: cannot remove '" + fileName + "': Is a directory");
 			filePtr = File::find<File>(shell, absPath);
-			if (absPath[absPath.size() - 1] == '/')
-			{
-				absPath = absPath.substr(0, absPath.size() - 1);
-			}
 			parentDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absPath));
 			if (filePtr == nullptr)
 				throw invalid_argument("rm: cannot remove '" + fileName + "': No such file or directory");
 			if (dynamic_cast<Directory *>(filePtr))
 				throw invalid_argument("rm: cannot remove '" + fileName + "': Is a directory");
-			parentDirectory->removeFile<File>(filePtr->getName());
+			parentDirectory->removeFile(filePtr->getName());
 			parentDirectory->setTime(time(nullptr));
 		}
 		catch (const invalid_argument &e)
@@ -145,16 +145,11 @@ namespace Executor
 		try
 		{
 			string absPath = Utils::relPathToAbsPath(shell, fileName);
-			if (absPath[absPath.size() - 1] == '/')
-			{
-				absPath = absPath.substr(0, absPath.size() - 1);
-			}
-
+			if (absPath == "/")
+				throw runtime_error("mkdir: cannot create directory '" + fileName + "': File exists");
 			string pPath = Utils::getParentPathOfAbsPath(absPath);
-			if (pPath[pPath.size() - 1] == '/')
-			{
-				pPath = pPath.substr(0, pPath.size() - 1);
-			}
+			if (pPath == "/")
+				pPath = "";
 
 			directory = File::find<File>(shell, absPath);
 			parentDirectory = File::find<Directory>(shell, pPath);
@@ -422,7 +417,7 @@ namespace Executor
 		{
 			throw std::runtime_error("cp: source file '" + source + "' does not exist");
 		}
-		std::cout << "path : " << shell.getCurrentDirectory()->getOwnFilesPath() + fileName << std::endl;
+		//std::cout << "path : " << shell.getCurrentDirectory()->getOwnFilesPath() + fileName << std::endl;
 		file = File::find<File>(shell, shell.getCurrentDirectory()->getOwnFilesPath() + fileName);
 		if (S_ISREG(sourceStat.st_mode) && sourceStat.st_size + Utils::getProgramSize(shell.getRoot()) > shell.getOsSize())
 			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
@@ -437,7 +432,7 @@ namespace Executor
 		}
 		else
 		{
-			shell.getCurrentDirectory()->removeFile<File>(fileName);
+			shell.getCurrentDirectory()->removeFile(fileName);
 			onlyAddToDirectory(shell, source, fileName, sourceStat);
 		}
 		shell.getCurrentDirectory()->setTime(time(nullptr));
@@ -470,7 +465,8 @@ namespace Executor
 			sourceFile = File::find<File>(shell, absSourcePath);
 			destDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absDestPath));
 			sourceDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absSourcePath));
-			std::cout << "source file null" << std::endl;
+			//std::cout << "source : " << absSourcePath << std::endl;
+			//std::cout << "dest : " << absDestPath << std::endl;
 			symbolicLink = new SymbolicLink(absDestPath.substr(absDestPath.find_last_of('/') + 1)
 										,destDirectory->getOwnFilesPath(), time(nullptr),sourceFile,
 										absSourcePath.substr(absSourcePath.find_last_of('/') + 1), sourceDirectory->getOwnFilesPath());

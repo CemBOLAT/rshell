@@ -22,8 +22,6 @@ class Directory : public File {
 		virtual void		save(ostream &os) const override;
 		virtual void		cat() const override;
 
-
-		template <typename T>
 		void				removeFile(const string &name);
 	private:
 		string			ownFilesPath;

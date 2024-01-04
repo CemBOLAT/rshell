@@ -16,55 +16,10 @@ Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
 	if (!file.is_open())
 		throw std::runtime_error("filesystem.txt not found");
 	timeStr = Utils::getContent(file);
-	timeT = std::stol(timeStr);
+	timeT = std::stoi(timeStr);
 	this->root = new Directory("/", timeT, "/");
 	this->currentDirectory = this->root;
 	file.close();
-}
-
-Shell::~Shell()
-{
-	Utils::terminate(this->root);
-}
-
-const string Shell::getFileSystemPath() const
-{
-	return Shell::fileSystemPath;
-}
-
-bool Shell::isTerminated() const
-{
-	return this->isTerminating;
-}
-
-void Shell::setTerminated(bool isTerminated)
-{
-	this->isTerminating = isTerminated;
-}
-
-void Shell::setPrompt(const string &prompt)
-{
-	this->prompt = prompt;
-}
-
-string Shell::getPrompt() const
-{
-	return this->prompt;
-}
-
-Directory *Shell::getRoot() const
-{
-	return this->root;
-}
-
-Directory *Shell::getCurrentDirectory() const
-{
-	return this->currentDirectory;
-}
-
-void Shell::setCurrentDirectory(Directory *directory)
-{
-	this->currentDirectory = directory;
 }
 
 void Shell::execute(string command)

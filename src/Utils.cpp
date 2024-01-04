@@ -101,45 +101,47 @@ namespace Utils
 		{
 			trim(line);
 			data += line;
-			if (line[line.size() - 1] == static_cast<char>(3))
+			if (!line.empty() && line[line.size() - 1] == static_cast<char>(3))
 			{
 				break;
 			}
 			data += "\n";
 		}
-		line += static_cast<char>(3) + '\0';
+		line += static_cast<char>(3);
 		return data;
 	}
 	// Precondition: path is a string
 	// Postcondition: returns the absolute path of path
 	string	relPathToAbsPath(const Shell &shell, const std::string &path)
 	{
-		if (path[0] == '/'){
-			return path;
-		}
-		if (shell.getCurrentDirectory() == shell.getRoot()){ // current directory is root
-			if (path[0] == '.' && path[1] == '.'){ // special condtion for parent directory of root (../ is root)
-				return "/" + path.substr(3, path.size() - 1);
+		string	relPathToAbsPath = shell.getCurrentDirectory()->getOwnFilesPath() + "/" + path;
+		vector<string>	relPathToAbsPathSplit = Utils::split(relPathToAbsPath, '/');
+		vector<string>	relPathToAbsPathSplitTmp;
+		if (relPathToAbsPathSplit.size() == 0)
+			return "/";
+		for (auto &path : relPathToAbsPathSplit)
+		{
+			//std::cout << path << std::endl;
+			if (path == ".")
+				continue;
+			else if (path == "..")
+			{
+				if (relPathToAbsPathSplitTmp.size() > 0)
+					relPathToAbsPathSplitTmp.pop_back();
 			}
-			else if (path[0] == '.'){ // path for current directory of root (./ is root)
-				return "/" + path.substr(2, path.size() - 1);
-			}
-			else{ // path for child directory of root
-				return "/" + path;
-			}
+			else
+				relPathToAbsPathSplitTmp.push_back(path);
 		}
-		if ((path[0] == '.' && path[1] == '/') ||  path[0] != '.'){ // path for child directory of current directory
-			if (path[0] == '.')
-				return shell.getCurrentDirectory()->getOwnFilesPath() + path.substr(2, path.size() - 1);
-			return shell.getCurrentDirectory()->getOwnFilesPath() + path;
+		relPathToAbsPath = "";
+		for (auto &path : relPathToAbsPathSplitTmp)
+		{
+			relPathToAbsPath += "/" + path;
 		}
-		if (path[0] == '.' && path[1] == '.' && path[2] == '/'){ // path for parent directory of current directory
-			return shell.getCurrentDirectory()->getParentDirectory()->getOwnFilesPath() + path.substr(3, path.size() - 1);
-		}
-		return "";
+		if (relPathToAbsPath == "")
+			relPathToAbsPath = "/";
+		return relPathToAbsPath;
 	}
-	// Precondition: path is a string
-	// Postcondition: returns the parent path of path
+
 	string getParentPathOfAbsPath(const string &absPath)
 	{
 		size_t found = absPath.find_last_of('/');

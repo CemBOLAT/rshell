@@ -29,7 +29,7 @@ void	SymbolicLink::print(ostream& os, size_t maxLen) const
 	Utils::TextEngine::reset();
 	Utils::TextEngine::yellow();
 	Utils::TextEngine::bold();
-	os << this->getName() << " -> " << this->getLinkedName();
+	os << this->getName() << " -> " << this->getLinkedPath() + this->getLinkedName();
 	Utils::TextEngine::reset();
 
 	os << endl;

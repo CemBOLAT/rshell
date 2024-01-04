@@ -66,5 +66,5 @@ void RegularFile::save(std::ostream &file) const
 
 void RegularFile::cat() const
 {
-	std::cout << getData() << std::endl;
+	cout << getData() << std::endl;
 }

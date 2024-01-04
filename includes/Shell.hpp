@@ -2,6 +2,7 @@
 # define SHELL_HPP
 
 #include "RegularFile.hpp"
+#include "Utils.hpp"
 
 class Directory;
 
@@ -10,20 +11,21 @@ class Shell {
 		Shell();
 		Shell(const Shell& shell) = default;
 		Shell&	operator=(const Shell& shell) = default;
-		virtual	~Shell();
 
-		bool			isTerminated() const;
-		void			setTerminated(bool isTerminated);
+		~Shell() { Utils::terminate(this->root); }
 
-		void			setPrompt(const string& prompt);
-		string			getPrompt() const;
+		bool			isTerminated() const { return this->isTerminating; }
+		void			setTerminated(bool isTerminated) { this->isTerminating = isTerminated; }
 
-		const string	getFileSystemPath() const;
+		void			setPrompt(const string& prompt) { this->prompt = prompt;}
+		string			getPrompt() const { return this->prompt; }
 
-		Directory*		getCurrentDirectory() const;
-		void			setCurrentDirectory(Directory* directory);
+		const string	getFileSystemPath() const { return Shell::fileSystemPath; }
 
-		Directory*		getRoot() const;
+		Directory*		getCurrentDirectory() const { return this->currentDirectory; }
+		void			setCurrentDirectory(Directory* directory) { this->currentDirectory = directory; }
+
+		Directory*		getRoot() const { return this->root; }
 		void			execute(string command);
 
 		size_t			getOsSize() const { return osSize; }
