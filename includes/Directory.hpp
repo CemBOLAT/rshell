@@ -12,16 +12,15 @@ class Directory : public File {
 		Directory&	operator=(const Directory& dir) = default;
 		virtual				~Directory();
 
-		vector<File*>		getFiles() const;
+		vector<File*>		getFiles() const { return this->files; }
 		Directory*			getDirectory(const string &name) const;
 		void				addFile(File* file);
-		Directory*			getParentDirectory() const;
-		void				setParentDirectory(Directory* parentDirectory);
-		string				getOwnFilesPath() const;
+		Directory*			getParentDirectory() const { return this->parentDirectory; }
+		void				setParentDirectory(Directory* parentDirectory) { this->parentDirectory = parentDirectory; }
+		string				getOwnFilesPath() const { return this->ownFilesPath; }
 		virtual void		print(ostream& os, size_t maxLen) const override;
 		virtual void		save(ostream &os) const override;
 		virtual void		cat() const override;
-
 		void				removeFile(const string &name);
 	private:
 		string			ownFilesPath;

@@ -17,9 +17,9 @@
 
 namespace
 {
-	void listOnlyCurrentDirectory(ostream &os, const Shell &shell, size_t maxNameLength)
+	void listOnlyCurrentDirectory(ostream &os, const Directory *dir, size_t maxNameLength)
 	{
-		time_t rawtime = shell.getCurrentDirectory()->getTime();
+		time_t rawtime = dir->getTime();
 		struct tm *timeinfo = std::localtime(&rawtime);
 
 		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << "."
@@ -27,9 +27,9 @@ namespace
 		Utils::printTime(os, timeinfo) << std::endl;
 	}
 
-	void listSpecialDirectories(ostream &os, const Shell &shell, size_t maxNameLength)
+	void listSpecialDirectories(ostream &os, const Directory *dir, size_t maxNameLength)
 	{
-		time_t		rawtime = shell.getCurrentDirectory()->getParentDirectory()->getTime();
+		time_t		rawtime = dir->getParentDirectory()->getTime();
 		struct tm	*timeinfo = std::localtime(&rawtime);
 
 		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << ".."
@@ -38,30 +38,45 @@ namespace
 	}
 }
 
-namespace Executor
-{
-	void ls(const Shell &Shell)
+namespace {
+	size_t getMaxNameLength(const vector<File *> &files)
 	{
-		Directory *currentDirectory = Shell.getCurrentDirectory();
-		vector<File *> files = currentDirectory->getFiles();
-		size_t maxNameLength = 0;
-
+		size_t maxNameLength = 2; // . ve .. için
 		for (File *file : files)
 		{
-			if (file->getName().size() > maxNameLength)
+			if (file->getName().length() > maxNameLength)
 				maxNameLength = file->getName().length();
 		}
-		listOnlyCurrentDirectory(cout, Shell, maxNameLength);
-		if (Shell.getCurrentDirectory() != Shell.getRoot())
-		{
-			listSpecialDirectories(cout, Shell, maxNameLength);
-		}
-		if (files.empty())
-			return;
+		return maxNameLength;
+	}
+}
 
+namespace Executor
+{
+	void ls(const Directory *directory, const Shell &Shell, const string &option)
+	{
+		vector<File *>	files = directory->getFiles();
+		size_t			maxNameLength = getMaxNameLength(files);
+		listOnlyCurrentDirectory(cout, directory, maxNameLength);
+		if (directory != Shell.getRoot())
+			listSpecialDirectories(cout, directory, maxNameLength);
 		for (File *file : files)
-		{
 			file->print(cout, maxNameLength);
+		if (option == "-R")
+		{
+			for (File *file : files)
+			{
+				if (dynamic_cast<Directory *>(file))
+				{
+					Directory *directory = dynamic_cast<Directory *>(file);
+					cout << "\n";
+					Utils::TextEngine::greenBackground();
+					cout << (directory->getPath() + directory->getName()) << ":";
+					Utils::TextEngine::reset();
+					cout << endl;
+					ls(directory, Shell, option);
+				}
+			}
 		}
 	}
 }
@@ -78,7 +93,7 @@ namespace Executor
 			throw runtime_error("cat: " + fileName + ": Is a directory");
 		try
 		{
-			string absPath = Utils::relPathToAbsPath(shell, fileName);
+			string	absPath = Utils::relPathToAbsPath(shell, fileName);
 			if (absPath == "/")
 				throw runtime_error("cat: " + fileName + ": Is a directory");
 			filePtr = File::find<File>(shell, absPath);
@@ -129,8 +144,8 @@ namespace Executor
 {
 	void mkdir(const Shell &shell, const string &fileName)
 	{
-		File *directory = nullptr;
-		Directory *parentDirectory = nullptr;
+		File		*directory = nullptr;
+		Directory	*parentDirectory = nullptr;
 		if (fileName.empty())
 			throw runtime_error("mkdir: missing operand");
 		else if (fileName == "." || fileName == "..")
@@ -143,7 +158,6 @@ namespace Executor
 			string pPath = Utils::getParentPathOfAbsPath(absPath);
 			if (pPath == "/")
 				pPath = "";
-
 			directory = File::find<File>(shell, absPath);
 			parentDirectory = File::find<Directory>(shell, pPath);
 			if (directory != nullptr)
@@ -167,39 +181,13 @@ namespace Executor
 	}
 }
 
-namespace
+namespace Executor
 {
-	void changeDir(Shell &shell, const string &directoryName)
+	void	cd(Shell &shell, const string &directoryName)
 	{
 		Directory *directory = nullptr;
 		if (directoryName.empty())
-			throw runtime_error("cd: missing operand");
-		else if (directoryName == "." || directoryName == "..")
-			throw runtime_error("cd: " + directoryName + ": Not a directory");
-		try
-		{
-			string	pPath = Utils::relPathToAbsPath(shell, directoryName);
-			directory = File::find<Directory>(shell, pPath);
-			if (directory == nullptr)
-				throw invalid_argument("cd: " + directoryName + ": No such file or directory");
-			shell.setCurrentDirectory(directory);
-		}
-		catch (const invalid_argument &e)
-		{
-			throw e;
-		}
-	}
-}
-
-namespace Executor
-{
-	// path bir kısmı düzgün sadece ./a/../b/ vs yok
-	void cd(Shell &shell, const string &directoryName)
-	{
-		if (directoryName.empty())
-		{
 			shell.setCurrentDirectory(shell.getRoot());
-		}
 		else if (directoryName == ".")
 			return;
 		else if (directoryName == "..")
@@ -212,56 +200,14 @@ namespace Executor
 		{
 			try
 			{
-				changeDir(shell, directoryName);
+				string pPath = Utils::relPathToAbsPath(shell, directoryName);
+				directory = File::find<Directory>(shell, pPath);
+				if (directory == nullptr)
+					throw invalid_argument("cd: " + directoryName + ": No such file or directory");
+				shell.setCurrentDirectory(directory);
 			}
-			catch (const runtime_error &e)
-			{
+			catch (const invalid_argument &e){
 				throw e;
-			}
-			catch (const invalid_argument &e)
-			{
-				throw e;
-			}
-		}
-	}
-}
-
-namespace Executor
-{
-	void lsRecursive(const Directory *directory, const Shell &Shell)
-	{
-		vector<File *> files = directory->getFiles();
-		size_t maxNameLength = 0;
-		for (File *file : files)
-		{
-			if (file->getName().length() > maxNameLength)
-				maxNameLength = file->getName().length();
-		}
-		if (maxNameLength < 2)
-			maxNameLength = 2;
-		if (directory->getPath() + directory->getName() != "//")
-		{
-			listSpecialDirectories(cout, Shell, maxNameLength);
-		}
-		else
-		{
-			listOnlyCurrentDirectory(cout, Shell, maxNameLength);
-		}
-		for (File *file : files)
-		{
-			file->print(cout, maxNameLength);
-		}
-		for (File *file : files)
-		{
-			if (dynamic_cast<Directory *>(file))
-			{
-				Directory *directory = dynamic_cast<Directory *>(file);
-				cout << "\n";
-				Utils::TextEngine::greenBackground();
-				cout << "." << directory->getPath() + directory->getName() << ":"; // burası düzgün değil gibi absolute vermeli sadece relative veriyor
-				Utils::TextEngine::reset();
-				cout << endl;
-				lsRecursive(directory, Shell);
 			}
 		}
 	}
@@ -401,8 +347,8 @@ namespace Executor
 	void cp(const Shell &shell, const string &source, const string &fileName)
 	{
 
-		struct stat sourceStat;
-		File *file = nullptr;
+		struct stat	sourceStat;
+		File		*file = nullptr;
 
 		if (source.empty() || fileName.empty())
 			throw runtime_error("cp: missing operand");
@@ -410,7 +356,6 @@ namespace Executor
 		{
 			throw std::runtime_error("cp: source file '" + source + "' does not exist");
 		}
-		//std::cout << "path : " << shell.getCurrentDirectory()->getOwnFilesPath() + fileName << std::endl;
 		file = File::find<File>(shell, shell.getCurrentDirectory()->getOwnFilesPath() + fileName);
 		if (S_ISREG(sourceStat.st_mode) && sourceStat.st_size + Utils::getProgramSize(shell.getRoot()) > shell.getOsSize())
 			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
@@ -432,7 +377,6 @@ namespace Executor
 	}
 }
 
-// copy isLNK SAÇMALIK VAR
 // @brief optimazsion probs in here
 namespace Executor
 {
@@ -443,9 +387,9 @@ namespace Executor
 		File			*sourceFile = nullptr;
 		File			*destFile = nullptr;
 		SymbolicLink	*symbolicLink = nullptr;
-
-		string		absSourcePath = Utils::relPathToAbsPath(shell, source);
-		string		absDestPath = Utils::relPathToAbsPath(shell, dest);
+		
+		string			absSourcePath = Utils::relPathToAbsPath(shell, source);
+		string			absDestPath = Utils::relPathToAbsPath(shell, dest);
 		if (dest.empty() || source.empty())
 			throw runtime_error("link: missing operand");
 		else if (dest == "." || dest == "..")
@@ -458,15 +402,11 @@ namespace Executor
 			sourceFile = File::find<File>(shell, absSourcePath);
 			destDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absDestPath));
 			sourceDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absSourcePath));
-			//std::cout << "source : " << absSourcePath << std::endl;
-			//std::cout << "dest : " << absDestPath << std::endl;
 			symbolicLink = new SymbolicLink(absDestPath.substr(absDestPath.find_last_of('/') + 1)
 										,destDirectory->getOwnFilesPath(), time(nullptr),sourceFile,
 										absSourcePath.substr(absSourcePath.find_last_of('/') + 1), sourceDirectory->getOwnFilesPath());
-			// root trick sonra bak!
 			destDirectory->addFile(symbolicLink);
-			//destDirectory->setTime(time(nullptr));
-			sourceFile = File::find<RegularFile>(shell, absSourcePath); // super saçma bir hata var burda
+			//sourceFile = File::find<RegularFile>(shell, absSourcePath); // super saçma bir hata var burda
 		}
 		catch (const invalid_argument &e)
 		{

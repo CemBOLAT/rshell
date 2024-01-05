@@ -10,7 +10,7 @@ const std::string Shell::fileSystemPath = "./os/filesystem.txt";
 
 Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
 {
-	std::ifstream	file(Shell::fileSystemPath);
+	std::ifstream	file(fileSystemPath);
 	time_t			timeT;
 	string			timeStr;
 	if (!file.is_open())
@@ -33,19 +33,15 @@ void Shell::execute(string command)
 	if (commandName == "exit")
 	{
 		this->setTerminated(true);
-		SaveFile::save("./os/backup.txt", *this);
+		SaveFile::save(Shell::getFileSystemPath(), *this);
 		return;
 	}
 	else if (commandName == "ls") // bu kısımlara baK
 	{
-		if (commandArgument == "-R"){
-			Executor::lsRecursive(getCurrentDirectory(), *this);
-		}
-		else if (commandArgument != ""){
-			throw runtime_error("ls: invalid option for cemalBolatShell -- '" + commandArgument + "'");
-		}
+		if (commandArgument == "-R" || commandArgument == "")
+			Executor::ls(getCurrentDirectory(), *this, commandArgument);
 		else
-			Executor::ls(*this);
+			throw runtime_error("ls: invalid option for cemalBolatShell -- '" + commandArgument + "'");
 		return;
 	}
 	else if (commandName == "cat")
@@ -118,5 +114,4 @@ void Shell::execute(string command)
 	}
 	else
 		throw runtime_error("cemalBolatShell: " + commandName + ": command not found");
-
 }

@@ -35,26 +35,6 @@ void	SymbolicLink::print(ostream& os, size_t maxLen) const
 	os << endl;
 }
 
-File*	SymbolicLink::getLink() const
-{
-	return this->link;
-}
-
-string	SymbolicLink::getLinkedName() const
-{
-	return this->linkedName;
-}
-
-void	SymbolicLink::setLink(File* link)
-{
-	this->link = link;
-}
-
-string	SymbolicLink::getLinkedPath() const
-{
-	return this->linkPath;
-}
-
 void	SymbolicLink::save(std::ostream &file) const {
 	file << "Type: Link" << std::endl;
 	file << "Name: " << getName() << std::endl;

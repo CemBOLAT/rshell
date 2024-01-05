@@ -164,9 +164,7 @@ namespace Utils
 		for (auto file : directory->getFiles())
 		{
 			if (dynamic_cast<Directory *>(file))
-			{
 				terminate(dynamic_cast<Directory *>(file)); // recursive call
-			}
 			else
 			{
 				delete file;
@@ -176,8 +174,7 @@ namespace Utils
 		delete directory;
 		directory = nullptr;
 	}
-} // namespace Utils
-
+}
 
 namespace Utils
 {
@@ -190,22 +187,15 @@ namespace Utils
 		for (auto file : directory->getFiles())
 		{
 			if (dynamic_cast<Directory *>(file))
-			{
 				size += getProgramSize(dynamic_cast<Directory *>(file)) + 15;
-			}
 			else if (dynamic_cast<RegularFile *>(file))
-			{
 				size += dynamic_cast<RegularFile *>(file)->getSizeBytes() + 15;
-			}
 			else
-			{
 				size += 15;
-			}
 		}
 		return size;
 	}
-} // namespace Utils
-
+}
 
 namespace Utils {
 	// Precondition: shell is a Shell

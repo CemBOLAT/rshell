@@ -21,16 +21,6 @@ ostream&	operator<<(ostream& os, const RegularFile& file)
 	return os;
 }
 
-size_t		RegularFile::getSizeBytes() const
-{
-	return this->sizeBytes;
-}
-
-string		RegularFile::getData() const
-{
-	return this->data;
-}
-
 void		RegularFile::copy(Directory *dir) const
 {
 	dir->addFile(new RegularFile(*this));

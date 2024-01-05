@@ -20,11 +20,6 @@ Directory::Directory(const string &name, time_t time, const string &path, Direct
 Directory::~Directory()
 {/*Body inintentionally left empty! */}
 
-vector<File*>	Directory::getFiles() const
-{
-	return this->files;
-}
-
 // hata dosya okumada sorun var
 Directory*	Directory::getDirectory(const string &name) const
 {
@@ -43,22 +38,6 @@ Directory*	Directory::getDirectory(const string &name) const
 void	Directory::addFile(File* file)
 {
 	this->files.push_back(file);
-}
-
-string	Directory::getOwnFilesPath() const
-{
-	return this->ownFilesPath;
-}
-
-// hata olabilir
-Directory*	Directory::getParentDirectory() const
-{
-	return this->parentDirectory;
-}
-
-void	Directory::setParentDirectory(Directory* parentDirectory)
-{
-	this->parentDirectory = parentDirectory;
 }
 
 void Directory::print(std::ostream &os, size_t maxLen) const

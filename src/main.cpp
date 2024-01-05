@@ -1,9 +1,8 @@
-#include <iostream>
 #include "../includes/Utils.hpp"
 #include "../includes/TextEngine.hpp"
 #include "../includes/LoadFile.hpp"
 #include "../includes/Shell.hpp"
-
+#include <iostream>
 
 int main(){
 
@@ -29,7 +28,10 @@ int main(){
 			}
 		}
 	} catch (const exception& e) {
-		cerr << e.what() << endl;
+		Utils::TextEngine::bold();
+		Utils::TextEngine::red();
+		cerr << e.what();
+		Utils::TextEngine::reset();
+		cout << endl;
 	}
-
 }

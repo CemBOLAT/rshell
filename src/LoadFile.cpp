@@ -28,7 +28,7 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file){
 	directory = File::find<Directory>(shell, path);
 
 	if (directory == nullptr)
-		throw runtime_error("Directory coouold not be found."); // not configrated
+		throw runtime_error("Filesystem may not be configrated ! "); // not configrated
 	directory->addFile(new RegularFile(name, data.size(), time_t_time, data, path));
 }
 
@@ -42,7 +42,6 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 
 	time_t time_t_time = stoi(time);
 
-
 	if (path == "/"){
 		parentDirectory = shell.getRoot();
 		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
@@ -54,7 +53,6 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
 	}
 }
-
 
 void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
 	string		name, path, time, linkPath, linkerName;
@@ -76,8 +74,6 @@ void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
 		throw runtime_error("Filesystem file is broken"); // not configrated
 	directory->addFile(new SymbolicLink(name, path, time_t_time, link, linkerName, linkPath));
 }
-
-
 
 void LoadFile::load(const std::string &path, Shell &shell){
 	ifstream file(path);

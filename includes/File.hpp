@@ -16,15 +16,12 @@ class File {
 		File&			operator=(const File& file) = default;
 		virtual			~File() = 0;
 
-		time_t			getTime() const;
-		time_t			setTime(const time_t &time);
+		time_t			getTime() const { return this->time; }
+		void			setTime(const time_t &time) { this->time = time; }
 
-		string			getName() const;
-		string			setName(const string &name);
-		string			getPath() const;
-		string			setPath(const string &path);
+		string			getName() const { return this->name; }
+		string			getPath() const { return this->path; }
 
-		friend ostream&	operator<<(ostream& os, const File& file);
 		virtual void	print(ostream& os, size_t maxLen) const = 0;
 		virtual void	save(ostream &os) const = 0;
 		virtual void	cat() const = 0;
@@ -32,7 +29,7 @@ class File {
 		template <typename T>
 		static T		*find(const Shell &shell, const string &name);
 	private:
-		string			name;
+		const string	name;
 		string 			path;
 		time_t			time;
 

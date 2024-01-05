@@ -12,8 +12,8 @@ class RegularFile : public File {
 		virtual				~RegularFile();
 
 
-		size_t				getSizeBytes() const;
-		string				getData() const;
+		size_t				getSizeBytes() const { return this->sizeBytes; }
+		string				getData() const { return this->data; }
 
 		void				copy(Directory *dir) const;
 		friend ostream&		operator<<(ostream& os, const RegularFile& file);
