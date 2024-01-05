@@ -22,6 +22,20 @@ class Directory : public File {
 		virtual void		save(ostream &os) const override;
 		virtual void		cat() const override;
 		void				removeFile(const string &name);
+
+		class Iterator {
+			public:
+				Iterator(const Directory* directory) : directory(directory), currentIndex(0) {}
+				bool				hasNext() const { return this->currentIndex < this->directory->getFiles().size(); }
+				File*				next() {
+					if (this->hasNext())
+						return this->directory->getFiles()[this->currentIndex++];
+					return nullptr;
+				}
+			private:
+				const Directory*	directory;
+				size_t				currentIndex;
+		};
 	private:
 		string			ownFilesPath;
 		vector<File*>	files;

@@ -83,3 +83,8 @@ void	Directory::removeFile(const string &name)
 		}
 	}
 }
+
+
+// ITERATOR
+
+

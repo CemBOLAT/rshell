@@ -114,9 +114,15 @@ namespace Utils
 	// Postcondition: returns the absolute path of path
 	string	relPathToAbsPath(const Shell &shell, const std::string &path)
 	{
-		string			relPathToAbsPath = shell.getCurrentDirectory()->getOwnFilesPath() + "/" + path;
-		vector<string>	relPathToAbsPathSplit = Utils::split(relPathToAbsPath, '/');
+		string			relPathToAbsPath;
+		vector<string>	relPathToAbsPathSplit;
 		vector<string>	relPathToAbsPathSplitTmp;
+		if (path[0] == '/')
+			relPathToAbsPathSplit = Utils::split(path, '/');
+		else
+		{
+			relPathToAbsPathSplit = Utils::split(shell.getCurrentDirectory()->getOwnFilesPath() + "/" + path, '/');
+		}
 		if (relPathToAbsPathSplit.size() == 0)
 			return "/";
 		for (auto &path : relPathToAbsPathSplit)

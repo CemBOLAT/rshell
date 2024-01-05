@@ -1,11 +1,15 @@
 #include "../includes/Utils.hpp"
+#include "../includes/Directory.hpp"
 #include <memory>
 
 template <typename T>
 T	*findTraverse(Directory *directory, const vector<string> &path)
 {
-	for (auto file : directory->getFiles())
+	Directory::Iterator it(directory);
+
+	while (it.hasNext())
 	{
+		File *file = it.next();
 		if (file->getName() == path[0])
 		{
 			if (path.size() == 1)
@@ -28,6 +32,7 @@ Directory	*File::find<Directory>(const Shell &shell, const string &path)
 	vector<string> paths = Utils::split(path, '/'); // **
 	if (paths.size() == 0)
 	{
+		std::cout << "root" << std::endl;
 		return shell.getRoot();
 	}
 	return (findTraverse<Directory>(shell.getRoot(), paths));

@@ -201,6 +201,10 @@ namespace Executor
 			try
 			{
 				string pPath = Utils::relPathToAbsPath(shell, directoryName);
+				if (pPath == "/"){
+					shell.setCurrentDirectory(shell.getRoot());
+					return;
+				}
 				directory = File::find<Directory>(shell, pPath);
 				if (directory == nullptr)
 					throw invalid_argument("cd: " + directoryName + ": No such file or directory");
@@ -387,7 +391,7 @@ namespace Executor
 		File			*sourceFile = nullptr;
 		File			*destFile = nullptr;
 		SymbolicLink	*symbolicLink = nullptr;
-		
+
 		string			absSourcePath = Utils::relPathToAbsPath(shell, source);
 		string			absDestPath = Utils::relPathToAbsPath(shell, dest);
 		if (dest.empty() || source.empty())
