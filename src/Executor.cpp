@@ -19,7 +19,7 @@ namespace
 {
 	void listOnlyCurrentDirectory(ostream &os, const Shell &shell, size_t maxNameLength)
 	{
-		time_t rawtime = shell.getRoot()->getTime();
+		time_t rawtime = shell.getCurrentDirectory()->getTime();
 		struct tm *timeinfo = std::localtime(&rawtime);
 
 		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << "."
@@ -29,12 +29,8 @@ namespace
 
 	void listSpecialDirectories(ostream &os, const Shell &shell, size_t maxNameLength)
 	{
-		time_t rawtime = shell.getCurrentDirectory()->getTime();
-		struct tm *timeinfo = std::localtime(&rawtime);
-
-		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << " ."
-		   << " ";
-		Utils::printTime(os, timeinfo) << std::endl;
+		time_t		rawtime = shell.getCurrentDirectory()->getParentDirectory()->getTime();
+		struct tm	*timeinfo = std::localtime(&rawtime);
 
 		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << ".."
 		   << " ";
@@ -55,13 +51,10 @@ namespace Executor
 			if (file->getName().size() > maxNameLength)
 				maxNameLength = file->getName().length();
 		}
+		listOnlyCurrentDirectory(cout, Shell, maxNameLength);
 		if (Shell.getCurrentDirectory() != Shell.getRoot())
 		{
 			listSpecialDirectories(cout, Shell, maxNameLength);
-		}
-		else
-		{
-			listOnlyCurrentDirectory(cout, Shell, maxNameLength);
 		}
 		if (files.empty())
 			return;
@@ -123,7 +116,7 @@ namespace Executor
 			if (dynamic_cast<Directory *>(filePtr))
 				throw invalid_argument("rm: cannot remove '" + fileName + "': Is a directory");
 			parentDirectory->removeFile(filePtr->getName());
-			parentDirectory->setTime(time(nullptr));
+			//parentDirectory->setTime(time(nullptr));
 		}
 		catch (const invalid_argument &e)
 		{
@@ -165,7 +158,7 @@ namespace Executor
 				directory = new Directory(name,
 										  time(nullptr), parentDirectory->getPath() + parentDirectory->getName() + "/", parentDirectory);
 			parentDirectory->addFile(directory);
-			parentDirectory->setTime(time(nullptr));
+			//parentDirectory->setTime(time(nullptr));
 		}
 		catch (const invalid_argument &e)
 		{
@@ -185,7 +178,7 @@ namespace
 			throw runtime_error("cd: " + directoryName + ": Not a directory");
 		try
 		{
-			string pPath = Utils::relPathToAbsPath(shell, directoryName);
+			string	pPath = Utils::relPathToAbsPath(shell, directoryName);
 			directory = File::find<Directory>(shell, pPath);
 			if (directory == nullptr)
 				throw invalid_argument("cd: " + directoryName + ": No such file or directory");
@@ -265,7 +258,7 @@ namespace Executor
 				Directory *directory = dynamic_cast<Directory *>(file);
 				cout << "\n";
 				Utils::TextEngine::greenBackground();
-				cout << "." << directory->getPath() + directory->getName() << ":";
+				cout << "." << directory->getPath() + directory->getName() << ":"; // burası düzgün değil gibi absolute vermeli sadece relative veriyor
 				Utils::TextEngine::reset();
 				cout << endl;
 				lsRecursive(directory, Shell);
@@ -398,7 +391,7 @@ namespace
 			Directory *directory = copyDirectory(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
 			shell.getCurrentDirectory()->addFile(directory);
 		}
-		shell.getCurrentDirectory()->setTime(time(nullptr));
+		//shell.getCurrentDirectory()->setTime(time(nullptr));
 	}
 }
 
@@ -435,7 +428,7 @@ namespace Executor
 			shell.getCurrentDirectory()->removeFile(fileName);
 			onlyAddToDirectory(shell, source, fileName, sourceStat);
 		}
-		shell.getCurrentDirectory()->setTime(time(nullptr));
+		//shell.getCurrentDirectory()->setTime(time(nullptr));
 	}
 }
 
@@ -472,7 +465,7 @@ namespace Executor
 										absSourcePath.substr(absSourcePath.find_last_of('/') + 1), sourceDirectory->getOwnFilesPath());
 			// root trick sonra bak!
 			destDirectory->addFile(symbolicLink);
-			destDirectory->setTime(time(nullptr));
+			//destDirectory->setTime(time(nullptr));
 			sourceFile = File::find<RegularFile>(shell, absSourcePath); // super saçma bir hata var burda
 		}
 		catch (const invalid_argument &e)
