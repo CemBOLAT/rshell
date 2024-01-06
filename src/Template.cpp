@@ -5,11 +5,8 @@
 template <typename T>
 T	*findTraverse(Directory *directory, const vector<string> &path)
 {
-	Directory::Iterator it(directory);
 
-	while (it.hasNext())
-	{
-		File *file = it.next();
+	for (auto file : directory->getFiles()){
 		if (file->getName() == path[0])
 		{
 			if (path.size() == 1)

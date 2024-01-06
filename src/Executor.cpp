@@ -142,7 +142,7 @@ namespace Executor
 
 namespace Executor
 {
-	void mkdir(const Shell &shell, const string &fileName)
+	void	mkdir(const Shell &shell, const string &fileName)
 	{
 		File		*directory = nullptr;
 		Directory	*parentDirectory = nullptr;
@@ -160,8 +160,13 @@ namespace Executor
 				pPath = "";
 			directory = File::find<File>(shell, absPath);
 			parentDirectory = File::find<Directory>(shell, pPath);
-			if (directory != nullptr)
-				throw invalid_argument("mkdir: cannot create directory '" + fileName + "': File exists");
+			if (directory != nullptr){
+				if (dynamic_cast<Directory *>(directory))
+					parentDirectory->removeFile(absPath.substr(absPath.find_last_of('/') + 1));
+				else
+					throw invalid_argument("mkdir: cannot create directory '" + fileName + "': File exists");
+				return;
+			}
 			else if (parentDirectory == nullptr)
 				throw invalid_argument("mkdir: cannot create directory '" + fileName + "': No such file or directory");
 			string name = absPath.substr(absPath.find_last_of('/') + 1);
@@ -172,7 +177,6 @@ namespace Executor
 				directory = new Directory(name,
 										  time(nullptr), parentDirectory->getPath() + parentDirectory->getName() + "/", parentDirectory);
 			parentDirectory->addFile(directory);
-			//parentDirectory->setTime(time(nullptr));
 		}
 		catch (const invalid_argument &e)
 		{
@@ -361,9 +365,9 @@ namespace Executor
 			throw std::runtime_error("cp: source file '" + source + "' does not exist");
 		}
 		file = File::find<File>(shell, shell.getCurrentDirectory()->getOwnFilesPath() + fileName);
-		if (S_ISREG(sourceStat.st_mode) && sourceStat.st_size + Utils::getProgramSize(shell.getRoot()) > shell.getOsSize())
+		if (S_ISREG(sourceStat.st_mode) && sourceStat.st_size + Utils::getProgramSize(shell) > shell.getOsSize())
 			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
-		if (S_ISDIR(sourceStat.st_mode) && getDirectorySize(sourceStat, source) + Utils::getProgramSize(shell.getRoot()) > shell.getOsSize())
+		if (S_ISDIR(sourceStat.st_mode) && getDirectorySize(sourceStat, source) + Utils::getProgramSize(shell) > shell.getOsSize())
 			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
 		if (file == nullptr)
 			onlyAddToDirectory(shell, source, fileName, sourceStat);
@@ -377,7 +381,6 @@ namespace Executor
 			shell.getCurrentDirectory()->removeFile(fileName);
 			onlyAddToDirectory(shell, source, fileName, sourceStat);
 		}
-		//shell.getCurrentDirectory()->setTime(time(nullptr));
 	}
 }
 

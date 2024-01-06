@@ -77,14 +77,10 @@ void	Directory::removeFile(const string &name)
 	{
 		if ((*it)->getName() == name)
 		{
-			delete *it;
+			if (dynamic_cast<Directory*>(*it))
+				Utils::terminate(dynamic_cast<Directory*>(*it));
 			this->files.erase(it);
 			return;
 		}
 	}
 }
-
-
-// ITERATOR
-
-

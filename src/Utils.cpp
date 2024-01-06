@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <vector>
 #include <sstream>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -187,19 +188,11 @@ namespace Utils
 	// Precondition: directory is a Directory
 	// Postcondition: returns the size of directory recursively
 	// Note: size of directory is the sum of size of its files and its subdirectories recursively + 15 is the size of saving system information
-	size_t getProgramSize(const Directory *directory)
+	size_t getProgramSize(const Shell &Shell)
 	{
-		size_t size = 0;
-		for (auto file : directory->getFiles())
-		{
-			if (dynamic_cast<Directory *>(file))
-				size += getProgramSize(dynamic_cast<Directory *>(file)) + 15;
-			else if (dynamic_cast<RegularFile *>(file))
-				size += dynamic_cast<RegularFile *>(file)->getSizeBytes() + 15;
-			else
-				size += 15;
-		}
-		return size;
+		struct stat	st;
+		stat(Shell.getFileSystemPath().c_str(), &st);
+		return st.st_size;
 	}
 }
 
@@ -216,6 +209,7 @@ namespace Utils {
 			}
 			else if (dynamic_cast<Directory *>(file) != nullptr){ // if file is a directory then recursive call
 				Directory *dir = dynamic_cast<Directory *>(file);
+				//dir->print(std::cout, 0);
 				recheckLinks(shell, dir);
 			}
 		}

@@ -70,12 +70,6 @@ Name: midterm
 Path: /gtu/cse/CSE101/notes/
 Time: 1704447988
 Type: Link
-Name: linkedNotes
-Path: /gtu/cse/CSE101/
-Time: 1704385703
-Link: /gtu/cse/CSE101/notes/
-LinkedName: notes
-Type: Link
 Name: dlink
 Path: /gtu/cse/CSE101/
 Time: 1704437822
@@ -191,85 +185,21 @@ Time: 1704437417
 Link: /family/photos/
 LinkedName: cemla
 Type: Directory
-Name: ssn
-Path: /
-Time: 1704390265
-Type: Regular
-Name: cemla
-Path: /ssn/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Link
-Name: linkedGtu
-Path: /ssn/
-Time: 1704385645
-Link: /
-LinkedName: gtu
-Type: Directory
-Name: shoeN
-Path: /ssn/
-Time: 1704390265
-Type: Directory
-Name: cemal
-Path: /ssn/shoeN/
-Time: 1704448737
-Type: Directory
-Name: dedThe
-Path: /
-Time: 1704447361
-Type: Regular
-Name: cemla
-Path: /dedThe/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Directory
-Name: dir
-Path: /dedThe/
-Time: 1704447353
-Type: Regular
-Name: here
-Path: /dedThe/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Directory
-Name: testdir
-Path: /dedThe/
-Time: 1704447353
-Type: Directory
-Name: deneme
-Path: /
-Time: 1704447720
-Type: Directory
-Name: myTest
+Name: esty
 Path: /
 Time: 1704447910
-Type: Directory
-Name: dir
-Path: /myTest/
-Time: 1704447919
-Type: Directory
-Name: esgut
-Path: /myTest/dir/
-Time: 1704447919
-Type: Directory
-Name: dir2
-Path: /myTest/
-Time: 1704447910
+Type: Regular
+Name: cemla
+Path: /esty/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
 Type: Regular
 Name: here
-Path: /myTest/
+Path: /esty/
 Time: 1704299052
 Content: total 0
 drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
@@ -277,10 +207,6 @@ drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
 -rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
 -rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
 Type: Directory
-Name: testdir
-Path: /myTest/
-Time: 1704447919
-Type: Directory
-Name: esgut
-Path: /myTest/testdir/
-Time: 1704447919
+Name: afa
+Path: /esty/
+Time: 1704559598

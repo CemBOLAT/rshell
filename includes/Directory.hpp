@@ -18,24 +18,12 @@ class Directory : public File {
 		Directory*			getParentDirectory() const { return this->parentDirectory; }
 		void				setParentDirectory(Directory* parentDirectory) { this->parentDirectory = parentDirectory; }
 		string				getOwnFilesPath() const { return this->ownFilesPath; }
+		vector<File*>		&getFiles () { return this->files; }
 		virtual void		print(ostream& os, size_t maxLen) const override;
 		virtual void		save(ostream &os) const override;
 		virtual void		cat() const override;
 		void				removeFile(const string &name);
-
-		class Iterator {
-			public:
-				Iterator(const Directory* directory) : directory(directory), currentIndex(0) {}
-				bool				hasNext() const { return this->currentIndex < this->directory->getFiles().size(); }
-				File*				next() {
-					if (this->hasNext())
-						return this->directory->getFiles()[this->currentIndex++];
-					return nullptr;
-				}
-			private:
-				const Directory*	directory;
-				size_t				currentIndex;
-		};
+		void				removeDirectory(const string &name);
 	private:
 		string			ownFilesPath;
 		vector<File*>	files;
