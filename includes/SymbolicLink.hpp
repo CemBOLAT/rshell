@@ -20,6 +20,7 @@ class SymbolicLink : public File
 		virtual void		save(ostream &os) const override;
 		//static SymbolicLink *find(const Shell &shell, const string &name, SymbolicLink *ptr);
 		virtual void		cat() const override;
+		virtual void		cd(Shell &shell) override;
 	private:
 		File*	link;
 		string	linkedName;

@@ -6,7 +6,7 @@
 #include <fstream>
 #include <string>
 
-const std::string Shell::fileSystemPath = "./os/filesystem.txt";
+const	std::string Shell::fileSystemPath = "./os/filesystem.txt";
 
 Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
 {
@@ -22,7 +22,7 @@ Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
 	file.close();
 }
 
-void Shell::execute(string command)
+void	Shell::execute(string command)
 {
 	command = Utils::trim(command);
 	string		commandName = command.substr(0, command.find(' '));
@@ -87,7 +87,7 @@ void Shell::execute(string command)
 			if (getCurrentDirectory()->getName() == "/")
 				this->setPrompt("cemalBolat:/$ ");
 			else
-				setPrompt("cemalBolat:" + getCurrentDirectory()->getPath() + getCurrentDirectory()->getName() + "/$ ");
+				setPrompt("cemalBolat:" + getCurrentDirectory()->getPath() + getCurrentDirectory()->getName() + "$ ");
 			return;
 		}
 	}
@@ -113,5 +113,5 @@ void Shell::execute(string command)
 		return;
 	}
 	else
-		throw runtime_error("cemalBolatShell: " + commandName + ": command not found");
+		throw invalid_argument("cemalBolatShell: " + commandName + ": command not found");
 }

@@ -21,6 +21,7 @@ namespace Utils {
 	std::string		getData(std::ifstream &file);
 	vector<string>	split(const string &str, char delim);
 	string			relPathToAbsPath(const Shell &shell, const string &path);
+	string			absPathToRelPath(const Shell &shell, const string &path);
 	string			getParentPathOfAbsPath(const string &absPath);
 	void			terminate(Directory *directory);
 	size_t			getProgramSize(const Shell &Shell);

@@ -58,3 +58,9 @@ void RegularFile::cat() const
 {
 	cout << getData() << std::endl;
 }
+
+void RegularFile::cd(Shell& shell)
+{
+	(void)shell;
+	throw std::runtime_error("cd :" + getName() + " : Not a directory");
+}

@@ -201,7 +201,6 @@ namespace Utils {
 	// Postcondition: rechecks the links of shell recursively because of the possibility of deleting linked files or creating new files for linking to them
 	void recheckLinks(Shell &shell, Directory *directory){
 		for (auto &file : directory->getFiles()){
-			//std::cout << file->getName() << std::endl;
 			if (dynamic_cast<SymbolicLink *>(file) != nullptr){ // if file is a symbolic link
 				SymbolicLink *link = dynamic_cast<SymbolicLink *>(file);
 				File		*linkFile = File::find<File>(shell, link->getLinkedPath() + "/" + link->getLinkedName());
@@ -209,9 +208,14 @@ namespace Utils {
 			}
 			else if (dynamic_cast<Directory *>(file) != nullptr){ // if file is a directory then recursive call
 				Directory *dir = dynamic_cast<Directory *>(file);
-				//dir->print(std::cout, 0);
 				recheckLinks(shell, dir);
 			}
 		}
+	}
+}
+
+namespace Utils{
+	string	absPathToRelPath(const Shell &shell, const string &path){
+		return path.substr(shell.getCurrentDirectory()->getOwnFilesPath().size(), path.size() - 1);
 	}
 }

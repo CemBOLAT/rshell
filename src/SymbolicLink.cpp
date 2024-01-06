@@ -52,3 +52,12 @@ void SymbolicLink::cat() const
 	}
 	link->cat();
 }
+
+void SymbolicLink::cd(Shell& shell)
+{
+	if (link == nullptr)
+	{
+		throw std::runtime_error("cd :" + getName() + " : No such file or directory");
+	}
+	link->cd(shell);
+}

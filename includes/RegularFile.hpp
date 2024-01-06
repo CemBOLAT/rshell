@@ -20,6 +20,7 @@ class RegularFile : public File {
 		virtual void		print(ostream& os, size_t maxLen) const override;
 		virtual void		save(ostream &os) const override;
 		virtual void		cat() const override;
+		virtual void		cd(Shell &shell) override;
 	private:
 		size_t			sizeBytes;
 		string			data;

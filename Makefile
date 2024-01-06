@@ -24,13 +24,12 @@ OBJS := ./obj/main.o \
 		./obj/SymbolicLink.o \
 
 CXX := g++
-CXXFLAGS := -std=c++11 -pedantic -g #-Wall -Wextra -Werror -I./include
+CXXFLAGS := -std=c++11 -pedantic -g -Wall -Wextra -Werror -I./include
 
 all : $(NAME)
 
 $(NAME) : $(OBJS) $(Header)
 	$(CXX) $(CXXFLAGS) -o $@ $^
-
 
 $(OBJS) : ./obj/%.o : ./src/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<

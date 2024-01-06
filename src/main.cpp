@@ -16,9 +16,9 @@ int main(){
 				cout << shell.getPrompt();
 				Utils::TextEngine::magenta();
 				string command;
-				getline(cin, command);
+				getline(cin, command); // getting command
 				Utils::TextEngine::reset();
-				shell.execute(command);
+				shell.execute(command); // executing command
 			} catch (const exception& e) {
 				Utils::TextEngine::bold();
 				Utils::TextEngine::red();

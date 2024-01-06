@@ -29,7 +29,6 @@ Directory	*File::find<Directory>(const Shell &shell, const string &path)
 	vector<string> paths = Utils::split(path, '/'); // **
 	if (paths.size() == 0)
 	{
-		std::cout << "root" << std::endl;
 		return shell.getRoot();
 	}
 	return (findTraverse<Directory>(shell.getRoot(), paths));

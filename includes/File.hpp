@@ -25,6 +25,7 @@ class File {
 		virtual void	print(ostream& os, size_t maxLen) const = 0;
 		virtual void	save(ostream &os) const = 0;
 		virtual void	cat() const = 0;
+		virtual void	cd(Shell &shell) = 0;
 
 		template <typename T>
 		static T		*find(const Shell &shell, const string &name);

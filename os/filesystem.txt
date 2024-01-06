@@ -76,6 +76,1307 @@ Time: 1704437822
 Link: /gtu/cse/CSE101/
 LinkedName: linkedNotes
 Type: Directory
+Name: myshell
+Path: /gtu/cse/CSE101/
+Time: 1704299052
+Type: Regular
+Name: Directory.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704566142
+Content: #include "../includes/Directory.hpp"
+#include "../includes/Utils.hpp"
+#include "../includes/TextEngine.hpp"
+#include "../includes/Shell.hpp"
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+
+Directory::Directory(const string &name, time_t time, const string &path)
+	: File(name, time, path), ownFilesPath("/"), parentDirectory(nullptr)
+{
+	this->files = vector<File*>();
+}
+
+Directory::Directory(const string &name, time_t time, const string &path, Directory* parentDirectory)
+	: File(name, time, path), ownFilesPath(path + name + "/" ),parentDirectory(parentDirectory)
+{
+	this->files = vector<File *>();
+}
+
+Directory::~Directory()
+{/*Body inintentionally left empty! */}
+
+// hata dosya okumada sorun var
+Directory*	Directory::getDirectory(const string &name) const
+{
+	for (auto file : this->files)
+	{
+		if (file->getName() == name)
+		{
+			if (dynamic_cast<Directory*>(file))
+				return dynamic_cast<Directory*>(file);
+		}
+	}
+
+	return nullptr;
+}
+
+void	Directory::addFile(File* file)
+{
+	this->files.push_back(file);
+}
+
+void Directory::print(std::ostream &os, size_t maxLen) const
+{
+	time_t rawtime = this->getTime();
+	struct tm *timeinfo = std::localtime(&rawtime);
+
+	Utils::TextEngine::yellow();
+	os << "D ";
+	Utils::TextEngine::reset();
+	Utils::TextEngine::bold();
+	Utils::TextEngine::cyan();
+	os << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
+	Utils::TextEngine::reset();
+
+	Utils::TextEngine::green();
+	Utils::printTime(os, timeinfo);
+	Utils::TextEngine::resetAll();
+	os << std::endl;
+}
+
+void	Directory::save(std::ostream &file) const {
+	file << "Type: Directory" << std::endl;
+	file << "Name: " << this->getName() << std::endl;
+	file << "Path: " << this->getPath() << std::endl;
+	file << "Time: " << this->getTime() << std::endl;
+}
+
+void Directory::cat() const
+{
+	throw std::runtime_error("cat: " + this->getName() + ": Is a directory");
+}
+
+void	Directory::removeFile(const string &name)
+{
+	for (auto it = this->files.begin(); it != this->files.end(); ++it)
+	{
+		if ((*it)->getName() == name)
+		{
+			if (dynamic_cast<Directory*>(*it))
+				Utils::terminate(dynamic_cast<Directory*>(*it));
+			this->files.erase(it);
+			return;
+		}
+	}
+}
+
+void Directory::cd(Shell &shell)
+{
+	shell.setCurrentDirectory(this);
+}
+Type: Regular
+Name: Executor.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704572259
+Content: #include "../includes/Executor.hpp"
+#include "../includes/Utils.hpp"
+#include "../includes/TextEngine.hpp"
+#include "../includes/RegularFile.hpp"
+#include "../includes/SymbolicLink.hpp"
+#include "../includes/File.hpp"
+#include "../includes/Directory.hpp"
+#include "./Template.cpp"
+#include <ctime>
+#include <sys/stat.h>
+#include <fstream>
+#include <dirent.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <iomanip>
+#include <cstring>
+
+namespace
+{
+	void listOnlyCurrentDirectory(ostream &os, const Directory *dir, size_t maxNameLength)
+	{
+		time_t rawtime = dir->getTime();
+		struct tm *timeinfo = std::localtime(&rawtime);
+
+		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << "."
+		   << " ";
+		Utils::printTime(os, timeinfo) << std::endl;
+	}
+
+	void listSpecialDirectories(ostream &os, const Directory *dir, size_t maxNameLength)
+	{
+		time_t		rawtime = dir->getParentDirectory()->getTime();
+		struct tm	*timeinfo = std::localtime(&rawtime);
+
+		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << ".."
+		   << " ";
+		Utils::printTime(os, timeinfo) << std::endl;
+	}
+}
+
+namespace {
+	size_t getMaxNameLength(const vector<File *> &files)
+	{
+		size_t maxNameLength = 2; // . ve .. için
+		for (File *file : files)
+		{
+			if (file->getName().length() > maxNameLength)
+				maxNameLength = file->getName().length();
+		}
+		return maxNameLength;
+	}
+}
+
+namespace Executor
+{
+	void ls(const Directory *directory, const Shell &Shell, const string &option)
+	{
+		vector<File *>	files = directory->getFiles();
+		size_t			maxNameLength = getMaxNameLength(files);
+		listOnlyCurrentDirectory(cout, directory, maxNameLength);
+		if (directory != Shell.getRoot())
+			listSpecialDirectories(cout, directory, maxNameLength);
+		for (File *file : files)
+			file->print(cout, maxNameLength);
+		if (option == "-R")
+		{
+			for (File *file : files)
+			{
+				if (dynamic_cast<Directory *>(file))
+				{
+					Directory *directory = dynamic_cast<Directory *>(file);
+					cout << "\n";
+					Utils::TextEngine::greenBackground();
+					cout << "./" << Utils::absPathToRelPath(Shell, directory->getOwnFilesPath()) << ":";
+					Utils::TextEngine::reset();
+					cout << endl;
+					ls(directory, Shell, option);
+				}
+			}
+		}
+	}
+}
+
+namespace Executor
+{
+	void cat(const Shell &shell, const string &fileName)
+	{
+		File *filePtr = nullptr;
+
+		if (fileName.empty())
+			throw runtime_error("cat: missing operand");
+		else if (fileName == "." || fileName == ".." || fileName == "/")
+			throw runtime_error("cat: " + fileName + ": Is a directory");
+		try
+		{
+			string	absPath = Utils::relPathToAbsPath(shell, fileName);
+			if (absPath == "/")
+				throw runtime_error("cat: " + fileName + ": Is a directory");
+			filePtr = File::find<File>(shell, absPath);
+			if (filePtr == nullptr)
+				throw invalid_argument("cat: " + fileName + ": No such file or directory");
+			filePtr->cat();
+		}
+		catch (const invalid_argument &e)
+		{
+			throw e;
+		}
+	}
+}
+
+namespace Executor
+{
+	void rm(const Shell &shell, const string &fileName)
+	{
+		File *filePtr = nullptr;
+		Directory *parentDirectory = nullptr;
+
+		if (fileName.empty())
+			throw runtime_error("rm: missing operand");
+		else if (fileName == "." || fileName == ".." || fileName == "/")
+			throw runtime_error("rm: " + fileName + ": Is a directory");
+		try
+		{
+			string	absPath = Utils::relPathToAbsPath(shell, fileName);
+			if (absPath == "/")
+				throw runtime_error("rm: cannot remove '" + fileName + "': Is a directory");
+			filePtr = File::find<File>(shell, absPath);
+			parentDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absPath));
+			if (filePtr == nullptr)
+				throw invalid_argument("rm: cannot remove '" + fileName + "': No such file or directory");
+			if (dynamic_cast<Directory *>(filePtr))
+				throw invalid_argument("rm: cannot remove '" + fileName + "': Is a directory");
+			parentDirectory->removeFile(filePtr->getName());
+		}
+		catch (const invalid_argument &e)
+		{
+			throw e;
+		}
+	}
+}
+
+namespace Executor
+{
+	void	mkdir(const Shell &shell, const string &fileName)
+	{
+		File		*directory = nullptr;
+		Directory	*parentDirectory = nullptr;
+		if (fileName.empty())
+			throw runtime_error("mkdir: missing operand");
+		else if (fileName == "." || fileName == "..")
+			throw runtime_error("mkdir: cannot create directory '" + fileName + "': File exists");
+		try
+		{
+			string absPath = Utils::relPathToAbsPath(shell, fileName);
+			if (absPath == "/")
+				throw runtime_error("mkdir: cannot create directory '" + fileName + "': File exists");
+			string pPath = Utils::getParentPathOfAbsPath(absPath);
+			if (pPath == "/")
+				pPath = "";
+			directory = File::find<File>(shell, absPath);
+			parentDirectory = File::find<Directory>(shell, pPath);
+			if (directory != nullptr){ // delete if existent file is directory and throw exception if not
+				if (dynamic_cast<Directory *>(directory))
+					parentDirectory->removeFile(absPath.substr(absPath.find_last_of('/') + 1));
+				else
+					throw invalid_argument("mkdir: cannot create directory '" + fileName + "': File exists");
+				return;
+			}
+			else if (parentDirectory == nullptr)
+				throw invalid_argument("mkdir: cannot create directory '" + fileName + "': No such file or directory");
+			string name = absPath.substr(absPath.find_last_of('/') + 1);
+			if (parentDirectory == shell.getRoot())
+				directory = new Directory(name,
+										  time(nullptr), parentDirectory->getPath(), parentDirectory);
+			else
+				directory = new Directory(name,
+										  time(nullptr), parentDirectory->getPath() + parentDirectory->getName() + "/", parentDirectory);
+			parentDirectory->addFile(directory);
+		}
+		catch (const invalid_argument &e)
+		{
+			throw e;
+		}
+	}
+}
+
+namespace Executor
+{
+	void	cd(Shell &shell, const string &directoryName)
+	{
+		File	*directory = nullptr;
+		if (directoryName.empty())
+			shell.setCurrentDirectory(shell.getRoot());
+		else if (directoryName == ".")
+			return;
+		else if (directoryName == "..")
+		{
+			if (shell.getCurrentDirectory() == shell.getRoot())
+				return;
+			shell.setCurrentDirectory(shell.getCurrentDirectory()->getParentDirectory());
+		}
+		else
+		{
+			try
+			{
+				string pPath = Utils::relPathToAbsPath(shell, directoryName);
+				if (pPath == "/"){
+					shell.setCurrentDirectory(shell.getRoot());
+					return;
+				}
+				directory = File::find<File>(shell, pPath);
+				if (directory == nullptr)
+					throw invalid_argument("cd: " + directoryName + ": No such file or directory");
+				directory->cd(shell);
+				//shell.setCurrentDirectory(directory);
+			}
+			catch (const invalid_argument &e){
+				throw e;
+			}
+		}
+	}
+}
+
+namespace
+{
+	RegularFile *copyRegularFile(const string &source, const string &fileName, const Shell &shell, const struct stat &sourceStat, const string &path)
+	{
+		ifstream sourceFile(source);
+		RegularFile *regularFile;
+		string data, line;
+		(void)shell;
+		if (!sourceFile.is_open())
+			throw runtime_error("file cannot open at your OS");
+		while (getline(sourceFile, line))
+		{
+			data += line + "\n";
+		}
+		data = data.substr(0, data.size() - 2);
+		data += static_cast<char>(3);
+		sourceFile.close();
+		regularFile = new RegularFile(fileName, data.size(), sourceStat.st_mtime, data, path);
+		return regularFile;
+	}
+}
+
+namespace
+{
+	Directory *copyDirectory(const string &source, const string &fileName, const Shell &shell, const struct stat &sourceStat, const string &path, Directory *parentDirectory)
+	{
+		Directory *directory;
+
+		DIR *copiedDir = opendir(source.c_str());
+		if (!copiedDir)
+		{
+			throw std::runtime_error("cp: cannot open source directory '" + source + "'");
+		}
+		struct dirent *entry;
+		directory = new Directory(fileName, sourceStat.st_mtime, path, parentDirectory);
+		while ((entry = readdir(copiedDir)) != nullptr)
+		{
+			if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+			{
+				std::string entryPath = source + "/" + entry->d_name;
+
+				struct stat entryStat;
+				if (stat(entryPath.c_str(), &entryStat) != 0)
+				{
+					throw std::runtime_error("cp: error accessing file '" + entryPath + "'");
+				}
+
+				if (S_ISREG(entryStat.st_mode))
+				{
+					// Copy regular file
+					RegularFile *regularFile = copyRegularFile(entryPath, entry->d_name, shell, entryStat, directory->getOwnFilesPath());
+					directory->addFile(regularFile);
+				}
+				else if (S_ISDIR(entryStat.st_mode))
+				{
+					// Recursively copy subdirectories
+					Directory *subDirectory = copyDirectory(entryPath, entry->d_name, shell, entryStat, directory->getOwnFilesPath(), directory);
+					directory->addFile(subDirectory);
+				}
+			}
+		}
+		closedir(copiedDir);
+		return (directory);
+	}
+}
+
+namespace
+{
+	size_t getDirectorySize(const struct stat &sourcestat, const string &source)
+	{
+		DIR *copiedDir = opendir(source.c_str());
+		if (!copiedDir)
+		{
+			throw std::runtime_error("cp: cannot open source directory '" + source + "'");
+		}
+		(void)sourcestat; // unused
+		struct dirent *entry;
+		size_t size = 0;
+		while ((entry = readdir(copiedDir)) != nullptr)
+		{
+			if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+			{
+				std::string entryPath = source + "/" + entry->d_name;
+
+				struct stat entryStat;
+				if (stat(entryPath.c_str(), &entryStat) != 0)
+				{
+					throw std::runtime_error("cp: error accessing file '" + entryPath + "'");
+				}
+
+				if (S_ISREG(entryStat.st_mode))
+				{
+					size += entryStat.st_size;
+				}
+				else if (S_ISDIR(entryStat.st_mode))
+				{
+					size += getDirectorySize(entryStat, entryPath);
+				}
+				else
+				{
+					size += 2;
+				}
+			}
+		}
+		closedir(copiedDir);
+		return (size);
+	}
+}
+
+namespace
+{
+	void onlyAddToDirectory(const Shell &shell, const string &source, const string &fileName, const struct stat &sourceStat)
+	{
+
+		if (S_ISREG(sourceStat.st_mode))
+		{
+			RegularFile *regularFile = copyRegularFile(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
+			shell.getCurrentDirectory()->addFile(regularFile);
+		}
+		else if (S_ISDIR(sourceStat.st_mode))
+		{
+			Directory *directory = copyDirectory(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath(), shell.getCurrentDirectory());
+			shell.getCurrentDirectory()->addFile(directory);
+		}
+		//shell.getCurrentDirectory()->setTime(time(nullptr));
+	}
+}
+
+// linklere bak
+namespace Executor
+{
+	void cp(const Shell &shell, const string &source, const string &fileName)
+	{
+
+		struct stat	sourceStat;
+		File		*file = nullptr;
+
+		if (source.empty() || fileName.empty())
+			throw runtime_error("cp: missing operand");
+		if (stat(source.c_str(), &sourceStat) != 0)
+		{
+			throw std::runtime_error("cp: source file '" + source + "' does not exist");
+		}
+		file = File::find<File>(shell, shell.getCurrentDirectory()->getOwnFilesPath() + fileName);
+		if (S_ISREG(sourceStat.st_mode) && sourceStat.st_size + Utils::getProgramSize(shell) > shell.getOsSize())
+			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
+		if (S_ISDIR(sourceStat.st_mode) && getDirectorySize(sourceStat, source) + Utils::getProgramSize(shell) > shell.getOsSize())
+			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
+		if (file == nullptr)
+			onlyAddToDirectory(shell, source, fileName, sourceStat);
+		else if ((dynamic_cast<Directory *>(file) && !S_ISDIR(sourceStat.st_mode)) ||
+				 (dynamic_cast<RegularFile *>(file) && !S_ISREG(sourceStat.st_mode)))
+		{
+			throw runtime_error("cp: cannot copy '" + source + "' -- '" + fileName + "' : File exists");
+		}
+		else
+		{
+			shell.getCurrentDirectory()->removeFile(fileName);
+			onlyAddToDirectory(shell, source, fileName, sourceStat);
+		}
+	}
+}
+
+// @brief optimazsion probs in here
+namespace Executor
+{
+	void	link(const Shell &shell, const string &source, const string &dest)
+	{
+		Directory		*destDirectory = nullptr;
+		Directory		*sourceDirectory = nullptr;
+		File			*sourceFile = nullptr;
+		File			*destFile = nullptr;
+		SymbolicLink	*symbolicLink = nullptr;
+
+		string			absSourcePath = Utils::relPathToAbsPath(shell, source);
+		string			absDestPath = Utils::relPathToAbsPath(shell, dest);
+		if (dest.empty() || source.empty())
+			throw runtime_error("link: missing operand");
+		else if (dest == "." || dest == "..")
+			throw runtime_error("link: cannot create link '" + dest + "': File exists");
+		try
+		{
+			destFile = File::find<File>(shell, absDestPath);
+			if (destFile != nullptr)
+				throw invalid_argument("link: cannot create link '" + dest + "': File exists");
+			sourceFile = File::find<File>(shell, absSourcePath);
+			destDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absDestPath));
+			sourceDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absSourcePath));
+			symbolicLink = new SymbolicLink(absDestPath.substr(absDestPath.find_last_of('/') + 1)
+										,destDirectory->getOwnFilesPath(), time(nullptr),sourceFile,
+										absSourcePath.substr(absSourcePath.find_last_of('/') + 1), sourceDirectory->getOwnFilesPath());
+			destDirectory->addFile(symbolicLink);
+			//sourceFile = File::find<RegularFile>(shell, absSourcePath); // super saçma bir hata var burda
+		}
+		catch (const invalid_argument &e)
+		{
+			throw e;
+		}
+	}
+}
+Type: Regular
+Name: File.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704468564
+Content: #include "../includes/File.hpp"
+#include "../includes/Directory.hpp"
+#include "../includes/Shell.hpp"
+#include "../includes/Utils.hpp"
+
+File::File(const string &name, time_t time, const string& path)
+	: name(name) , path(path) ,time(time)
+{/*Body inintentionally left empty! */}
+
+
+File::~File()
+{/*Body inintentionally left empty! */}
+Type: Regular
+Name: LoadFile.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704469425
+Content: #include "../includes/LoadFile.hpp"
+#include "../includes/Shell.hpp"
+#include "../includes/RegularFile.hpp"
+#include "../includes/SymbolicLink.hpp"
+#include "../includes/Utils.hpp"
+#include <fstream>
+#include <string>
+#include <ctime>
+#include <sstream>
+
+using namespace std;
+
+void LoadFile::addRegularFile(Shell &shell, ifstream &file){
+	string		name, path, time, data;
+	Directory	*directory = shell.getRoot();
+	name = Utils::getContent(file);
+	path = Utils::getContent(file);
+	time = Utils::getContent(file);
+	data = Utils::getData(file);
+
+	time_t time_t_time = stoi(time);
+
+	if (path == "/"){
+		directory = shell.getRoot();
+		directory->addFile(new RegularFile(name, data.size(), time_t_time, data, path));
+		return;
+	}
+	directory = File::find<Directory>(shell, path);
+
+	if (directory == nullptr)
+		throw runtime_error("Filesystem may not be configrated ! "); // not configrated
+	directory->addFile(new RegularFile(name, data.size(), time_t_time, data, path));
+}
+
+void LoadFile::addDirectory(Shell &shell, ifstream &file){
+	string		name, path, time;
+	Directory	*parentDirectory;
+
+	name = Utils::getContent(file);
+	path = Utils::getContent(file);
+	time = Utils::getContent(file);
+
+	time_t time_t_time = stoi(time);
+
+	if (path == "/"){
+		parentDirectory = shell.getRoot();
+		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
+	}
+	else{
+		parentDirectory = File::find<Directory>(shell, path);
+		if (parentDirectory == nullptr)
+			throw runtime_error("Directory coould not be found."); // not configrated
+		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
+	}
+}
+
+void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
+	string		name, path, time, linkPath, linkerName;
+	File		*link = nullptr;
+	Directory	*directory = nullptr;
+
+	name = Utils::getContent(file);
+	path = Utils::getContent(file);
+	time = Utils::getContent(file);
+	linkPath = Utils::getContent(file);
+	linkerName = Utils::getContent(file);
+
+	time_t time_t_time = stoi(time);
+
+	link = File::find<File>(shell, linkPath + linkerName);
+	directory = File::find<Directory>(shell, path);
+
+	if (directory == nullptr)
+		throw runtime_error("Filesystem file is broken"); // not configrated
+	directory->addFile(new SymbolicLink(name, path, time_t_time, link, linkerName, linkPath));
+}
+
+void LoadFile::load(const std::string &path, Shell &shell){
+	ifstream file(path);
+
+	if (!file.is_open())
+		throw runtime_error("File could not be opened.");
+	string lineTmp; // to ignore first line for roots time
+	getline(file, lineTmp); // ignore first line
+	while (!file.eof())
+	{
+		string line;
+		getline(file, line);
+		line = Utils::trim(line);
+		if (line.empty())
+			continue;
+		if (line.substr(line.find(" ") + 1, line.size() - 1) == "Regular"){
+			addRegularFile(shell, file);
+		}
+		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Directory"){
+			addDirectory(shell, file);
+		}
+		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Link"){
+			addSymbolicLink(shell, file);
+		}
+		else{
+			throw runtime_error("Filesystem is not in correct format.");
+		}
+		Utils::recheckLinks(shell ,shell.getRoot());
+	}
+	file.close();
+}
+Type: Regular
+Name: main.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704468546
+Content: #include "../includes/Utils.hpp"
+#include "../includes/TextEngine.hpp"
+#include "../includes/LoadFile.hpp"
+#include "../includes/Shell.hpp"
+#include <iostream>
+
+int main(){
+
+	try {
+		Shell shell;
+		LoadFile::load(shell.getFileSystemPath(), shell);
+		while (!shell.isTerminated()) {
+			try {
+				Utils::TextEngine::green();
+				Utils::TextEngine::bold();
+				cout << shell.getPrompt();
+				Utils::TextEngine::magenta();
+				string command;
+				getline(cin, command);
+				Utils::TextEngine::reset();
+				shell.execute(command);
+			} catch (const exception& e) {
+				Utils::TextEngine::bold();
+				Utils::TextEngine::red();
+				cerr << e.what();
+				Utils::TextEngine::reset();
+				cout << endl;
+			}
+		}
+	} catch (const exception& e) {
+		Utils::TextEngine::bold();
+		Utils::TextEngine::red();
+		cerr << e.what();
+		Utils::TextEngine::reset();
+		cout << endl;
+	}
+}
+Type: Regular
+Name: RegularFile.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704572215
+Content: #include "../includes/RegularFile.hpp"
+#include "../includes/Utils.hpp"
+#include "../includes/TextEngine.hpp"
+#include <ctime>
+#include <iomanip>
+
+RegularFile::RegularFile(const string &name, size_t sizeBytes, time_t time, const string& data, const string& path)
+	: File(name, time, path), sizeBytes(sizeBytes), data(data)
+{/*Body inintentionally left empty! */}
+
+RegularFile::~RegularFile()
+{/*Body inintentionally left empty! */}
+
+ostream&	operator<<(ostream& os, const RegularFile& file)
+{
+	time_t rawtime = file.getTime();
+	struct tm* timeinfo = std::localtime(&rawtime);
+
+	os << "F " << file.getName() << " ";
+	Utils::printTime(os, timeinfo) << file.getSizeBytes() << " Bytes";
+	return os;
+}
+
+void		RegularFile::copy(Directory *dir) const
+{
+	dir->addFile(new RegularFile(*this));
+}
+
+void		RegularFile::print(ostream& os, size_t maxLen) const
+{
+	time_t rawtime = this->getTime();
+	struct tm* timeinfo = std::localtime(&rawtime);
+
+	Utils::TextEngine::yellow();
+	os << "F ";
+	Utils::TextEngine::bold();
+	Utils::TextEngine::orange();
+	os << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
+	Utils::TextEngine::reset();
+	Utils::TextEngine::green();
+	Utils::printTime(os, timeinfo);
+	Utils::TextEngine::cyan();
+	os << this->getSizeBytes() << " Bytes";
+	Utils::TextEngine::reset();
+	os << endl;
+}
+
+void RegularFile::save(std::ostream &file) const
+{
+	file << "Type: Regular" << std::endl;
+	file << "Name: " << getName() << std::endl;
+	file << "Path: " << getPath() << std::endl;
+	file << "Time: " << getTime() << std::endl;
+	file << "Content: " << getData() << std::endl;
+}
+
+void RegularFile::cat() const
+{
+	cout << getData() << std::endl;
+}
+
+void RegularFile::cd(Shell& shell)
+{
+	(void)shell;
+	throw std::runtime_error("cd :" + getName() + " : Not a directory");
+}
+Type: Regular
+Name: SaveFile.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704557225
+Content: #include "../includes/SaveFile.hpp"
+#include "../includes/SymbolicLink.hpp"
+#include "../includes/Shell.hpp"
+#include "../includes/RegularFile.hpp"
+#include <fstream>
+
+namespace {
+	void	recursive(std::ofstream &file, Directory *directory){
+		for (const auto &vfile : directory->getFiles()){
+			vfile->save(file);
+			if (dynamic_cast<Directory*>(vfile) != nullptr){
+				Directory *vdFile = dynamic_cast<Directory*>(vfile);
+				recursive(file, vdFile);
+			}
+		}
+	}
+}
+
+void SaveFile::save(const std::string &path, Shell &shell){
+	std::ofstream file(path);
+	if(!file.is_open()){
+		throw std::runtime_error("File cannot be opened!");
+	}
+	file << "Time: " << shell.getRoot()->getTime() << std::endl;
+	for (const auto &vfile : shell.getRoot()->getFiles()){
+		if (vfile != nullptr){
+			vfile->save(file);
+			if (dynamic_cast<Directory*>(vfile) != nullptr){
+				Directory *vdFile = dynamic_cast<Directory*>(vfile);
+				recursive(file, vdFile);
+			}
+		}
+	}
+	file.close();
+}
+Type: Regular
+Name: Shell.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704574151
+Content: #include "../includes/RegularFile.hpp"
+#include "../includes/Utils.hpp"
+#include "../includes/SaveFile.hpp"
+#include "../includes/Utils.hpp"
+#include "../includes/Executor.hpp"
+#include <fstream>
+#include <string>
+
+const	std::string Shell::fileSystemPath = "./os/filesystem.txt";
+
+Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
+{
+	std::ifstream	file(fileSystemPath);
+	time_t			timeT;
+	string			timeStr;
+	if (!file.is_open())
+		throw std::runtime_error("filesystem.txt not found");
+	timeStr = Utils::getContent(file);
+	timeT = std::stoi(timeStr);
+	this->root = new Directory("/", timeT, "/");
+	this->currentDirectory = this->root;
+	file.close();
+}
+
+void	Shell::execute(string command)
+{
+	command = Utils::trim(command);
+	string		commandName = command.substr(0, command.find(' '));
+	string		commandArgument = command.substr(command.find(' ') + 1, command.size() - 1);
+
+	if (command.find(' ') == string::npos)
+		commandArgument = "";
+	if (commandName == "exit")
+	{
+		this->setTerminated(true);
+		SaveFile::save(Shell::getFileSystemPath(), *this);
+		return;
+	}
+	else if (commandName == "ls") // bu kısımlara baK
+	{
+		if (commandArgument == "-R" || commandArgument == "")
+			Executor::ls(getCurrentDirectory(), *this, commandArgument);
+		else
+			throw runtime_error("ls: invalid option for cemalBolatShell -- '" + commandArgument + "'");
+		return;
+	}
+	else if (commandName == "cat")
+	{
+		vector<string>	argsplit = Utils::split(commandArgument, ' ');
+		if (argsplit.size() > 1)
+			throw runtime_error("cat: invalid number of arguments for cemalBolatShell -- ");
+		else
+			Executor::cat(*this, commandArgument);
+		return;
+	}
+	else if (commandName == "rm")
+	{
+		vector<string>	argsplit = Utils::split(commandArgument, ' ');
+		if (argsplit.size() > 1)
+			throw runtime_error("rm: invalid number of arguments for cemalBolatShell -- ");
+		else {
+			Executor::rm(*this, commandArgument);
+			Utils::recheckLinks(*this, getRoot());
+			SaveFile::save(getFileSystemPath(), *this);
+			return;
+		}
+	}
+	else if (commandName == "mkdir")
+	{
+		vector<string> argsplit = Utils::split(commandArgument, ' ');
+		if (argsplit.size() > 1)
+			throw runtime_error("mkdir: invalid number of arguments for cemalBolatShell -- ");
+		else {
+			Executor::mkdir(*this, commandArgument);
+			Utils::recheckLinks(*this, getRoot());
+			SaveFile::save(getFileSystemPath(), *this);
+			return;
+		}
+	}
+	else if (commandName == "cd")
+	{
+		vector<string> argsplit = Utils::split(commandArgument, ' ');
+		if (argsplit.size() > 1)
+			throw runtime_error("cd: invalid number of arguments for cemalBolatShell -- ");
+		else {
+			Executor::cd(*this, commandArgument);
+			if (getCurrentDirectory()->getName() == "/")
+				this->setPrompt("cemalBolat:/$ ");
+			else
+				setPrompt("cemalBolat:" + getCurrentDirectory()->getPath() + getCurrentDirectory()->getName() + "$ ");
+			return;
+		}
+	}
+	else if (commandName == "cp"){
+		vector<string> args = Utils::split(commandArgument, ' ');
+		if (args.size() < 2)
+			throw runtime_error("cp: missing operand");
+		else if (args.size() > 2)
+			throw runtime_error("cp: invalid number of arguments for cemalBolatShell -- ");
+		Executor::cp(*this, args[0], args[1]);
+		Utils::recheckLinks(*this, getRoot());
+		SaveFile::save(getFileSystemPath(), *this);
+		return;
+	}
+	else if (commandName == "link"){
+		vector<string> args = Utils::split(commandArgument, ' ');
+		if (args.size() < 2)
+			throw runtime_error("link: missing operand");
+		else if (args.size() > 2)
+			throw runtime_error("link: invalid number of arguments for cemalBolatShell -- ");
+		Executor::link(*this, args[0], args[1]);
+		SaveFile::save(getFileSystemPath(), *this);
+		return;
+	}
+	else
+		throw runtime_error("cemalBolatShell: " + commandName + ": command not found");
+}
+Type: Regular
+Name: SymbolicLink.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704566112
+Content: #include "../includes/SymbolicLink.hpp"
+#include "../includes/Utils.hpp"
+#include "../includes/TextEngine.hpp"
+#include <ctime>
+#include <iomanip>
+
+SymbolicLink::SymbolicLink(const string& name, const string& path, time_t time, File* link, const string& linkedName, const string& linkPath)
+	: File(name, time, path), link(link), linkedName(linkedName), linkPath(linkPath)
+{/*Body inintentionally left empty! */}
+
+SymbolicLink::~SymbolicLink()
+{/*Body inintentionally left empty! */}
+
+void	SymbolicLink::print(ostream& os, size_t maxLen) const
+{
+	time_t rawtime = this->getTime();
+	struct tm* timeinfo = std::localtime(&rawtime);
+
+	Utils::TextEngine::red();
+	os << "L ";
+	Utils::TextEngine::bold();
+	Utils::TextEngine::orange();
+	os << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
+	Utils::TextEngine::reset();
+	Utils::TextEngine::green();
+	Utils::printTime(os, timeinfo);
+	Utils::TextEngine::cyan();
+	os << "2 Bytes ";
+	Utils::TextEngine::reset();
+	Utils::TextEngine::yellow();
+	Utils::TextEngine::bold();
+	os << this->getName() << " -> " << this->getLinkedPath() + this->getLinkedName();
+	Utils::TextEngine::reset();
+
+	os << endl;
+}
+
+void	SymbolicLink::save(std::ostream &file) const {
+	file << "Type: Link" << std::endl;
+	file << "Name: " << getName() << std::endl;
+	file << "Path: " << getPath() << std::endl;
+	file << "Time: " << getTime() << std::endl;
+	file << "Link: " << linkPath << std::endl;
+	file << "LinkedName: " << linkedName << std::endl;
+}
+
+void SymbolicLink::cat() const
+{
+	if (link == nullptr)
+	{
+		throw std::runtime_error("cat :" + getName() + " : No such file or directory");
+	}
+	link->cat();
+}
+
+void SymbolicLink::cd(Shell& shell)
+{
+	if (link == nullptr)
+	{
+		throw std::runtime_error("cd :" + getName() + " : No such file or directory");
+	}
+	link->cd(shell);
+
+Type: Regular
+Name: Template.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704574167
+Content: #include "../includes/Utils.hpp"
+#include "../includes/Directory.hpp"
+#include <memory>
+
+template <typename T>
+T	*findTraverse(Directory *directory, const vector<string> &path)
+{
+
+	for (auto file : directory->getFiles()){
+		if (file->getName() == path[0])
+		{
+			if (path.size() == 1)
+			{
+				if (dynamic_cast<T *>(file))
+					return dynamic_cast<T *>(file);
+			}
+			else
+			{
+				return findTraverse<T>(dynamic_cast<Directory *>(file), vector<string>(path.begin() + 1, path.end()));
+			}
+		}
+	}
+	return nullptr;
+}
+
+template <>
+Directory	*File::find<Directory>(const Shell &shell, const string &path)
+{
+	vector<string> paths = Utils::split(path, '/'); // **
+	if (paths.size() == 0)
+	{
+		return shell.getRoot();
+	}
+	return (findTraverse<Directory>(shell.getRoot(), paths));
+}
+
+template <typename T>
+T	*File::find(const Shell &shell, const string &path)
+{
+	vector<string> paths = Utils::split(path, '/'); // **
+	return (findTraverse<T>(shell.getRoot(), paths));
+
+Type: Regular
+Name: TextEngine.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704299052
+Content: #include "../includes/TextEngine.hpp"
+#include <iostream>
+using namespace std;
+
+
+namespace Utils {
+	// namespace : TextEngine is for text coloring in terminal
+	namespace TextEngine {
+		void	yellow() { cout << ANSI_FG_YELLOW; }
+		void	red() { cout << ANSI_FG_RED; }
+		void	green() { cout << ANSI_FG_GREEN; }
+		void	blue() { cout << ANSI_FG_BLUE; }
+		void	reset() {cout << ANSI_RESET; }
+		void	bold() { cout << ANSI_BOLD; }
+		void	underline() { cout << ANSI_UNDERLINE;}
+		void	blink() { cout << ANSI_BLINK;}
+		void	black() { cout << ANSI_FG_BLACK; }
+		void	magenta() { cout << ANSI_FG_MAGENTA; }
+		void	cyan() { cout << ANSI_FG_CYAN; }
+		void	white() { cout << ANSI_FG_WHITE; }
+		void	redBackground() { cout << ANSI_BG_RED; }
+		void	greenBackground() { cout << ANSI_BG_GREEN; }
+		void	blueBackground() { cout << ANSI_BG_BLUE; }
+		void	yellowBackground() { cout << ANSI_BG_YELLOW; }
+		void	blackBackground() { cout << ANSI_BG_BLACK; }
+		void	magentaBackground() { cout << ANSI_BG_MAGENTA; }
+		void	cyanBackground() { cout << ANSI_BG_CYAN; }
+		void	whiteBackground() { cout << ANSI_BG_WHITE; }
+		void	resetBackground() { cout << "\033[49m"; }
+		void	resetForeground() { cout << "\033[39m"; }
+		void	resetAll() { cout << "\033[0m"; }
+		void	orange() { cout << "\033[38;5;208m"; }
+	}
+
+Type: Regular
+Name: Utils.cpp
+Path: /gtu/cse/CSE101/myshell/
+Time: 1704574340
+Content: #include "../includes/Utils.hpp"
+#include "../includes/RegularFile.hpp"
+#include "../includes/SymbolicLink.hpp"
+#include "../includes/Shell.hpp"
+#include <iomanip>
+#include <vector>
+#include <sstream>
+#include <sys/stat.h>
+
+using namespace std;
+
+namespace {
+	// Precondition: month is between 1 and 12
+	// Postcondition: returns the string of month
+	string convertMonth(int month){
+		switch (month)
+		{
+		case 1: return "Jan";
+		case 2: return "Feb";
+		case 3: return "Mar";
+		case 4: return "Apr";
+		case 5: return "May";
+		case 6: return "Jun";
+		case 7: return "Jul";
+		case 8: return "Aug";
+		case 9: return "Sep";
+		case 10: return "Oct";
+		case 11: return "Nov";
+		default: return "Dec";
+		}
+	}
+}
+
+namespace Utils
+{
+	// Precondition: str is a string
+	// Postcondition: returns the vector of splitted string by delim
+	vector<string>	split(const string &str, char delim)
+	{
+		std::vector<std::string>	elems;
+		std::stringstream			ss(str);
+		std::string					item;
+		while (std::getline(ss, item, delim))
+		{
+			if (!item.empty())
+				elems.push_back(item);
+		}
+		return elems;
+	}
+	// Precondition: str is a string
+	// Postcondition: returns the trimmed string
+	string	trim(const std::string &str)
+	{
+		size_t first = str.find_first_not_of(" \t\r");
+		size_t last = str.find_last_not_of(" \t\r");
+
+		if (first == std::string::npos || last == std::string::npos)
+			return "";
+
+		return str.substr(first, last - first + 1);
+	}
+	// Precondition : file is a ifstream
+	// Postcondition: returns the content of file (without spaces)
+	string	getContent(std::ifstream &file)
+	{
+		string content;
+		getline(file, content);
+		content = trim(content);
+		if (content.empty())
+			throw runtime_error("File content is not configrated!");
+		return content.substr(content.find(" ") + 1, content.size() - 1);
+	}
+	// Precondition: timeinfo is a struct tm
+	// Postcondition: prints the timeinfo to os
+	ostream &printTime(ostream &os, struct tm *timeinfo)
+	{
+		int day = timeinfo->tm_mday;
+		int month = timeinfo->tm_mon + 1;
+		int hour = timeinfo->tm_hour;
+		int minute = timeinfo->tm_min;
+
+		os << std::setw(3) << std::setfill('0') << convertMonth(month) << " "
+			<< std::setw(2) << std::setfill('0') << day << " "
+			<< std::setw(2) << std::setfill('0') << hour << ":"
+			<< std::setw(2) << std::setfill('0') << minute << " ";
+		return os;
+	}
+	// Precondition: file is a ifstream
+	// Postcondition: returns the data of file
+	string	getData(std::ifstream &file)
+	{
+		string data;
+		string line;
+		getline(file, line);
+		data = line.substr(line.find(" ") + 1, line.size() - 1);
+		if (data[data.size() - 1] == static_cast<char>(3))
+		{
+			return data;
+		}
+		data += "\n";
+		while (getline(file, line))
+		{
+			trim(line);
+			data += line;
+			if (!line.empty() && line[line.size() - 1] == static_cast<char>(3))
+			{
+				break;
+			}
+			data += "\n";
+		}
+		line += static_cast<char>(3);
+		return data;
+	}
+	// Precondition: path is a string
+	// Postcondition: returns the absolute path of path
+	string	relPathToAbsPath(const Shell &shell, const std::string &path)
+	{
+		string			relPathToAbsPath;
+		vector<string>	relPathToAbsPathSplit;
+		vector<string>	relPathToAbsPathSplitTmp;
+		if (path[0] == '/')
+			relPathToAbsPathSplit = Utils::split(path, '/');
+		else
+		{
+			relPathToAbsPathSplit = Utils::split(shell.getCurrentDirectory()->getOwnFilesPath() + "/" + path, '/');
+		}
+		if (relPathToAbsPathSplit.size() == 0)
+			return "/";
+		for (auto &path : relPathToAbsPathSplit)
+		{
+			//std::cout << path << std::endl;
+			if (path == ".")
+				continue;
+			else if (path == "..")
+			{
+				if (relPathToAbsPathSplitTmp.size() > 0)
+					relPathToAbsPathSplitTmp.pop_back();
+			}
+			else
+				relPathToAbsPathSplitTmp.push_back(path);
+		}
+		relPathToAbsPath = "";
+		for (auto &path : relPathToAbsPathSplitTmp)
+		{
+			relPathToAbsPath += "/" + path;
+		}
+		if (relPathToAbsPath == "")
+			relPathToAbsPath = "/";
+		return relPathToAbsPath;
+	}
+
+	string getParentPathOfAbsPath(const string &absPath)
+	{
+		size_t found = absPath.find_last_of('/');
+		if (found != std::string::npos)
+		{
+			if (found == 0)
+				return "/";
+			return absPath.substr(0, found);
+		}
+		return "/";
+	}
+}
+
+namespace Utils
+{
+	// Precondition: directory is a Directory
+	// Postcondition: deletes the directory and its files recursively from memory for preventing memory leak
+	void terminate(Directory *directory)
+	{
+		for (auto file : directory->getFiles())
+		{
+			if (dynamic_cast<Directory *>(file))
+				terminate(dynamic_cast<Directory *>(file)); // recursive call
+			else
+			{
+				delete file;
+				file = nullptr;
+			}
+		}
+		delete directory;
+		directory = nullptr;
+	}
+}
+
+namespace Utils
+{
+	// Precondition: directory is a Directory
+	// Postcondition: returns the size of directory recursively
+	// Note: size of directory is the sum of size of its files and its subdirectories recursively + 15 is the size of saving system information
+	size_t getProgramSize(const Shell &Shell)
+	{
+		struct stat	st;
+		stat(Shell.getFileSystemPath().c_str(), &st);
+		return st.st_size;
+	}
+}
+
+namespace Utils {
+	// Precondition: shell is a Shell
+	// Postcondition: rechecks the links of shell recursively because of the possibility of deleting linked files or creating new files for linking to them
+	void recheckLinks(Shell &shell, Directory *directory){
+		for (auto &file : directory->getFiles()){
+			if (dynamic_cast<SymbolicLink *>(file) != nullptr){ // if file is a symbolic link
+				SymbolicLink *link = dynamic_cast<SymbolicLink *>(file);
+				File		*linkFile = File::find<File>(shell, link->getLinkedPath() + "/" + link->getLinkedName());
+				link->setLink(linkFile);
+			}
+			else if (dynamic_cast<Directory *>(file) != nullptr){ // if file is a directory then recursive call
+				Directory *dir = dynamic_cast<Directory *>(file);
+				recheckLinks(shell, dir);
+			}
+		}
+	}
+}
+
+namespace Utils{
+	string	absPathToRelPath(const Shell &shell, const string &path){
+		return path.substr(shell.getCurrentDirectory()->getOwnFilesPath().size(), path.size() - 1);
+	}
+}
+Type: Directory
 Name: CSE102
 Path: /gtu/cse/
 Time: 1704385192
@@ -145,14 +1446,6 @@ Name: math
 Path: /gtu/
 Time: 1704447640
 Type: Directory
-Name: eng
-Path: /gtu/
-Time: 1704447856
-Type: Directory
-Name: esGut
-Path: /gtu/eng/
-Time: 1704447856
-Type: Directory
 Name: family
 Path: /
 Time: 1704437417
@@ -184,22 +1477,19 @@ Path: /family/
 Time: 1704437417
 Link: /family/photos/
 LinkedName: cemla
+Type: Link
+Name: linkgtu
+Path: /
+Time: 1704565993
+Link: /
+LinkedName: gtu
 Type: Directory
-Name: esty
+Name: dream
 Path: /
 Time: 1704447910
 Type: Regular
 Name: cemla
-Path: /esty/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
-Type: Regular
-Name: here
-Path: /esty/
+Path: /dream/
 Time: 1704299052
 Content: total 0
 drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
@@ -207,6 +1497,37 @@ drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
 -rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
 -rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
 Type: Directory
-Name: afa
-Path: /esty/
-Time: 1704559598
+Name: dir
+Path: /dream/
+Time: 1704447919
+Type: Directory
+Name: esgut
+Path: /dream/dir/
+Time: 1704447919
+Type: Directory
+Name: dir2
+Path: /dream/
+Time: 1704447910
+Type: Regular
+Name: here
+Path: /dream/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Directory
+Name: testdir
+Path: /dream/
+Time: 1704447919
+Type: Directory
+Name: esgut
+Path: /dream/testdir/
+Time: 1704447919
+Type: Link
+Name: dlinkgtu
+Path: /
+Time: 1704574583
+Link: /
+LinkedName: linkgtu

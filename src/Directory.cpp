@@ -1,6 +1,7 @@
 #include "../includes/Directory.hpp"
 #include "../includes/Utils.hpp"
 #include "../includes/TextEngine.hpp"
+#include "../includes/Shell.hpp"
 #include <ctime>
 #include <sstream>
 #include <iomanip>
@@ -83,4 +84,9 @@ void	Directory::removeFile(const string &name)
 			return;
 		}
 	}
+}
+
+void Directory::cd(Shell &shell)
+{
+	shell.setCurrentDirectory(this);
 }

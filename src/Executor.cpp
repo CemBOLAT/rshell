@@ -71,7 +71,7 @@ namespace Executor
 					Directory *directory = dynamic_cast<Directory *>(file);
 					cout << "\n";
 					Utils::TextEngine::greenBackground();
-					cout << (directory->getPath() + directory->getName()) << ":";
+					cout << "./" << Utils::absPathToRelPath(Shell, directory->getOwnFilesPath()) << ":";
 					Utils::TextEngine::reset();
 					cout << endl;
 					ls(directory, Shell, option);
@@ -131,7 +131,6 @@ namespace Executor
 			if (dynamic_cast<Directory *>(filePtr))
 				throw invalid_argument("rm: cannot remove '" + fileName + "': Is a directory");
 			parentDirectory->removeFile(filePtr->getName());
-			//parentDirectory->setTime(time(nullptr));
 		}
 		catch (const invalid_argument &e)
 		{
@@ -160,7 +159,7 @@ namespace Executor
 				pPath = "";
 			directory = File::find<File>(shell, absPath);
 			parentDirectory = File::find<Directory>(shell, pPath);
-			if (directory != nullptr){
+			if (directory != nullptr){ // delete if existent file is directory and throw exception if not
 				if (dynamic_cast<Directory *>(directory))
 					parentDirectory->removeFile(absPath.substr(absPath.find_last_of('/') + 1));
 				else
@@ -189,7 +188,7 @@ namespace Executor
 {
 	void	cd(Shell &shell, const string &directoryName)
 	{
-		Directory *directory = nullptr;
+		File	*directory = nullptr;
 		if (directoryName.empty())
 			shell.setCurrentDirectory(shell.getRoot());
 		else if (directoryName == ".")
@@ -209,10 +208,11 @@ namespace Executor
 					shell.setCurrentDirectory(shell.getRoot());
 					return;
 				}
-				directory = File::find<Directory>(shell, pPath);
+				directory = File::find<File>(shell, pPath);
 				if (directory == nullptr)
 					throw invalid_argument("cd: " + directoryName + ": No such file or directory");
-				shell.setCurrentDirectory(directory);
+				directory->cd(shell);
+				//shell.setCurrentDirectory(directory);
 			}
 			catch (const invalid_argument &e){
 				throw e;
@@ -245,7 +245,7 @@ namespace
 
 namespace
 {
-	Directory *copyDirectory(const string &source, const string &fileName, const Shell &shell, const struct stat &sourceStat, const string &path)
+	Directory *copyDirectory(const string &source, const string &fileName, const Shell &shell, const struct stat &sourceStat, const string &path, Directory *parentDirectory)
 	{
 		Directory *directory;
 
@@ -255,7 +255,7 @@ namespace
 			throw std::runtime_error("cp: cannot open source directory '" + source + "'");
 		}
 		struct dirent *entry;
-		directory = new Directory(fileName, sourceStat.st_mtime, path, shell.getCurrentDirectory());
+		directory = new Directory(fileName, sourceStat.st_mtime, path, parentDirectory);
 		while ((entry = readdir(copiedDir)) != nullptr)
 		{
 			if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
@@ -277,7 +277,7 @@ namespace
 				else if (S_ISDIR(entryStat.st_mode))
 				{
 					// Recursively copy subdirectories
-					Directory *subDirectory = copyDirectory(entryPath, entry->d_name, shell, entryStat, directory->getOwnFilesPath());
+					Directory *subDirectory = copyDirectory(entryPath, entry->d_name, shell, entryStat, directory->getOwnFilesPath(), directory);
 					directory->addFile(subDirectory);
 				}
 			}
@@ -342,7 +342,7 @@ namespace
 		}
 		else if (S_ISDIR(sourceStat.st_mode))
 		{
-			Directory *directory = copyDirectory(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
+			Directory *directory = copyDirectory(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath(), shell.getCurrentDirectory());
 			shell.getCurrentDirectory()->addFile(directory);
 		}
 		//shell.getCurrentDirectory()->setTime(time(nullptr));
