@@ -131,6 +131,7 @@ namespace Executor
 			if (dynamic_cast<Directory *>(filePtr))
 				throw invalid_argument("rm: cannot remove '" + fileName + "': Is a directory");
 			parentDirectory->removeFile(filePtr->getName());
+			parentDirectory->setTime(time(nullptr));
 		}
 		catch (const invalid_argument &e)
 		{
@@ -160,8 +161,10 @@ namespace Executor
 			directory = File::find<File>(shell, absPath);
 			parentDirectory = File::find<Directory>(shell, pPath);
 			if (directory != nullptr){ // delete if existent file is directory and throw exception if not
-				if (dynamic_cast<Directory *>(directory))
+				if (dynamic_cast<Directory *>(directory)){
 					parentDirectory->removeFile(absPath.substr(absPath.find_last_of('/') + 1));
+					parentDirectory->setTime(time(nullptr));
+				}
 				else
 					throw invalid_argument("mkdir: cannot create directory '" + fileName + "': File exists");
 				return;
@@ -176,6 +179,7 @@ namespace Executor
 				directory = new Directory(name,
 										  time(nullptr), parentDirectory->getPath() + parentDirectory->getName() + "/", parentDirectory);
 			parentDirectory->addFile(directory);
+			parentDirectory->setTime(time(nullptr));
 		}
 		catch (const invalid_argument &e)
 		{
@@ -339,11 +343,13 @@ namespace
 		{
 			RegularFile *regularFile = copyRegularFile(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath());
 			shell.getCurrentDirectory()->addFile(regularFile);
+			shell.getCurrentDirectory()->setTime(time(nullptr));
 		}
 		else if (S_ISDIR(sourceStat.st_mode))
 		{
 			Directory *directory = copyDirectory(source, fileName, shell, sourceStat, shell.getCurrentDirectory()->getOwnFilesPath(), shell.getCurrentDirectory());
 			shell.getCurrentDirectory()->addFile(directory);
+			shell.getCurrentDirectory()->setTime(time(nullptr));
 		}
 		//shell.getCurrentDirectory()->setTime(time(nullptr));
 	}
@@ -413,7 +419,7 @@ namespace Executor
 										,destDirectory->getOwnFilesPath(), time(nullptr),sourceFile,
 										absSourcePath.substr(absSourcePath.find_last_of('/') + 1), sourceDirectory->getOwnFilesPath());
 			destDirectory->addFile(symbolicLink);
-			//sourceFile = File::find<RegularFile>(shell, absSourcePath); // super saçma bir hata var burda
+			destDirectory->setTime(time(nullptr));
 		}
 		catch (const invalid_argument &e)
 		{

@@ -1,4 +1,4 @@
-Time: 1704447720
+Time: 1704668553
 Type: Directory
 Name: gtu
 Path: /
@@ -6,7 +6,7 @@ Time: 1704447737
 Type: Directory
 Name: cse
 Path: /gtu/
-Time: 1704289277
+Time: 1704668635
 Type: Directory
 Name: CSE101
 Path: /gtu/cse/
@@ -1436,11 +1436,74 @@ Time: 1704385261
 Type: Directory
 Name: CSE108
 Path: /gtu/cse/
-Time: 1704385272
+Time: 1704668685
 Type: Directory
 Name: labNotes
 Path: /gtu/cse/CSE108/
-Time: 1704385272
+Time: 1704668672
+Type: Directory
+Name: notes
+Path: /gtu/cse/CSE108/labNotes/
+Time: 1704638880
+Type: Regular
+Name: asdas
+Path: /gtu/cse/CSE108/labNotes/notes/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Regular
+Name: cemla
+Path: /gtu/cse/CSE108/labNotes/notes/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Directory
+Name: dir
+Path: /gtu/cse/CSE108/labNotes/notes/
+Time: 1704447919
+Type: Directory
+Name: esgut
+Path: /gtu/cse/CSE108/labNotes/notes/dir/
+Time: 1704447919
+Type: Directory
+Name: dir2
+Path: /gtu/cse/CSE108/labNotes/notes/
+Time: 1704447910
+Type: Regular
+Name: here
+Path: /gtu/cse/CSE108/labNotes/notes/
+Time: 1704299052
+Content: total 0
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
+drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
+-rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
+Type: Directory
+Name: testdir
+Path: /gtu/cse/CSE108/labNotes/notes/
+Time: 1704447919
+Type: Directory
+Name: esgut
+Path: /gtu/cse/CSE108/labNotes/notes/testdir/
+Time: 1704447919
+Type: Directory
+Name: homeworks
+Path: /gtu/cse/CSE108/
+Time: 1704668685
+Type: Directory
+Name: CSE241
+Path: /gtu/cse/
+Time: 1704668651
+Type: Directory
+Name: esguten
+Path: /gtu/cse/CSE241/
+Time: 1704668651
 Type: Directory
 Name: math
 Path: /gtu/
@@ -1505,10 +1568,6 @@ drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
 Type: Directory
 Name: dir
 Path: /testgtu/
-Time: 1704447919
-Type: Directory
-Name: esgut
-Path: /testgtu/dir/
 Time: 1704447919
 Type: Directory
 Name: dir2
