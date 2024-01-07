@@ -1483,13 +1483,19 @@ Path: /
 Time: 1704565993
 Link: /
 LinkedName: gtu
+Type: Link
+Name: dlinkgtu
+Path: /
+Time: 1704574583
+Link: /
+LinkedName: linkgtu
 Type: Directory
-Name: dream
+Name: testgtu
 Path: /
 Time: 1704447910
 Type: Regular
 Name: cemla
-Path: /dream/
+Path: /testgtu/
 Time: 1704299052
 Content: total 0
 drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
@@ -1498,36 +1504,27 @@ drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
 -rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
 Type: Directory
 Name: dir
-Path: /dream/
+Path: /testgtu/
 Time: 1704447919
 Type: Directory
 Name: esgut
-Path: /dream/dir/
+Path: /testgtu/dir/
 Time: 1704447919
 Type: Directory
 Name: dir2
-Path: /dream/
+Path: /testgtu/
 Time: 1704447910
-Type: Regular
-Name: here
-Path: /dream/
-Time: 1704299052
-Content: total 0
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:15 .
-drwxrwxrwx 1 cbolat cbolat 512 Jan  2 17:04 ..
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 asdas
--rwxrwxrwx 1 cbolat cbolat   0 Jan  2 17:15 ceml
 Type: Directory
 Name: testdir
-Path: /dream/
+Path: /testgtu/
 Time: 1704447919
 Type: Directory
 Name: esgut
-Path: /dream/testdir/
+Path: /testgtu/testdir/
 Time: 1704447919
 Type: Link
-Name: dlinkgtu
-Path: /
-Time: 1704574583
-Link: /
-LinkedName: linkgtu
+Name: linkhere
+Path: /testgtu/
+Time: 1704625827
+Link: /testgtu/
+LinkedName: here

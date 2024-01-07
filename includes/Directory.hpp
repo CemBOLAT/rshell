@@ -25,6 +25,21 @@ class Directory : public File {
 		virtual void		cd(Shell &shell) override;
 		void				removeFile(const string &name);
 
+		class Iterator {
+			public:
+				Iterator(vector<File*>::iterator it) : it(it) {}
+				Iterator(const Iterator& it) = default;
+				Iterator&	operator=(const Iterator& it) = default;
+				~Iterator() = default;
+				File*		&operator*() { return *it; }
+				Iterator	&operator++() { ++it; return *this; }
+				bool		operator==(const Iterator& it) const { return this->it == it.it; }
+				bool		operator!=(const Iterator& it) const { return this->it != it.it; }
+			private:
+				std::vector<File*>::iterator	it;
+		};
+		Iterator	begin() { return Iterator(files.begin()); }
+		Iterator	end() { return Iterator(files.end()); }
 	private:
 		string			ownFilesPath;
 		vector<File*>	files;

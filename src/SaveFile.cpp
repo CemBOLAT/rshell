@@ -6,10 +6,10 @@
 
 namespace {
 	void	recursive(std::ofstream &file, Directory *directory){
-		for (const auto &vfile : directory->getFiles()){
-			vfile->save(file);
-			if (dynamic_cast<Directory*>(vfile) != nullptr){
-				Directory *vdFile = dynamic_cast<Directory*>(vfile);
+		for (auto vfile = directory->begin(); vfile != directory->end(); ++vfile){
+			(*vfile)->save(file);
+			if (dynamic_cast<Directory*>(*vfile) != nullptr){
+				Directory *vdFile = dynamic_cast<Directory*>(*vfile);
 				recursive(file, vdFile);
 			}
 		}

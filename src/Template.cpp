@@ -6,17 +6,17 @@ template <typename T>
 T	*findTraverse(Directory *directory, const vector<string> &path)
 {
 
-	for (auto file : directory->getFiles()){
-		if (file->getName() == path[0])
+	for (auto file = directory->begin(); file != directory->end(); ++file){
+		if ((*file)->getName() == path[0])
 		{
 			if (path.size() == 1)
 			{
-				if (dynamic_cast<T *>(file))
-					return dynamic_cast<T *>(file);
+				if (dynamic_cast<T *>(*file))
+					return dynamic_cast<T *>(*file);
 			}
 			else
 			{
-				return findTraverse<T>(dynamic_cast<Directory *>(file), vector<string>(path.begin() + 1, path.end()));
+				return findTraverse<T>(dynamic_cast<Directory *>(*file), vector<string>(path.begin() + 1, path.end()));
 			}
 		}
 	}

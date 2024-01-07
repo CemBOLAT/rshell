@@ -56,7 +56,9 @@ void RegularFile::save(std::ostream &file) const
 
 void RegularFile::cat() const
 {
-	cout << getData() << std::endl;
+	for (auto c = data.begin(); c != data.end(); ++c)
+		std::cout << *c;
+	std::cout << std::endl;
 }
 
 void RegularFile::cd(Shell& shell)

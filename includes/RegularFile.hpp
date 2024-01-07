@@ -21,6 +21,22 @@ class RegularFile : public File {
 		virtual void		save(ostream &os) const override;
 		virtual void		cat() const override;
 		virtual void		cd(Shell &shell) override;
+
+		class Iterator {
+			public:
+				Iterator(string::iterator it) : it(it) {}
+				Iterator(const Iterator& it) = default;
+				Iterator&	operator=(const Iterator& it) = default;
+				~Iterator() = default;
+				char		&operator*() { return *it; }
+				Iterator	&operator++() { ++it; return *this; }
+				bool		operator==(const Iterator& it) const { return this->it == it.it; }
+				bool		operator!=(const Iterator& it) const { return this->it != it.it; }
+			private:
+				string::iterator	it;
+		};
+		Iterator	begin() { return Iterator(data.begin()); }
+		Iterator	end() { return Iterator(data.end()); }
 	private:
 		size_t			sizeBytes;
 		string			data;

@@ -51,8 +51,8 @@ namespace Utils
 	// Postcondition: returns the trimmed string
 	string	trim(const std::string &str)
 	{
-		size_t first = str.find_first_not_of(" \t\r");
-		size_t last = str.find_last_not_of(" \t\r");
+		size_t	first = str.find_first_not_of(" \t\r");
+		size_t	last = str.find_last_not_of(" \t\r");
 
 		if (first == std::string::npos || last == std::string::npos)
 			return "";
@@ -74,10 +74,10 @@ namespace Utils
 	// Postcondition: prints the timeinfo to os
 	ostream &printTime(ostream &os, struct tm *timeinfo)
 	{
-		int day = timeinfo->tm_mday;
-		int month = timeinfo->tm_mon + 1;
-		int hour = timeinfo->tm_hour;
-		int minute = timeinfo->tm_min;
+		int	day = timeinfo->tm_mday;
+		int	month = timeinfo->tm_mon + 1;
+		int	hour = timeinfo->tm_hour;
+		int	minute = timeinfo->tm_min;
 
 		os << std::setw(3) << std::setfill('0') << convertMonth(month) << " "
 			<< std::setw(2) << std::setfill('0') << day << " "
@@ -89,8 +89,8 @@ namespace Utils
 	// Postcondition: returns the data of file
 	string	getData(std::ifstream &file)
 	{
-		string data;
-		string line;
+		string	data;
+		string	line;
 		getline(file, line);
 		data = line.substr(line.find(" ") + 1, line.size() - 1);
 		if (data[data.size() - 1] == static_cast<char>(3))
@@ -168,14 +168,15 @@ namespace Utils
 	// Postcondition: deletes the directory and its files recursively from memory for preventing memory leak
 	void terminate(Directory *directory)
 	{
-		for (auto file : directory->getFiles())
+		// Use iterator for deleting files
+		for (auto it = directory->begin(); it != directory->end(); ++it)
 		{
-			if (dynamic_cast<Directory *>(file))
-				terminate(dynamic_cast<Directory *>(file)); // recursive call
+			if (dynamic_cast<Directory *>(*it))
+				terminate(dynamic_cast<Directory *>(*it)); // recursive call
 			else
 			{
-				delete file;
-				file = nullptr;
+				delete *it;
+				*it = nullptr;
 			}
 		}
 		delete directory;
@@ -200,14 +201,14 @@ namespace Utils {
 	// Precondition: shell is a Shell
 	// Postcondition: rechecks the links of shell recursively because of the possibility of deleting linked files or creating new files for linking to them
 	void recheckLinks(Shell &shell, Directory *directory){
-		for (auto &file : directory->getFiles()){
-			if (dynamic_cast<SymbolicLink *>(file) != nullptr){ // if file is a symbolic link
-				SymbolicLink *link = dynamic_cast<SymbolicLink *>(file);
+		for (auto it = directory->begin(); it != directory->end(); ++it){
+			if (dynamic_cast<SymbolicLink *>(*it) != nullptr){ // if file is a symbolic link
+				SymbolicLink *link = dynamic_cast<SymbolicLink *>(*it);
 				File		*linkFile = File::find<File>(shell, link->getLinkedPath() + "/" + link->getLinkedName());
 				link->setLink(linkFile);
 			}
-			else if (dynamic_cast<Directory *>(file) != nullptr){ // if file is a directory then recursive call
-				Directory *dir = dynamic_cast<Directory *>(file);
+			else if (dynamic_cast<Directory *>(*it) != nullptr){ // if file is a directory then recursive call
+				Directory *dir = dynamic_cast<Directory *>(*it);
 				recheckLinks(shell, dir);
 			}
 		}
