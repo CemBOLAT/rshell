@@ -5,38 +5,40 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <stdexcept>
 
 Directory::Directory(const string &name, time_t time, const string &path)
 	: File(name, time, path), ownFilesPath("/"), parentDirectory(nullptr)
 {
-	this->files = vector<File*>();
+	this->files = vector<File *>();
 }
 
-Directory::Directory(const string &name, time_t time, const string &path, Directory* parentDirectory)
-	: File(name, time, path), ownFilesPath(path + name + "/" ),parentDirectory(parentDirectory)
+Directory::Directory(const string &name, time_t time, const string &path, Directory *parentDirectory)
+	: File(name, time, path), ownFilesPath(path + name + "/"), parentDirectory(parentDirectory)
 {
 	this->files = vector<File *>();
 }
 
 Directory::~Directory()
-{/*Body inintentionally left empty! */}
+{ /*Body inintentionally left empty! */
+}
 
 // hata dosya okumada sorun var
-Directory*	Directory::getDirectory(const string &name) const
+Directory *Directory::getDirectory(const string &name) const
 {
 	for (auto file : this->files)
 	{
 		if (file->getName() == name)
 		{
-			if (dynamic_cast<Directory*>(file))
-				return dynamic_cast<Directory*>(file);
+			if (dynamic_cast<Directory *>(file))
+				return dynamic_cast<Directory *>(file);
 		}
 	}
 
 	return nullptr;
 }
 
-void	Directory::addFile(File* file)
+void Directory::addFile(File *file)
 {
 	this->files.push_back(file);
 }
@@ -60,7 +62,8 @@ void Directory::print(std::ostream &os, size_t maxLen) const
 	os << std::endl;
 }
 
-void	Directory::save(std::ostream &file) const {
+void Directory::save(std::ostream &file) const
+{
 	file << "Type: Directory" << std::endl;
 	file << "Name: " << this->getName() << std::endl;
 	file << "Path: " << this->getPath() << std::endl;
@@ -72,14 +75,14 @@ void Directory::cat() const
 	throw std::runtime_error("cat: " + this->getName() + ": Is a directory");
 }
 
-void	Directory::removeFile(const string &name)
+void Directory::removeFile(const string &name)
 {
 	for (auto it = this->files.begin(); it != this->files.end(); ++it)
 	{
 		if ((*it)->getName() == name)
 		{
-			if (dynamic_cast<Directory*>(*it))
-				Utils::terminate(dynamic_cast<Directory*>(*it));
+			if (dynamic_cast<Directory *>(*it))
+				Utils::recRemoveDir(dynamic_cast<Directory *>(*it));
 			this->files.erase(it);
 			return;
 		}

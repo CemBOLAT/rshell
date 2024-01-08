@@ -3,18 +3,21 @@
 #include "../includes/TextEngine.hpp"
 #include <ctime>
 #include <iomanip>
+#include <stdexcept>
 
-SymbolicLink::SymbolicLink(const string& name, const string& path, time_t time, File* link, const string& linkedName, const string& linkPath)
+SymbolicLink::SymbolicLink(const string &name, const string &path, time_t time, File *link, const string &linkedName, const string &linkPath)
 	: File(name, time, path), link(link), linkedName(linkedName), linkPath(linkPath)
-{/*Body inintentionally left empty! */}
+{ /*Body inintentionally left empty! */
+}
 
 SymbolicLink::~SymbolicLink()
-{/*Body inintentionally left empty! */}
+{ /*Body inintentionally left empty! */
+}
 
-void	SymbolicLink::print(ostream& os, size_t maxLen) const
+void SymbolicLink::print(ostream &os, size_t maxLen) const
 {
 	time_t rawtime = this->getTime();
-	struct tm* timeinfo = std::localtime(&rawtime);
+	struct tm *timeinfo = std::localtime(&rawtime);
 
 	Utils::TextEngine::red();
 	os << "L ";
@@ -35,7 +38,8 @@ void	SymbolicLink::print(ostream& os, size_t maxLen) const
 	os << endl;
 }
 
-void	SymbolicLink::save(std::ostream &file) const {
+void SymbolicLink::save(std::ostream &file) const
+{
 	file << "Type: Link" << std::endl;
 	file << "Name: " << getName() << std::endl;
 	file << "Path: " << getPath() << std::endl;
@@ -53,7 +57,7 @@ void SymbolicLink::cat() const
 	link->cat();
 }
 
-void SymbolicLink::cd(Shell& shell)
+void SymbolicLink::cd(Shell &shell)
 {
 	if (link == nullptr)
 	{

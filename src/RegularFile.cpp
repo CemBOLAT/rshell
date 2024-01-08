@@ -3,33 +3,36 @@
 #include "../includes/TextEngine.hpp"
 #include <ctime>
 #include <iomanip>
+#include <stdexcept>
 
-RegularFile::RegularFile(const string &name, size_t sizeBytes, time_t time, const string& data, const string& path)
+RegularFile::RegularFile(const string &name, size_t sizeBytes, time_t time, const string &data, const string &path)
 	: File(name, time, path), sizeBytes(sizeBytes), data(data)
-{/*Body inintentionally left empty! */}
+{ /*Body inintentionally left empty! */
+}
 
 RegularFile::~RegularFile()
-{/*Body inintentionally left empty! */}
+{ /*Body inintentionally left empty! */
+}
 
-ostream&	operator<<(ostream& os, const RegularFile& file)
+ostream &operator<<(ostream &os, const RegularFile &file)
 {
 	time_t rawtime = file.getTime();
-	struct tm* timeinfo = std::localtime(&rawtime);
+	struct tm *timeinfo = std::localtime(&rawtime);
 
 	os << "F " << file.getName() << " ";
 	Utils::printTime(os, timeinfo) << file.getSizeBytes() << " Bytes";
 	return os;
 }
 
-void		RegularFile::copy(Directory *dir) const
+void RegularFile::copy(Directory *dir) const
 {
 	dir->addFile(new RegularFile(*this));
 }
 
-void		RegularFile::print(ostream& os, size_t maxLen) const
+void RegularFile::print(ostream &os, size_t maxLen) const
 {
 	time_t rawtime = this->getTime();
-	struct tm* timeinfo = std::localtime(&rawtime);
+	struct tm *timeinfo = std::localtime(&rawtime);
 
 	Utils::TextEngine::yellow();
 	os << "F ";
@@ -61,7 +64,7 @@ void RegularFile::cat() const
 	std::cout << std::endl;
 }
 
-void RegularFile::cd(Shell& shell)
+void RegularFile::cd(Shell &shell)
 {
 	(void)shell;
 	throw std::runtime_error("cd :" + getName() + " : Not a directory");

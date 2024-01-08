@@ -7,12 +7,14 @@
 #include <string>
 #include <ctime>
 #include <sstream>
+#include <stdexcept>
 
 using namespace std;
 
-void LoadFile::addRegularFile(Shell &shell, ifstream &file){
-	string		name, path, time, data;
-	Directory	*directory = shell.getRoot();
+void LoadFile::addRegularFile(Shell &shell, ifstream &file)
+{
+	string name, path, time, data;
+	Directory *directory = shell.getRoot();
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
 	time = Utils::getContent(file);
@@ -20,7 +22,8 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file){
 
 	time_t time_t_time = stoi(time);
 
-	if (path == "/"){
+	if (path == "/")
+	{
 		directory = shell.getRoot();
 		directory->addFile(new RegularFile(name, data.size(), time_t_time, data, path));
 		return;
@@ -32,9 +35,10 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file){
 	directory->addFile(new RegularFile(name, data.size(), time_t_time, data, path));
 }
 
-void LoadFile::addDirectory(Shell &shell, ifstream &file){
-	string		name, path, time;
-	Directory	*parentDirectory;
+void LoadFile::addDirectory(Shell &shell, ifstream &file)
+{
+	string name, path, time;
+	Directory *parentDirectory;
 
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
@@ -42,22 +46,25 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file){
 
 	time_t time_t_time = stoi(time);
 
-	if (path == "/"){
+	if (path == "/")
+	{
 		parentDirectory = shell.getRoot();
 		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
 	}
-	else{
+	else
+	{
 		parentDirectory = File::find<Directory>(shell, path);
 		if (parentDirectory == nullptr)
-			throw runtime_error("Directory coould not be found."); // not configrated
+			throw runtime_error("Directory coould not be found.");						   // not configrated
 		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
 	}
 }
 
-void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
-	string		name, path, time, linkPath, linkerName;
-	File		*link = nullptr;
-	Directory	*directory = nullptr;
+void LoadFile::addSymbolicLink(Shell &shell, ifstream &file)
+{
+	string name, path, time, linkPath, linkerName;
+	File *link = nullptr;
+	Directory *directory = nullptr;
 
 	name = Utils::getContent(file);
 	path = Utils::getContent(file);
@@ -75,12 +82,13 @@ void	LoadFile::addSymbolicLink(Shell &shell, ifstream &file){
 	directory->addFile(new SymbolicLink(name, path, time_t_time, link, linkerName, linkPath));
 }
 
-void LoadFile::load(const std::string &path, Shell &shell){
+void LoadFile::load(const std::string &path, Shell &shell)
+{
 	ifstream file(path);
 
 	if (!file.is_open())
 		throw runtime_error("File could not be opened.");
-	string lineTmp; // to ignore first line for roots time
+	string lineTmp;			// to ignore first line for roots time
 	getline(file, lineTmp); // ignore first line
 	while (!file.eof())
 	{
@@ -89,19 +97,23 @@ void LoadFile::load(const std::string &path, Shell &shell){
 		line = Utils::trim(line);
 		if (line.empty())
 			continue;
-		if (line.substr(line.find(" ") + 1, line.size() - 1) == "Regular"){
+		if (line.substr(line.find(" ") + 1, line.size() - 1) == "Regular")
+		{
 			addRegularFile(shell, file);
 		}
-		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Directory"){
+		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Directory")
+		{
 			addDirectory(shell, file);
 		}
-		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Link"){
+		else if (line.substr(line.find(" ") + 1, line.size() - 1) == "Link")
+		{
 			addSymbolicLink(shell, file);
 		}
-		else{
+		else
+		{
 			throw runtime_error("Filesystem is not in correct format.");
 		}
-		Utils::recheckLinks(shell ,shell.getRoot());
+		Utils::recheckLinks(shell, shell.getRoot());
 	}
 	file.close();
 }

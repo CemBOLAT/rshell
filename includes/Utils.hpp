@@ -23,7 +23,7 @@ namespace Utils {
 	string			relPathToAbsPath(const Shell &shell, const string &path);
 	string			absPathToRelPath(const Shell &shell, const string &path);
 	string			getParentPathOfAbsPath(const string &absPath);
-	void			terminate(Directory *directory);
+	void			recRemoveDir(Directory *directory);
 	size_t			getProgramSize(const Shell &Shell);
 	void			recheckLinks(Shell &shell, Directory *directory);
 }

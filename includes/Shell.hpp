@@ -12,7 +12,7 @@ class Shell {
 		Shell(const Shell& shell) = default;
 		Shell&	operator=(const Shell& shell) = default;
 
-		~Shell() { Utils::terminate(this->root); }
+		~Shell() { Utils::recRemoveDir(this->root); }
 
 		bool			isTerminated() const { return this->isTerminating; }
 		void			setTerminated(bool isTerminated) { this->isTerminating = isTerminated; }

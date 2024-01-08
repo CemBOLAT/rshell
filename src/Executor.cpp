@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <iomanip>
 #include <cstring>
+#include <stdexcept>
 
 namespace
 {
@@ -29,8 +30,8 @@ namespace
 
 	void listSpecialDirectories(ostream &os, const Directory *dir, size_t maxNameLength)
 	{
-		time_t		rawtime = dir->getParentDirectory()->getTime();
-		struct tm	*timeinfo = std::localtime(&rawtime);
+		time_t rawtime = dir->getParentDirectory()->getTime();
+		struct tm *timeinfo = std::localtime(&rawtime);
 
 		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << ".."
 		   << " ";
@@ -38,7 +39,8 @@ namespace
 	}
 }
 
-namespace {
+namespace
+{
 	size_t getMaxNameLength(const vector<File *> &files)
 	{
 		size_t maxNameLength = 2; // . ve .. için
@@ -55,8 +57,8 @@ namespace Executor
 {
 	void ls(const Directory *directory, const Shell &Shell, const string &option)
 	{
-		vector<File *>	files = directory->getFiles();
-		size_t			maxNameLength = getMaxNameLength(files);
+		vector<File *> files = directory->getFiles();
+		size_t maxNameLength = getMaxNameLength(files);
 		listOnlyCurrentDirectory(cout, directory, maxNameLength);
 		if (directory != Shell.getRoot())
 			listSpecialDirectories(cout, directory, maxNameLength);
@@ -70,7 +72,7 @@ namespace Executor
 				{
 					Directory *directory = dynamic_cast<Directory *>(file);
 					cout << "\n";
-					Utils::TextEngine::greenBackground();
+					Utils::TextEngine::orange();
 					cout << "./" << Utils::absPathToRelPath(Shell, directory->getOwnFilesPath()) << ":";
 					Utils::TextEngine::reset();
 					cout << endl;
@@ -93,7 +95,7 @@ namespace Executor
 			throw runtime_error("cat: " + fileName + ": Is a directory");
 		try
 		{
-			string	absPath = Utils::relPathToAbsPath(shell, fileName);
+			string absPath = Utils::relPathToAbsPath(shell, fileName);
 			if (absPath == "/")
 				throw runtime_error("cat: " + fileName + ": Is a directory");
 			filePtr = File::find<File>(shell, absPath);
@@ -121,7 +123,7 @@ namespace Executor
 			throw runtime_error("rm: " + fileName + ": Is a directory");
 		try
 		{
-			string	absPath = Utils::relPathToAbsPath(shell, fileName);
+			string absPath = Utils::relPathToAbsPath(shell, fileName);
 			if (absPath == "/")
 				throw runtime_error("rm: cannot remove '" + fileName + "': Is a directory");
 			filePtr = File::find<File>(shell, absPath);
@@ -142,10 +144,10 @@ namespace Executor
 
 namespace Executor
 {
-	void	mkdir(const Shell &shell, const string &fileName)
+	void mkdir(const Shell &shell, const string &fileName)
 	{
-		File		*directory = nullptr;
-		Directory	*parentDirectory = nullptr;
+		File *directory = nullptr;
+		Directory *parentDirectory = nullptr;
 		if (fileName.empty())
 			throw runtime_error("mkdir: missing operand");
 		else if (fileName == "." || fileName == "..")
@@ -160,8 +162,10 @@ namespace Executor
 				pPath = "";
 			directory = File::find<File>(shell, absPath);
 			parentDirectory = File::find<Directory>(shell, pPath);
-			if (directory != nullptr){ // delete if existent file is directory and throw exception if not
-				if (dynamic_cast<Directory *>(directory)){
+			if (directory != nullptr)
+			{ // delete if existent file is directory and throw exception if not
+				if (dynamic_cast<Directory *>(directory))
+				{
 					parentDirectory->removeFile(absPath.substr(absPath.find_last_of('/') + 1));
 					parentDirectory->setTime(time(nullptr));
 				}
@@ -190,9 +194,9 @@ namespace Executor
 
 namespace Executor
 {
-	void	cd(Shell &shell, const string &directoryName)
+	void cd(Shell &shell, const string &directoryName)
 	{
-		File	*directory = nullptr;
+		File *directory = nullptr;
 		if (directoryName.empty())
 			shell.setCurrentDirectory(shell.getRoot());
 		else if (directoryName == ".")
@@ -208,7 +212,8 @@ namespace Executor
 			try
 			{
 				string pPath = Utils::relPathToAbsPath(shell, directoryName);
-				if (pPath == "/"){
+				if (pPath == "/")
+				{
 					shell.setCurrentDirectory(shell.getRoot());
 					return;
 				}
@@ -216,9 +221,10 @@ namespace Executor
 				if (directory == nullptr)
 					throw invalid_argument("cd: " + directoryName + ": No such file or directory");
 				directory->cd(shell);
-				//shell.setCurrentDirectory(directory);
+				// shell.setCurrentDirectory(directory);
 			}
-			catch (const invalid_argument &e){
+			catch (const invalid_argument &e)
+			{
 				throw e;
 			}
 		}
@@ -351,7 +357,7 @@ namespace
 			shell.getCurrentDirectory()->addFile(directory);
 			shell.getCurrentDirectory()->setTime(time(nullptr));
 		}
-		//shell.getCurrentDirectory()->setTime(time(nullptr));
+		// shell.getCurrentDirectory()->setTime(time(nullptr));
 	}
 }
 
@@ -361,8 +367,8 @@ namespace Executor
 	void cp(const Shell &shell, const string &source, const string &fileName)
 	{
 
-		struct stat	sourceStat;
-		File		*file = nullptr;
+		struct stat sourceStat;
+		File *file = nullptr;
 
 		if (source.empty() || fileName.empty())
 			throw runtime_error("cp: missing operand");
@@ -393,16 +399,16 @@ namespace Executor
 // @brief optimazsion probs in here
 namespace Executor
 {
-	void	link(const Shell &shell, const string &source, const string &dest)
+	void link(const Shell &shell, const string &source, const string &dest)
 	{
-		Directory		*destDirectory = nullptr;
-		Directory		*sourceDirectory = nullptr;
-		File			*sourceFile = nullptr;
-		File			*destFile = nullptr;
-		SymbolicLink	*symbolicLink = nullptr;
+		Directory *destDirectory = nullptr;
+		Directory *sourceDirectory = nullptr;
+		File *sourceFile = nullptr;
+		File *destFile = nullptr;
+		SymbolicLink *symbolicLink = nullptr;
 
-		string			absSourcePath = Utils::relPathToAbsPath(shell, source);
-		string			absDestPath = Utils::relPathToAbsPath(shell, dest);
+		string absSourcePath = Utils::relPathToAbsPath(shell, source);
+		string absDestPath = Utils::relPathToAbsPath(shell, dest);
 		if (dest.empty() || source.empty())
 			throw runtime_error("link: missing operand");
 		else if (dest == "." || dest == "..")
@@ -415,9 +421,8 @@ namespace Executor
 			sourceFile = File::find<File>(shell, absSourcePath);
 			destDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absDestPath));
 			sourceDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absSourcePath));
-			symbolicLink = new SymbolicLink(absDestPath.substr(absDestPath.find_last_of('/') + 1)
-										,destDirectory->getOwnFilesPath(), time(nullptr),sourceFile,
-										absSourcePath.substr(absSourcePath.find_last_of('/') + 1), sourceDirectory->getOwnFilesPath());
+			symbolicLink = new SymbolicLink(absDestPath.substr(absDestPath.find_last_of('/') + 1), destDirectory->getOwnFilesPath(), time(nullptr), sourceFile,
+											absSourcePath.substr(absSourcePath.find_last_of('/') + 1), sourceDirectory->getOwnFilesPath());
 			destDirectory->addFile(symbolicLink);
 			destDirectory->setTime(time(nullptr));
 		}
