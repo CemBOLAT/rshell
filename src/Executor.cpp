@@ -194,7 +194,7 @@ namespace Executor
 
 namespace Executor
 {
-	void cd(Shell &shell, const string &directoryName)
+	void	cd(Shell &shell, const string &directoryName)
 	{
 		File *directory = nullptr;
 		if (directoryName.empty())
@@ -329,10 +329,6 @@ namespace
 				{
 					size += getDirectorySize(entryStat, entryPath);
 				}
-				else
-				{
-					size += 2;
-				}
 			}
 		}
 		closedir(copiedDir);
@@ -367,8 +363,8 @@ namespace Executor
 	void cp(const Shell &shell, const string &source, const string &fileName)
 	{
 
-		struct stat sourceStat;
-		File *file = nullptr;
+		struct stat	sourceStat;
+		File		*file = nullptr;
 
 		if (source.empty() || fileName.empty())
 			throw runtime_error("cp: missing operand");
@@ -377,22 +373,13 @@ namespace Executor
 			throw std::runtime_error("cp: source file '" + source + "' does not exist");
 		}
 		file = File::find<File>(shell, shell.getCurrentDirectory()->getOwnFilesPath() + fileName);
+		if (file != nullptr)
+			throw runtime_error("cp: cannot copy to '" + fileName + "': File exists");
 		if (S_ISREG(sourceStat.st_mode) && sourceStat.st_size + Utils::getProgramSize(shell) > shell.getOsSize())
 			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
 		if (S_ISDIR(sourceStat.st_mode) && getDirectorySize(sourceStat, source) + Utils::getProgramSize(shell) > shell.getOsSize())
 			throw runtime_error("cp: cannot copy '" + source + "': No space left on device");
-		if (file == nullptr)
-			onlyAddToDirectory(shell, source, fileName, sourceStat);
-		else if ((dynamic_cast<Directory *>(file) && !S_ISDIR(sourceStat.st_mode)) ||
-				 (dynamic_cast<RegularFile *>(file) && !S_ISREG(sourceStat.st_mode)))
-		{
-			throw runtime_error("cp: cannot copy '" + source + "' -- '" + fileName + "' : File exists");
-		}
-		else
-		{
-			shell.getCurrentDirectory()->removeFile(fileName);
-			onlyAddToDirectory(shell, source, fileName, sourceStat);
-		}
+		onlyAddToDirectory(shell, source, fileName, sourceStat);
 	}
 }
 

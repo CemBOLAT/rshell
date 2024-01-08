@@ -9,7 +9,7 @@
 
 const std::string Shell::fileSystemPath = "./os/filesystem.txt";
 
-Shell::Shell() : isTerminating(false), prompt("cemalBolat:/$ ")
+Shell::Shell() : isTerminating(false), prompt("/$ ")
 {
 	std::ifstream file(fileSystemPath);
 	time_t timeT;
@@ -89,9 +89,9 @@ void Shell::execute(string command)
 		{
 			Executor::cd(*this, commandArgument);
 			if (getCurrentDirectory()->getName() == "/")
-				this->setPrompt("cemalBolat:/$ ");
+				this->setPrompt("/$ ");
 			else
-				setPrompt("cemalBolat:" + getCurrentDirectory()->getPath() + getCurrentDirectory()->getName() + "$ ");
+				setPrompt(getCurrentDirectory()->getPath() + getCurrentDirectory()->getName() + "$ ");
 			return;
 		}
 	}
@@ -102,6 +102,8 @@ void Shell::execute(string command)
 			throw runtime_error("cp: missing operand");
 		else if (args.size() > 2)
 			throw runtime_error("cp: invalid number of arguments for cemalBolatShell -- ");
+		else if (args[1] == "." || args[1] == ".." || args[1] == "/")
+			throw runtime_error("cp: cannot copy to " + args[1] + ": file exists");
 		Executor::cp(*this, args[0], args[1]);
 		Utils::recheckLinks(*this, getRoot());
 		SaveFile::save(getFileSystemPath(), *this);

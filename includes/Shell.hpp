@@ -16,20 +16,14 @@ class Shell {
 
 		bool			isTerminated() const { return this->isTerminating; }
 		void			setTerminated(bool isTerminated) { this->isTerminating = isTerminated; }
-
 		void			setPrompt(const string& prompt) { this->prompt = prompt;}
 		string			getPrompt() const { return this->prompt; }
-
 		const string	getFileSystemPath() const { return Shell::fileSystemPath; }
-
 		Directory*		getCurrentDirectory() const { return this->currentDirectory; }
 		void			setCurrentDirectory(Directory* directory) { this->currentDirectory = directory; }
-
 		Directory*		getRoot() const { return this->root; }
 		void			execute(string command);
-
 		size_t			getOsSize() const { return osSize; }
-
 	private:
 		static const string	fileSystemPath;
 		Directory*			root;

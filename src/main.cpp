@@ -13,6 +13,10 @@ int main(){
 			try {
 				Utils::TextEngine::green();
 				Utils::TextEngine::bold();
+				cout << "cemalBolat@C++0S:";
+				Utils::TextEngine::reset();
+				Utils::TextEngine::bold();
+				Utils::TextEngine::blue();
 				cout << shell.getPrompt();
 				Utils::TextEngine::magenta();
 				string command;
