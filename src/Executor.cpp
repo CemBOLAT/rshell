@@ -152,7 +152,7 @@ namespace Executor
 		try
 		{
 			string absPath = Utils::relPathToAbsPath(shell, fileName);
-			if (absPath == "/")
+			if (absPath == "/" || absPath == shell.getCurrentDirectory()->getOwnFilesPath()) // if file is root directory or current directory throw exception
 				throw runtime_error("rm: cannot remove '" + fileName + "': Is a directory"); // root directory cannot be deleted
 			filePtr = File::find<File>(shell, absPath);
 			parentDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absPath));
@@ -189,7 +189,7 @@ namespace Executor
 		try
 		{
 			string absPath = Utils::relPathToAbsPath(shell, fileName);
-			if (absPath == "/")
+			if (absPath == "/" || absPath == shell.getCurrentDirectory()->getOwnFilesPath()) // if file is root directory or current directory throw exception
 				throw runtime_error("mkdir: cannot create directory '" + fileName + "': File exists"); // root directory cannot be created and deleted
 			string pPath = Utils::getParentPathOfAbsPath(absPath);
 			if (pPath == "/")
@@ -417,6 +417,8 @@ namespace Executor
 
 		if (source.empty() || fileName.empty())
 			throw runtime_error("cp: missing operand");
+		if (fileName == "." || fileName == ".." || fileName == "/")
+			throw runtime_error("cp: cannot copy to '" + fileName + "': File exists");
 		if (stat(source.c_str(), &sourceStat) != 0)
 		{
 			throw std::runtime_error("cp: source file '" + source + "' does not exist"); // if stat cannot be accessed throw exception and exit

@@ -33,6 +33,8 @@ Shell::~Shell()
 
 void Shell::execute(string command)
 {
+	if (command == "")
+		return;
 	command = Utils::trim(command);
 	vector<string> commandSplit = Utils::split(command, ' ');
 	string commandName = commandSplit[0];
@@ -124,6 +126,6 @@ void Shell::execute(string command)
 		SaveFile::save(getFileSystemPath(), *this);
 		return;
 	}
-	else if (command != "")
+	else
 		throw invalid_argument("cemalBolatShell: " + commandName + ": command not found");
 }
