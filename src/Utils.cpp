@@ -19,30 +19,18 @@ namespace
 	{
 		switch (month)
 		{
-		case 1:
-			return "Jan";
-		case 2:
-			return "Feb";
-		case 3:
-			return "Mar";
-		case 4:
-			return "Apr";
-		case 5:
-			return "May";
-		case 6:
-			return "Jun";
-		case 7:
-			return "Jul";
-		case 8:
-			return "Aug";
-		case 9:
-			return "Sep";
-		case 10:
-			return "Oct";
-		case 11:
-			return "Nov";
-		default:
-			return "Dec";
+		case 1: return "Jan";
+		case 2: return "Feb";
+		case 3: return "Mar";
+		case 4: return "Apr";
+		case 5: return "May";
+		case 6: return "Jun";
+		case 7: return "Jul";
+		case 8: return "Aug";
+		case 9: return "Sep";
+		case 10: return "Oct";
+		case 11: return "Nov";
+		default: return "Dec";
 		}
 	}
 }
@@ -197,7 +185,7 @@ namespace Utils
 	// Postcondition: rechecks the links of shell recursively because of the possibility of deleting linked files or creating new files for linking to them
 	void recheckLinks(Shell &shell, Directory *directory)
 	{
-		for (auto it = directory->begin(); it != directory->end(); ++it)
+		for (auto it = directory->getFiles().begin(); it != directory->getFiles().end(); ++it)
 		{
 			if (dynamic_cast<SymbolicLink *>(*it) != nullptr)
 			{ // if file is a symbolic link
@@ -214,15 +202,8 @@ namespace Utils
 	}
 }
 
-namespace Utils
-{
-	string absPathToRelPath(const Shell &shell, const string &path)
-	{
-		return path.substr(shell.getCurrentDirectory()->getOwnFilesPath().size(), path.size() - 1);
-	}
-}
-
 namespace Utils {
+	// prints the prompt properly
 	void printPrompt(const Shell &shell) {
 		Utils::TextEngine::green();
 		Utils::TextEngine::bold();

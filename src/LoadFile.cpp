@@ -11,6 +11,8 @@
 
 using namespace std;
 
+// Precondition: program wants to load regular file
+// Postcondition: regular file is loaded
 void LoadFile::addRegularFile(Shell &shell, ifstream &file)
 {
 	string name, path, time, data;
@@ -31,10 +33,12 @@ void LoadFile::addRegularFile(Shell &shell, ifstream &file)
 	directory = File::find<Directory>(shell, path);
 
 	if (directory == nullptr)
-		throw runtime_error("Filesystem may not be configrated ! "); // not configrated
+		throw runtime_error("Filesystem may not be configrated ! ");
 	directory->addFile(new RegularFile(name, data.size(), time_t_time, data, path));
 }
 
+// Precondition: program wants to load directory
+// Postcondition: directory is loaded
 void LoadFile::addDirectory(Shell &shell, ifstream &file)
 {
 	string name, path, time;
@@ -49,17 +53,19 @@ void LoadFile::addDirectory(Shell &shell, ifstream &file)
 	if (path == "/")
 	{
 		parentDirectory = shell.getRoot();
-		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
+		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory));
 	}
 	else
 	{
 		parentDirectory = File::find<Directory>(shell, path);
 		if (parentDirectory == nullptr)
-			throw runtime_error("Directory coould not be found.");						   // not configrated
-		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory)); // zaman kritik
+			throw runtime_error("Directory coould not be found.");
+		parentDirectory->addFile(new Directory(name, time_t_time, path, parentDirectory));
 	}
 }
 
+// Precondition: program wants to load symbolic link
+// Postcondition: symbolic link is loaded
 void LoadFile::addSymbolicLink(Shell &shell, ifstream &file)
 {
 	string name, path, time, linkPath, linkerName;
@@ -82,6 +88,8 @@ void LoadFile::addSymbolicLink(Shell &shell, ifstream &file)
 	directory->addFile(new SymbolicLink(name, path, time_t_time, link, linkerName, linkPath));
 }
 
+// Precondition: program wants to load file system
+// Postcondition: file system is loaded
 void LoadFile::load(const std::string &path, Shell &shell)
 {
 	ifstream file(path);
@@ -113,7 +121,7 @@ void LoadFile::load(const std::string &path, Shell &shell)
 		{
 			throw runtime_error("Filesystem is not in correct format.");
 		}
-		Utils::recheckLinks(shell, shell.getRoot());
 	}
+	Utils::recheckLinks(shell, shell.getRoot()); // recheck links because they may be linked after loading file system
 	file.close();
 }

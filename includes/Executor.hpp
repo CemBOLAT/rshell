@@ -1,3 +1,5 @@
+// Executor.hpp
+// Executor is a namespace that contains functions that execute commands.
 #ifndef EXECUTOR_HPP
 # define EXECUTOR_HPP
 

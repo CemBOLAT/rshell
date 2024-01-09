@@ -3,6 +3,7 @@
 
 #include <string>
 
+// namespace for colorful text
 namespace Utils {
 	namespace TextEngine {
 

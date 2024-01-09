@@ -7,9 +7,10 @@
 
 namespace
 {
+	// recursive function that saves subdirectories and files
 	void recursive(std::ofstream &file, Directory *directory)
 	{
-		for (auto vfile = directory->begin(); vfile != directory->end(); ++vfile)
+		for (auto vfile = directory->getFiles().begin(); vfile != directory->getFiles().end(); ++vfile)
 		{
 			(*vfile)->save(file);
 			if (dynamic_cast<Directory *>(*vfile) != nullptr)
@@ -21,6 +22,8 @@ namespace
 	}
 }
 
+// Precondition: program wants to save the current state of the shell to a file
+// Postcondition: the current state of the shell is saved to a file
 void SaveFile::save(const std::string &path, Shell &shell)
 {
 	std::ofstream file(path);
@@ -34,10 +37,10 @@ void SaveFile::save(const std::string &path, Shell &shell)
 		if (vfile != nullptr)
 		{
 			vfile->save(file);
-			if (dynamic_cast<Directory *>(vfile) != nullptr)
+			if (dynamic_cast<Directory *>(vfile) != nullptr) // if it is a directory then call recursive function
 			{
 				Directory *vdFile = dynamic_cast<Directory *>(vfile);
-				recursive(file, vdFile);
+				recursive(file, vdFile); // recursive function
 			}
 		}
 	}

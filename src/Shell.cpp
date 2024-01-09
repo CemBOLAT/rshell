@@ -23,6 +23,9 @@ Shell::Shell() : isTerminating(false), prompt("/$ ")
 	file.close();
 }
 
+/* destructor : deletes root directory \
+	deleting root directory deletes all files in it recursively. \
+	because delete calls each files destructor and deletes them. */
 Shell::~Shell()
 {
 	delete this->root;
@@ -53,7 +56,7 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "cat")
 	{
-		if (commandSplit.size() > 1)
+		if (commandSplit.size() > 2)
 			throw runtime_error("cat: invalid number of arguments for cemalBolatShell -- ");
 		else
 			Executor::cat(*this, commandSplit[1]);
@@ -61,7 +64,7 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "rm")
 	{
-		if (commandSplit.size() > 1)
+		if (commandSplit.size() > 2)
 			throw runtime_error("rm: invalid number of arguments for cemalBolatShell -- ");
 		else
 		{
@@ -73,7 +76,7 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "mkdir")
 	{
-		if (commandSplit.size() > 1)
+		if (commandSplit.size() > 2)
 			throw runtime_error("mkdir: invalid number of arguments for cemalBolatShell -- ");
 		else
 		{
@@ -85,7 +88,7 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "cd")
 	{
-		if (commandSplit.size() > 1)
+		if (commandSplit.size() > 2)
 			throw runtime_error("cd: invalid number of arguments for cemalBolatShell -- ");
 		else
 		{
@@ -99,9 +102,9 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "cp")
 	{
-		if (commandSplit.size() < 2)
+		if (commandSplit.size() < 3)
 			throw runtime_error("cp: missing operand");
-		else if (commandSplit.size() > 2)
+		else if (commandSplit.size() > 3)
 			throw runtime_error("cp: invalid number of arguments for cemalBolatShell -- ");
 		else if (commandSplit[1] == "." || commandSplit[1] == ".." || commandSplit[1] == "/")
 			throw runtime_error("cp: cannot copy to " + commandSplit[1] + ": file exists");
@@ -112,11 +115,12 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "link")
 	{
-		if (commandSplit.size() < 2)
+		if (commandSplit.size() < 3)
 			throw runtime_error("link: missing operand");
-		else if (commandSplit.size() > 2)
+		else if (commandSplit.size() > 3)
 			throw runtime_error("link: invalid number of arguments for cemalBolatShell -- ");
 		Executor::link(*this, commandSplit[1], commandSplit[2]);
+		Utils::recheckLinks(*this, getRoot());
 		SaveFile::save(getFileSystemPath(), *this);
 		return;
 	}

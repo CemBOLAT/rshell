@@ -8,10 +8,10 @@ int main(){
 
 	try {
 		Shell	shell;
-		LoadFile::load(shell.getFileSystemPath(), shell);
+		LoadFile::load(shell.getFileSystemPath(), shell); // loading file system
 		while (!shell.isTerminated()) {
 			try {
-				Utils::printPrompt(shell);
+				Utils::printPrompt(shell); // printing prompt
 				string	command;
 				getline(cin, command); // getting command
 				Utils::TextEngine::reset();

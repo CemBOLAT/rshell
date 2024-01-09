@@ -11,9 +11,10 @@ RegularFile::RegularFile(const string &name, size_t sizeBytes, time_t time, cons
 }
 
 RegularFile::~RegularFile()
-{ /*Body inintentionally left empty! */
-}
+{ /*Body inintentionally left empty! */}
 
+// Preconditions: User wants to print the information about this file with using ls or something.
+// Postconditions: Prints the information about this file. <colorful way>
 void RegularFile::print(ostream &os, size_t maxLen) const
 {
 	time_t rawtime = this->getTime();
@@ -33,6 +34,8 @@ void RegularFile::print(ostream &os, size_t maxLen) const
 	os << endl;
 }
 
+// Preconditions : Progaram wants to save this file to filesystem.txt file.
+// Postconditions : Saves this file to filesystem.txt file.
 void RegularFile::save(std::ostream &file) const
 {
 	file << "Type: Regular" << std::endl;
@@ -42,15 +45,21 @@ void RegularFile::save(std::ostream &file) const
 	file << "Content: " << getData() << std::endl;
 }
 
+// Preconditions: User wants to print the content of this file.
+// Postconditions: Prints the content of this file.
 void RegularFile::cat() const
 {
-	for (auto c = this->cbegin(); c != this->cend(); ++c)
-		std::cout << *c;
+	for (auto it : *this) // iterator (I know it is not a good way to do this but I wanted to use iterator)
+	{
+		std::cout << it;
+	}
 	std::cout << std::endl;
 }
 
-void RegularFile::cd(Shell &shell)
+// Preconditions: User wants to cd this file.
+// Postconditions: Throws exception because it is not a directory.
+void RegularFile::cd(Shell &shell) // throws exception because it is not a directory
 {
-	(void)shell;
+	(void)shell; // unused parameter but I need it to override the virtual function
 	throw std::runtime_error("cd :" + getName() + " : Not a directory");
 }
