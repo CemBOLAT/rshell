@@ -23,7 +23,7 @@ void SymbolicLink::print(ostream &os, size_t maxLen) const
 	os << "L ";
 	Utils::TextEngine::bold();
 	Utils::TextEngine::orange();
-	os << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
+	os << std::left << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
 	Utils::TextEngine::reset();
 	Utils::TextEngine::green();
 	Utils::printTime(os, timeinfo);

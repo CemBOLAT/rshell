@@ -7,19 +7,12 @@
 int main(){
 
 	try {
-		Shell shell;
+		Shell	shell;
 		LoadFile::load(shell.getFileSystemPath(), shell);
 		while (!shell.isTerminated()) {
 			try {
-				Utils::TextEngine::green();
-				Utils::TextEngine::bold();
-				cout << "cemalBolat@C++0S:";
-				Utils::TextEngine::reset();
-				Utils::TextEngine::bold();
-				Utils::TextEngine::blue();
-				cout << shell.getPrompt();
-				Utils::TextEngine::magenta();
-				string command;
+				Utils::printPrompt(shell);
+				string	command;
 				getline(cin, command); // getting command
 				Utils::TextEngine::reset();
 				shell.execute(command); // executing command

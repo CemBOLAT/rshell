@@ -14,21 +14,6 @@ RegularFile::~RegularFile()
 { /*Body inintentionally left empty! */
 }
 
-ostream &operator<<(ostream &os, const RegularFile &file)
-{
-	time_t rawtime = file.getTime();
-	struct tm *timeinfo = std::localtime(&rawtime);
-
-	os << "F " << file.getName() << " ";
-	Utils::printTime(os, timeinfo) << file.getSizeBytes() << " Bytes";
-	return os;
-}
-
-void RegularFile::copy(Directory *dir) const
-{
-	dir->addFile(new RegularFile(*this));
-}
-
 void RegularFile::print(ostream &os, size_t maxLen) const
 {
 	time_t rawtime = this->getTime();
@@ -38,7 +23,7 @@ void RegularFile::print(ostream &os, size_t maxLen) const
 	os << "F ";
 	Utils::TextEngine::bold();
 	Utils::TextEngine::orange();
-	os << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
+	os << std::left << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
 	Utils::TextEngine::reset();
 	Utils::TextEngine::green();
 	Utils::printTime(os, timeinfo);
@@ -59,7 +44,7 @@ void RegularFile::save(std::ostream &file) const
 
 void RegularFile::cat() const
 {
-	for (auto c = data.begin(); c != data.end(); ++c)
+	for (auto c = this->cbegin(); c != this->cend(); ++c)
 		std::cout << *c;
 	std::cout << std::endl;
 }

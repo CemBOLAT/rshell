@@ -23,7 +23,7 @@ namespace
 		time_t rawtime = dir->getTime();
 		struct tm *timeinfo = std::localtime(&rawtime);
 
-		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << "."
+		os << "D " << std::left << std::setw(maxNameLength) << std::setfill(' ') << "."
 		   << " ";
 		Utils::printTime(os, timeinfo) << std::endl;
 	}
@@ -33,7 +33,7 @@ namespace
 		time_t rawtime = dir->getParentDirectory()->getTime();
 		struct tm *timeinfo = std::localtime(&rawtime);
 
-		os << "D " << std::setw(maxNameLength) << std::setfill(' ') << ".."
+		os << "D " << std::left << std::setw(maxNameLength) << std::setfill(' ') << ".."
 		   << " ";
 		Utils::printTime(os, timeinfo) << std::endl;
 	}
@@ -41,13 +41,13 @@ namespace
 
 namespace
 {
-	size_t getMaxNameLength(const vector<File *> &files)
+	size_t getMaxNameLength(const Directory *directory)
 	{
 		size_t maxNameLength = 2; // . ve .. için
-		for (File *file : files)
+		for (auto file = directory->cbegin(); file != directory->cend(); ++file)
 		{
-			if (file->getName().length() > maxNameLength)
-				maxNameLength = file->getName().length();
+			if ((*file)->getName().length() > maxNameLength)
+				maxNameLength = (*file)->getName().length();
 		}
 		return maxNameLength;
 	}
@@ -57,20 +57,19 @@ namespace Executor
 {
 	void ls(const Directory *directory, const Shell &Shell, const string &option)
 	{
-		vector<File *> files = directory->getFiles();
-		size_t maxNameLength = getMaxNameLength(files);
+		size_t maxNameLength = getMaxNameLength(directory);
 		listOnlyCurrentDirectory(cout, directory, maxNameLength);
 		if (directory != Shell.getRoot())
 			listSpecialDirectories(cout, directory, maxNameLength);
-		for (File *file : files)
-			file->print(cout, maxNameLength);
+		for (auto file = directory->cbegin(); file != directory->cend(); ++file)
+			(*file)->print(cout, maxNameLength);
 		if (option == "-R")
 		{
-			for (File *file : files)
+			for (auto file = directory->cbegin(); file != directory->cend(); ++file)
 			{
-				if (dynamic_cast<Directory *>(file))
+				if (dynamic_cast<Directory *>(*file))
 				{
-					Directory *directory = dynamic_cast<Directory *>(file);
+					Directory *directory = dynamic_cast<Directory *>(*file);
 					cout << "\n";
 					Utils::TextEngine::orange();
 					cout << "./" << Utils::absPathToRelPath(Shell, directory->getOwnFilesPath()) << ":";
@@ -398,18 +397,26 @@ namespace Executor
 		string absDestPath = Utils::relPathToAbsPath(shell, dest);
 		if (dest.empty() || source.empty())
 			throw runtime_error("link: missing operand");
-		else if (dest == "." || dest == "..")
+		else if (dest == "." || dest == ".." || dest == "/")
 			throw runtime_error("link: cannot create link '" + dest + "': File exists");
 		try
 		{
 			destFile = File::find<File>(shell, absDestPath);
+			destDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absDestPath));
+			if (destDirectory == nullptr)
+				throw invalid_argument("link: cannot create link '" + dest + "': No such file or directory");
 			if (destFile != nullptr)
 				throw invalid_argument("link: cannot create link '" + dest + "': File exists");
 			sourceFile = File::find<File>(shell, absSourcePath);
-			destDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absDestPath));
 			sourceDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absSourcePath));
-			symbolicLink = new SymbolicLink(absDestPath.substr(absDestPath.find_last_of('/') + 1), destDirectory->getOwnFilesPath(), time(nullptr), sourceFile,
+			if (sourceDirectory == nullptr){
+				symbolicLink = new SymbolicLink(absDestPath.substr(absDestPath.find_last_of('/') + 1), destDirectory->getOwnFilesPath(), time(nullptr), sourceFile,
+											absSourcePath.substr(absSourcePath.find_last_of('/') + 1), Utils::getParentPathOfAbsPath(absSourcePath) + "/");
+			}
+			else {
+				symbolicLink = new SymbolicLink(absDestPath.substr(absDestPath.find_last_of('/') + 1), destDirectory->getOwnFilesPath(), time(nullptr), sourceFile,
 											absSourcePath.substr(absSourcePath.find_last_of('/') + 1), sourceDirectory->getOwnFilesPath());
+			}
 			destDirectory->addFile(symbolicLink);
 			destDirectory->setTime(time(nullptr));
 		}

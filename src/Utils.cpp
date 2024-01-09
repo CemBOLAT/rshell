@@ -1,5 +1,6 @@
 #include "../includes/Utils.hpp"
 #include "../includes/RegularFile.hpp"
+#include "../includes/TextEngine.hpp"
 #include "../includes/SymbolicLink.hpp"
 #include "../includes/Shell.hpp"
 #include <iomanip>
@@ -94,10 +95,10 @@ namespace Utils
 		int hour = timeinfo->tm_hour;
 		int minute = timeinfo->tm_min;
 
-		os << std::setw(3) << std::setfill('0') << convertMonth(month) << " "
-		   << std::setw(2) << std::setfill('0') << day << " "
-		   << std::setw(2) << std::setfill('0') << hour << ":"
-		   << std::setw(2) << std::setfill('0') << minute << " ";
+		os << std::right << std::setw(3) << std::setfill('0') << convertMonth(month) << " "
+		   << std::right << std::setw(2) << std::setfill('0') << day << " "
+		   << std::right << std::setw(2) << std::setfill('0') << hour << ":"
+		   << std::right << std::setw(2) << std::setfill('0') << minute << " ";
 		return os;
 	}
 	// Precondition: file is a ifstream
@@ -180,28 +181,6 @@ namespace Utils
 namespace Utils
 {
 	// Precondition: directory is a Directory
-	// Postcondition: deletes the directory and its files recursively from memory for preventing memory leak
-	void recRemoveDir(Directory *directory)
-	{
-		// Use iterator for deleting files
-		for (auto it = directory->begin(); it != directory->end(); ++it)
-		{
-			if (dynamic_cast<Directory *>(*it))
-				recRemoveDir(dynamic_cast<Directory *>(*it)); // recursive call
-			else
-			{
-				delete *it;
-				*it = nullptr;
-			}
-		}
-		delete directory;
-		directory = nullptr;
-	}
-}
-
-namespace Utils
-{
-	// Precondition: directory is a Directory
 	// Postcondition: returns the size of directory recursively
 	// Note: size of directory is the sum of size of its files and its subdirectories recursively + 15 is the size of saving system information
 	size_t getProgramSize(const Shell &Shell)
@@ -240,5 +219,18 @@ namespace Utils
 	string absPathToRelPath(const Shell &shell, const string &path)
 	{
 		return path.substr(shell.getCurrentDirectory()->getOwnFilesPath().size(), path.size() - 1);
+	}
+}
+
+namespace Utils {
+	void printPrompt(const Shell &shell) {
+		Utils::TextEngine::green();
+		Utils::TextEngine::bold();
+		cout << "cemalBolat@C++0S:";
+		Utils::TextEngine::reset();
+		Utils::TextEngine::bold();
+		Utils::TextEngine::blue();
+		cout << shell.getPrompt();
+		Utils::TextEngine::magenta();
 	}
 }

@@ -15,8 +15,6 @@ class RegularFile : public File {
 		size_t				getSizeBytes() const { return this->sizeBytes; }
 		string				getData() const { return this->data; }
 
-		void				copy(Directory *dir) const;
-		friend ostream&		operator<<(ostream& os, const RegularFile& file);
 		virtual void		print(ostream& os, size_t maxLen) const override;
 		virtual void		save(ostream &os) const override;
 		virtual void		cat() const override;
@@ -25,6 +23,7 @@ class RegularFile : public File {
 		class Iterator {
 			public:
 				Iterator(string::iterator it) : it(it) {}
+				Iterator(string::const_iterator it) : cit(it) {}
 				Iterator(const Iterator& it) = default;
 				Iterator&	operator=(const Iterator& it) = default;
 				~Iterator() = default;
@@ -33,10 +32,13 @@ class RegularFile : public File {
 				bool		operator==(const Iterator& it) const { return this->it == it.it; }
 				bool		operator!=(const Iterator& it) const { return this->it != it.it; }
 			private:
-				string::iterator	it;
+				string::iterator		it;
+				string::const_iterator	cit;
 		};
 		Iterator	begin() { return Iterator(data.begin()); }
 		Iterator	end() { return Iterator(data.end()); }
+		Iterator	cbegin() const { return Iterator(data.cbegin()); }
+		Iterator	cend() const { return Iterator(data.cend()); }
 	private:
 		size_t			sizeBytes;
 		string			data;

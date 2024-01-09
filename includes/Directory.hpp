@@ -27,19 +27,26 @@ class Directory : public File {
 
 		class Iterator {
 			public:
-				Iterator(vector<File*>::iterator it) : it(it) {}
+				Iterator(vector<File *>::iterator it) : it(it) {}
+				Iterator(vector<File *>::const_iterator it) : cit(it) {}
 				Iterator(const Iterator& it) = default;
 				Iterator&	operator=(const Iterator& it) = default;
 				~Iterator() = default;
 				File*		&operator*() { return *it; }
+				//const File*	operator*() { return *it; }
 				Iterator	&operator++() { ++it; return *this; }
 				bool		operator==(const Iterator& it) const { return this->it == it.it; }
 				bool		operator!=(const Iterator& it) const { return this->it != it.it; }
 			private:
-				std::vector<File*>::iterator	it;
+				std::vector<File*>::iterator		it;
+				std::vector<File*>::const_iterator	cit;
 		};
+
 		Iterator	begin() { return Iterator(files.begin()); }
+		Iterator	cbegin() const { return Iterator(files.cbegin()); }
 		Iterator	end() { return Iterator(files.end()); }
+		Iterator	cend() const { return Iterator(files.cend()); }
+
 	private:
 		string			ownFilesPath;
 		vector<File*>	files;

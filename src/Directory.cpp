@@ -20,7 +20,9 @@ Directory::Directory(const string &name, time_t time, const string &path, Direct
 }
 
 Directory::~Directory()
-{ /*Body inintentionally left empty! */
+{
+	for (auto file : this->files)
+		delete file;
 }
 
 // hata dosya okumada sorun var
@@ -53,7 +55,7 @@ void Directory::print(std::ostream &os, size_t maxLen) const
 	Utils::TextEngine::reset();
 	Utils::TextEngine::bold();
 	Utils::TextEngine::cyan();
-	os << std::right << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
+	os << std::left << std::setw(maxLen) << std::setfill(' ') << this->getName() << " ";
 	Utils::TextEngine::reset();
 
 	Utils::TextEngine::green();
@@ -81,8 +83,7 @@ void Directory::removeFile(const string &name)
 	{
 		if ((*it)->getName() == name)
 		{
-			if (dynamic_cast<Directory *>(*it))
-				Utils::recRemoveDir(dynamic_cast<Directory *>(*it));
+			delete *it;
 			this->files.erase(it);
 			return;
 		}
