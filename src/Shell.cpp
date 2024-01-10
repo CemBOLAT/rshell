@@ -37,6 +37,8 @@ void Shell::execute(string command)
 		return;
 	command = Utils::trim(command);
 	vector<string> commandSplit = Utils::split(command, ' ');
+	if (commandSplit.size() == 0)
+		return;
 	string commandName = commandSplit[0];
 
 	if (commandName == "exit")
@@ -58,7 +60,7 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "cat")
 	{
-		if (commandSplit.size() > 2)
+		if (commandSplit.size() != 2)
 			throw runtime_error("cat: invalid number of arguments for cemalBolatShell -- ");
 		else
 			Executor::cat(*this, commandSplit[1]);
@@ -66,7 +68,7 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "rm")
 	{
-		if (commandSplit.size() > 2)
+		if (commandSplit.size() != 2)
 			throw runtime_error("rm: invalid number of arguments for cemalBolatShell -- ");
 		else
 		{
@@ -78,7 +80,7 @@ void Shell::execute(string command)
 	}
 	else if (commandName == "mkdir")
 	{
-		if (commandSplit.size() > 2)
+		if (commandSplit.size() != 2)
 			throw runtime_error("mkdir: invalid number of arguments for cemalBolatShell -- ");
 		else
 		{
@@ -94,7 +96,10 @@ void Shell::execute(string command)
 			throw runtime_error("cd: invalid number of arguments for cemalBolatShell -- ");
 		else
 		{
-			Executor::cd(*this, commandSplit[1]);
+			if (commandSplit.size() == 1)
+				Executor::cd(*this, "/");
+			else
+				Executor::cd(*this, commandSplit[1]);
 			if (getCurrentDirectory()->getName() == "/")
 				this->setPrompt("/$ ");
 			else
