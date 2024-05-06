@@ -483,3 +483,102 @@ namespace Executor
 }
 
 // ****************************************  LINK OVER ****************************************//
+
+namespace Executor
+{
+	// Precondition: User wants to execute clear command
+	// Postcondition: program executes clear command
+	void clear()
+	{
+		cout << "\033[2J\033[1;1H"; // clear screen
+	}
+}
+
+
+namespace Executor
+{
+	// Precondition: User wants to execute touch command
+	// Postcondition: program executes touch command
+	void touch(const Shell &shell, const vector<string> &splitpath)
+	{
+		Directory	*parentDirectory = nullptr;
+		File		*file = nullptr;
+		string		fileName;
+		string		absPath;
+		if (splitpath.size() < 2)
+			throw runtime_error("touch: missing operand");
+		else if (splitpath.size() > 2)
+			throw runtime_error("touch: invalid number of arguments for cemalBolatShell -- ");
+		try
+		{
+			absPath = Utils::relPathToAbsPath(shell, splitpath[1]);
+			if (absPath == "/" || absPath == shell.getCurrentDirectory()->getOwnFilesPath()) // if file is root directory or current directory throw exception
+				throw runtime_error("touch: cannot create file '" + splitpath[1] + "': File exists"); // root directory cannot be created and deleted
+			file = File::find<File>(shell, absPath);
+			parentDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absPath));
+			if (file != nullptr) // delete if existent file is directory and throw exception if not
+			{
+				if (dynamic_cast<Directory *>(file)) // if file is directory
+				{
+					parentDirectory->removeFile(absPath.substr(absPath.find_last_of('/') + 1)); // remove directory from parent directory
+					parentDirectory->setTime(time(nullptr));
+				}
+				else
+					file->setTime(time(nullptr)); // if file is not directory throw exception
+				return;
+			}
+			else if (parentDirectory == nullptr) // if parent directory does not exist throw exception <for root directory parent directory manipulalated as root too at find function>
+				throw invalid_argument("touch: cannot create file '" + splitpath[1] + "': No such file or directory");
+			fileName = absPath.substr(absPath.find_last_of('/') + 1);
+			file = new RegularFile(fileName, 0, time(nullptr), "", parentDirectory->getOwnFilesPath());
+			parentDirectory->addFile(file); // add directory to parent directory
+			parentDirectory->setTime(time(nullptr)); // set parent directory's time to current time to show that it is modified
+		}
+		catch (const invalid_argument &e)
+		{
+			throw e;
+		}
+	}
+}
+
+namespace Executor
+{
+	// Precondition: User wants to execute echo command
+	// Postcondition: program executes echo command
+	void echo(const Shell &shell, const string &text, const string &fileName)
+	{
+		Directory	*parentDirectory = nullptr;
+		File		*file = nullptr;
+		string		absPath;
+		if (fileName.empty())
+			throw runtime_error("echo: missing operand");
+		try
+		{
+			absPath = Utils::relPathToAbsPath(shell, fileName);
+			if (absPath == "/" || absPath == shell.getCurrentDirectory()->getOwnFilesPath()) // if file is root directory or current directory throw exception
+				throw runtime_error("echo: cannot create file '" + fileName + "': File exists"); // root directory cannot be created and deleted
+			file = File::find<File>(shell, absPath);
+			parentDirectory = File::find<Directory>(shell, Utils::getParentPathOfAbsPath(absPath));
+			if (file != nullptr) // delete if existent file is directory and throw exception if not
+			{
+				if (dynamic_cast<Directory *>(file)) // if file is directory
+				{
+					parentDirectory->removeFile(absPath.substr(absPath.find_last_of('/') + 1)); // remove directory from parent directory
+					parentDirectory->setTime(time(nullptr));
+				}
+				else
+					file->setTime(time(nullptr)); // if file is not directory throw exception
+				return;
+			}
+			else if (parentDirectory == nullptr) // if parent directory does not exist throw exception <for root directory parent directory manipulalated as root too at find function>
+				throw invalid_argument("echo: cannot create file '" + fileName + "': No such file or directory");
+			file = new RegularFile(absPath.substr(absPath.find_last_of('/') + 1), text.size(), time(nullptr), text, parentDirectory->getOwnFilesPath());
+			parentDirectory->addFile(file); // add directory to parent directory
+			parentDirectory->setTime(time(nullptr)); // set parent directory's time to current time to show that it is modified
+		}
+		catch (const invalid_argument &e)
+		{
+			throw e;
+		}
+	}
+}

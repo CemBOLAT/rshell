@@ -13,6 +13,9 @@ namespace Executor {
 	void	ls(const Directory *directory, const Shell &shell, const string& option);
 	void	cp(const Shell& shell, const string& source, const string& fileName);
 	void	link(const Shell& shell, const string& source, const string& fileName);
+	void	clear();
+	void	touch(const Shell& shell, const vector<string>& _splitpath);
+	void	echo(const Shell& shell, const string &text, const string &fileName);
 }
 
 #endif

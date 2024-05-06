@@ -1,4 +1,4 @@
-Time: 1704885405
+Time: 1715008666
 Type: Directory
 Name: gtu
 Path: /
@@ -9040,3 +9040,29 @@ Path: /
 Time: 1704813318
 Link: /gtu/cse/cse101/
 LinkedName: hw_notes
+Type: Regular
+Name: baha
+Path: /
+Time: 1715008597
+Content: 
+Type: Regular
+Name: 31
+Path: /
+Time: 1715008602
+Content: baha
+Type: Regular
+Name: bahas
+Path: /
+Time: 1715008611
+Content: 31
+Type: Regular
+Name: annn
+Path: /
+Time: 1715008626
+Content: cemal
+
+Type: Regular
+Name: sok
+Path: /
+Time: 1715008666
+Content: arka

@@ -131,6 +131,27 @@ void Shell::execute(string command)
 		SaveFile::save(getFileSystemPath(), *this);
 		return;
 	}
+	else if (commandName == "clear"){
+		Executor::clear();
+		return;
+	}
+	else if (commandName == "touch"){
+		Executor::touch(*this, commandSplit);
+	}
+	else if (commandName == "echo"){
+		if (commandSplit.size() < 2)
+			throw runtime_error("echo: missing operand");
+		else if (commandSplit.size() == 2){
+		    std::cout << commandSplit[1] << std::endl;
+		    return;
+		}
+		else if (commandSplit.size() > 3)
+			throw runtime_error("echo: invalid number of arguments for cemalBolatShell -- ");
+		Executor::echo(*this, commandSplit[1], commandSplit[2]);
+		Utils::recheckLinks(*this, getRoot());
+		SaveFile::save(getFileSystemPath(), *this);
+	}
+	
 	else
 		throw invalid_argument("cemalBolatShell: " + commandName + ": command not found");
 }
